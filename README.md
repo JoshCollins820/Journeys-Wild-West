@@ -8,8 +8,6 @@ Eliminate as many bandits as you can!
 
 ‎
 
-Info About **JOURNEYS**:
-
 **JOURNEYS**, is a collection of **minigames** written in Python.
 
 From slaying zombies with magic and gunning down western bandits, to begging for spare change and strolling around a little town, you can expect to explore a wide variety of experiences through JOURNEYS minigames.
