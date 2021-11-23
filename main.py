@@ -638,6 +638,19 @@ def mainMenu():
         intromusic.stop()
 
 
+def playerDead():
+    global dead, moveAbility
+    # death screen
+    if dead == True:
+        screen.blit(asset_death_screen, (300 - 300, 300 - 300))
+        screen.blit(deathScore_text, (270, 350))
+        moveAbility = False
+        stopSounds()
+        if playerHP == 0:
+            death.stop()
+            death.play()
+
+
 def revolver_reload_timer_handler():
     global revRoundsMag, revRoundsTotal
     if revRoundsTotal > 0:
@@ -686,7 +699,6 @@ revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireD
 
 # Main Menu Music
 intromusic.play(-1)
-
 
 
 # Screen Refresh Loop
@@ -1429,18 +1441,9 @@ while True:
         elif banMoveAbility == False:
             banMove = 0
 
-
-        # death screen
         if playerHP <= 0:
             dead = True
-        if dead == True:
-            screen.blit(asset_death_screen, (300-300, 300-300))
-            screen.blit(deathScore_text, (270, 350))
-            moveAbility = False
-            stopSounds()
-            if playerHP == 0:
-                death.stop()
-                death.play()
+            playerDead()
 
         # constant for loop
         for i in range(0, 1):
