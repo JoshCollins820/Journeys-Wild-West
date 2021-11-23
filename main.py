@@ -1,6 +1,6 @@
 ### JOURNEY'S WILD WEST
 ## BY JOSH COLLINS
-# VERSION 1.13
+# VERSION 1.14
 
 # Modules
 import pygame
