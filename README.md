@@ -7,7 +7,7 @@ With a six-shooter on your hip and a sniper rifle on your back, you are unstoppa
 Eliminate as many bandits as you can!
 
 
-Info about **JOURNEYS**:
+Info About **JOURNEYS**:
 
 **JOURNEYS**, is a collection of **minigames** written in Python.
 
