@@ -1,6 +1,6 @@
 ### JOURNEY'S WILD WEST
 ## BY JOSH COLLINS
-# VERSION 1.14
+# VERSION 1.15
 
 # Modules
 import pygame
@@ -268,7 +268,7 @@ interact_text = font1.render("INTERACT", True, (255,255,255))
 buy_text = font1.render("BUY", True, (255,255,255))
 potionCount_text = font1.render((str(hpPotionCount)), True, (255,255,255))
 clickPlay_text = font1.render("Click Here to PLAY", True, (255,255,255))
-deathScore_text = font1.render(("Score: " + str(score)), True, (255,255,255))
+deathScore_text = font2.render(("Score: " + str(score)), True, (255,255,255))
 shopWarning_text = font1.render("\"Take your hand off the gun, son..\"", True, (0, 0, 0))
 # syntax - (Message, AntiAliasing, Color, Background=None)
 
@@ -614,6 +614,30 @@ def stopSounds():
     shot.stop()
 
 
+def mainMenu():
+    global startGame, tumbleAuto, playButtonHover, moveAbility, banMoveAbility, mouse_posx, mouse_posy
+    if startGame == False:
+        # Background
+        screen.blit(asset_main_menu, (0, 0))
+        # Hover Button
+        if (235 <= mouse_posx <= 365) and (390 <= mouse_posy <= 435) and playButtonClicked == False:
+            screen.blit(asset_button_hover, (0, 0))
+            playButtonHover = True
+        # Click Button
+        elif (235 <= mouse_posx <= 365) and (390 <= mouse_posy <= 435) and playButtonClicked == True:
+            screen.blit(asset_button_clicked, (0, 0))
+            playButtonHover = False
+        # Normal Button
+        else:
+            screen.blit(asset_button_normal, (0, 0))
+            playButtonHover = False
+        moveAbility = False
+        banMoveAbility = False
+    elif startGame == True:
+        tumbleAuto = 15
+        intromusic.stop()
+
+
 def revolver_reload_timer_handler():
     global revRoundsMag, revRoundsTotal
     if revRoundsTotal > 0:
@@ -663,9 +687,11 @@ revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireD
 # Main Menu Music
 intromusic.play(-1)
 
+
+
 # Screen Refresh Loop
 while True:
-    # Event Handler
+    # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
         if event.type == pygame.QUIT:
@@ -1013,29 +1039,10 @@ while True:
     # Mouse Position
     mouse_posx,mouse_posy = pygame.mouse.get_pos()
 
-    # Main Menu
-    if startGame == False:
-        # Background
-        screen.blit(asset_main_menu, (0, 0))
-        # Hover Button
-        if (235 <= mouse_posx <= 365) and (390 <= mouse_posy <= 435) and playButtonClicked == False:
-            screen.blit(asset_button_hover, (0, 0))
-            playButtonHover = True
-        # Click Button
-        elif (235 <= mouse_posx <= 365) and (390 <= mouse_posy <= 435) and playButtonClicked == True:
-            screen.blit(asset_button_clicked, (0, 0))
-            playButtonHover = False
-        # Normal Button
-        else:
-            screen.blit(asset_button_normal, (0, 0))
-            playButtonHover = False
-        moveAbility = False
-        banMoveAbility = False
-    elif startGame == True:
-        tumbleAuto = 15
-        intromusic.stop()
+    # Main Menu -------------------------------------------------------------------------------------------------
+    mainMenu()
 
-    # Game Started
+    # Game Started ----------------------------------------------------------------------------------------------
     if startGame == True:
         # sky
         screen.blit(asset_sky_day, (300-300, 300-300))
@@ -1388,13 +1395,14 @@ while True:
                     screen.blit(asset_scope_back_right, (300-300, 300-300))
                 if lookingLeft == True:
                     screen.blit(asset_scope_back_left, (300-300, 300-300))
-                    # fp bandits
+
+                # fp bandits
                 if banx1 <= 600 and ban2InScope == False and ban3InScope == False:
                     if banx1 <= 600 and banx1 >= 250 and lookingRight == True or banx1 >= 0 and banx1 <= 250 and lookingLeft == True:
                         if banHP > 0:
                             ban1InScope = True
                             screen.blit(asset_bandit1_fp, (300-115, 350-180))
-        #
+
                 if banx2 <= 600 and ban3InScope == False and ban1InScope == False:
                     if banx2 <= 600 and banx2 >= 250 and lookingRight == True or banx2 >= 0 and banx2 <= 250 and lookingLeft == True:
                         if ban2HP > 0:
