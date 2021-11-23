@@ -35,6 +35,8 @@ bodyWeight = 12
 moneyCount = 0
 revRoundsMag = 6
 revRoundsTotal = 24
+revolverFireRate = 200
+revolverReloadSpeed = 450
 sniperRoundsMag = 1
 sniperRoundsTotal = 3
 hpPotionCount = 0
@@ -318,6 +320,7 @@ playerSniper = False
 playerGrab = False
 playButtonHover = False
 playButtonClicked = False
+readyToFireRevolver = True
 
 
 def worldLeft():
@@ -586,30 +589,6 @@ def hpPotion():
     potion.play()
 
 
-def click():
-    global moneyCount, startGame, moveAbility, hotbarSlot2, hotbarSlot6, dead, bulletx, hotbarSlot1, lookingLeft,\
-        lookingRight, revRoundsMag, scopeScreen, banMoveAbility, hpPotionCount, playerIdle, sniperRoundsMag,\
-        sniperRoundsTotal, playerSniper
-
-    if startGame == False:
-        button.play()
-        intro.play()
-        startGame = True
-        moveAbility = True
-        banMoveAbility = True
-
-    if hotbarSlot6 == True and hpPotionCount > 0:
-        hpPotion()
-        playerIdle = False
-
-    if hotbarSlot1 == True:
-        if moveAbility == True:
-            fire()
-
-    if hotbarSlot2 == True:
-        fire()
-
-
 def getBanditRespawn():
     x = random.randint(-1200, 1200)
     if x <= 700 and x >= -100:
@@ -668,11 +647,18 @@ def startGame_timer_handler():
     startGame_timer.stop()
 
 
+def revolverFireDelay_timer_handler():
+    global readyToFireRevolver
+    readyToFireRevolver = True
+    revolverFireDelay_timer.stop()
+
+
 # timers
-revolver_reload_timer = simplegui.create_timer(450, revolver_reload_timer_handler)
+revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
 music_timer = simplegui.create_timer(15000, music_timer_handler)
 startGame_timer = simplegui.create_timer(50, startGame_timer_handler)
+revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireDelay_timer_handler)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -720,8 +706,10 @@ while True:
             if event.key == pygame.K_SPACE:
                 # Revolver fire
                 if hotbarSlot1 == True:
-                    if moveAbility == True:
+                    if moveAbility == True and readyToFireRevolver == True:
                         fire()
+                        readyToFireRevolver = False
+                        revolverFireDelay_timer.start()
                         if revRoundsMag <= 0:
                             reloadUI = True
                             outAmmoUI = False
@@ -1016,8 +1004,10 @@ while True:
                     hpPotion()
                     playerIdle = False
                 if hotbarSlot1 == True:
-                    if moveAbility == True:
+                    if moveAbility == True and readyToFireRevolver == True:
                         fire()
+                        readyToFireRevolver = False
+                        revolverFireDelay_timer.start()
                 if hotbarSlot2 == True:
                     fire()
     # Mouse Position

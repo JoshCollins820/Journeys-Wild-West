@@ -1,32 +1,33 @@
----------------------------BUGS----------------------------
+------------------------ KNOWN BUGS------------------------
 - Scoped bandits not getting larger
   (Convert into rectangles)
 
 --------------------------IMPROVE--------------------------
-- Volume for sounds
 - Object oriented enemies
-- Walking
 
 ----------------------------ADD----------------------------
+- Pause Menu
+- Volume for sounds
 - Game Loop
+- Continuous Walking
 - Combat roll
 - Looting
 - Open saloon
+- Horses
+- Bounty posters
+- Lost item posters
+- Missions
 
+-------------------------CHANGELOG-------------------------
+- Version 1.15
+- Added Main Menu
+- Added fire rate cap to revolver
+- Fixed player model bugs
 
-
-
-
----------------------------Extra---------------------------
+---------------------------NOTES---------------------------
 
 Play Button Dimensions:
-Top Left: (235, 390)
-Top Right: (365, 390)
-Bottom Left: (235, 435)
-Bottom Right: (365, 435)
-
-
-Old Main Menu Backup:
-screen.blit(asset_journey_cover, (300-242.5, 145-101))
-screen.blit(clickPlay_text, (233, 228))
-tumbleAuto = 15
+- Top Left: (235, 390)
+- Top Right: (365, 390)
+- Bottom Left: (235, 435)
+- Bottom Right: (365, 435)
