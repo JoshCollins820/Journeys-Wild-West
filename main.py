@@ -29,6 +29,7 @@ pygame.display.set_caption("JOURNEYS: WILD WEST")
 pygame.display.set_icon(pygame.image.load("assets/icon/window_icon.png"))
 collapse = True
 
+
 # values and statements
 if collapse:
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
@@ -134,6 +135,7 @@ if collapse:
     restartButtonClicked = False
     mainMenuButtonHover = False
     mainMenuButtonClicked = False
+    pause = False
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
 # keys
@@ -306,6 +308,7 @@ if collapse:
     asset_main_menu_button_normal = pygame.image.load("assets/UI/main_menu_button_normal.png")
     asset_main_menu_button_hover = pygame.image.load("assets/UI/main_menu_button_hover.png")
     asset_main_menu_button_clicked = pygame.image.load("assets/UI/main_menu_button_clicked.png")
+    asset_paused_overlay = pygame.image.load("assets/UI/paused.png")
 
 # fonts
 if collapse:
@@ -764,6 +767,7 @@ def resetValues():
     restartButtonHover = False
     mainMenuButtonHover = False
     mainMenuButtonClicked = False
+    pause = False
 
 
 def stopAllTimers(tup):
@@ -858,6 +862,14 @@ while True:
             sys.exit()
         # Keyboard Handler
         if event.type == pygame.KEYDOWN:
+            # Pause Game
+            if event.key == pygame.K_ESCAPE and pause == False:
+                pygame.mixer.pause()
+                pause = True
+            # Unpause Game
+            elif event.key == pygame.K_ESCAPE and pause == True:
+                pygame.mixer.unpause()
+                pause = False
             # Walk left
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 walkLeft()
@@ -1262,8 +1274,11 @@ while True:
     # Main Menu -------------------------------------------------------------------------------------------------
     mainMenu()
 
+    if pause == True:
+        screen.blit(asset_paused_overlay, (0, 0))
+
     # Game Started ----------------------------------------------------------------------------------------------
-    if startGame == True:
+    if startGame == True and pause == False:
         # sky
         screen.blit(asset_sky_day, (300-300, 300-300))
         # ground
