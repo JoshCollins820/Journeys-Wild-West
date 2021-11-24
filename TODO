@@ -24,9 +24,15 @@
 - Fixed HP Beer animation being too short
 - Added a Restart button
 - Added Main Menu button
+- Added Pause Menu
 - Fixed sniper rifle firing without ammo
 
 
 ---------------------------NOTES---------------------------
+
+tl: 239, 312
+tr: 365, 312
+bl: 239, 353
+br: 365, 353
 
 

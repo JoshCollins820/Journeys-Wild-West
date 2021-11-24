@@ -136,6 +136,8 @@ if collapse:
     mainMenuButtonHover = False
     mainMenuButtonClicked = False
     pause = False
+    resumeButtonHover = False
+    resumeButtonClicked = False
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
 # keys
@@ -309,6 +311,10 @@ if collapse:
     asset_main_menu_button_hover = pygame.image.load("assets/UI/main_menu_button_hover.png")
     asset_main_menu_button_clicked = pygame.image.load("assets/UI/main_menu_button_clicked.png")
     asset_paused_overlay = pygame.image.load("assets/UI/paused.png")
+    asset_paused_darken = pygame.image.load("assets/UI/pause_darken.png")
+    asset_resume_button_normal = pygame.image.load("assets/UI/resume_button_normal.png")
+    asset_resume_button_hover = pygame.image.load("assets/UI/resume_button_hover.png")
+    asset_resume_button_clicked = pygame.image.load("assets/UI/resume_button_clicked.png")
 
 # fonts
 if collapse:
@@ -639,26 +645,41 @@ def stopSounds():
 
 def mainMenu():
     global startGame, tumbleAuto, playButtonHover, moveAbility, banMoveAbility, mouse_posx, mouse_posy
-    if startGame == False and dead == False:
-        # Background
-        screen.blit(asset_main_menu, (0, 0))
-        # Hover Button
-        if (235 <= mouse_posx <= 365) and (390 <= mouse_posy <= 435) and playButtonClicked == False:
-            screen.blit(asset_button_hover, (0, 0))
-            playButtonHover = True
-        # Click Button
-        elif (235 <= mouse_posx <= 365) and (390 <= mouse_posy <= 435) and playButtonClicked == True:
-            screen.blit(asset_button_clicked, (0, 0))
-            playButtonHover = False
-        # Normal Button
-        else:
-            screen.blit(asset_button_normal, (0, 0))
-            playButtonHover = False
-        moveAbility = False
-        banMoveAbility = False
-    elif startGame == True:
-        tumbleAuto = 15
-        intromusic.stop()
+    # Background
+    screen.blit(asset_main_menu, (0, 0))
+    # Hover Button
+    if (235 <= mouse_posx <= 365) and (390 <= mouse_posy <= 435) and playButtonClicked == False:
+        screen.blit(asset_button_hover, (0, 0))
+        playButtonHover = True
+    # Click Button
+    elif (235 <= mouse_posx <= 365) and (390 <= mouse_posy <= 435) and playButtonClicked == True:
+        screen.blit(asset_button_clicked, (0, 0))
+        playButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_button_normal, (0, 0))
+        playButtonHover = False
+    moveAbility = False
+    banMoveAbility = False
+
+
+
+def pauseGame():
+    global resumeButtonClicked, resumeButtonHover
+    screen.blit(asset_paused_overlay, (0, 0))
+    # Resume Button
+    # Hover Button
+    if (239 <= mouse_posx <= 365) and (312 <= mouse_posy <= 353) and resumeButtonClicked == False:
+        screen.blit(asset_resume_button_hover, (0, 0))
+        resumeButtonHover = True
+    # Click Button
+    elif (239 <= mouse_posx <= 365) and (312 <= mouse_posy <= 353) and resumeButtonClicked == True:
+        resumeButtonHover = False
+        screen.blit(asset_resume_button_clicked, (0, 0))
+    # Normal Button
+    else:
+        screen.blit(asset_resume_button_normal, (0, 0))
+        resumeButtonHover = False
 
 
 def playerDead():
@@ -685,7 +706,8 @@ def resetValues():
         hotbarSlot5, hotbarSlot6, reloadUI, outAmmoUI, scopeScreen,ban1InScope,ban2InScope,ban3InScope,insideShop, \
         ownSniperRifle, catalog, catalogPage1, catalogPage2, catalogPage3, playerIdle, playerWalk, playerHolster, \
         playerLegsIdle, playerShoot, playerDrink, playerSniper, playerGrab, playButtonHover, playButtonClicked, \
-        readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked
+        readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked, \
+        resumeButtonHover, resumeButtonClicked
 
     # player vals
     playerHP = 100
@@ -768,6 +790,8 @@ def resetValues():
     mainMenuButtonHover = False
     mainMenuButtonClicked = False
     pause = False
+    resumeButtonHover = False
+    resumeButtonClicked = False
 
 
 def stopAllTimers(tup):
@@ -821,6 +845,14 @@ def mainMenu_timer_handler():
     mainMenu_timer.stop()
 
 
+def resumeGame_timer_handler():
+    global pause, resumeButtonClicked
+    resumeButtonClicked = False
+    pause = False
+    pygame.mixer.unpause()
+    resumeGame_timer.stop()
+
+
 def revolverFireDelay_timer_handler():
     global readyToFireRevolver
     readyToFireRevolver = True
@@ -839,6 +871,7 @@ sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
 music_timer = simplegui.create_timer(15000, music_timer_handler)
 startGame_timer = simplegui.create_timer(50, startGame_timer_handler)
 mainMenu_timer = simplegui.create_timer(50, mainMenu_timer_handler)
+resumeGame_timer = simplegui.create_timer(50, resumeGame_timer_handler)
 revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireDelay_timer_handler)
 drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_handler)
 
@@ -863,13 +896,13 @@ while True:
         # Keyboard Handler
         if event.type == pygame.KEYDOWN:
             # Pause Game
-            if event.key == pygame.K_ESCAPE and pause == False:
+            if event.key == pygame.K_ESCAPE and pause == False and startGame == True and dead == False:
                 pygame.mixer.pause()
+                screen.blit(asset_paused_darken, (0, 0))
                 pause = True
             # Unpause Game
             elif event.key == pygame.K_ESCAPE and pause == True:
-                pygame.mixer.unpause()
-                pause = False
+                resumeGame_timer.start()
             # Walk left
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 walkLeft()
@@ -939,7 +972,6 @@ while True:
                         ban1InScope = False
                         ban2InScope = False
                         ban3InScope = False
-
             # Switch to hotbar slot 1
             if event.key == pygame.K_1 and moveAbility == True and scopeScreen == False:
                 hotbarSlot1 = not hotbarSlot1
@@ -959,7 +991,6 @@ while True:
                 if hotbarSlot1 == False:
                     playerShoot = False
                     playerHolster = False
-
             # Switch to hotbar slot 2
             if event.key == pygame.K_2 and moveAbility == True:
                 hotbarSlot2 = not hotbarSlot2
@@ -980,7 +1011,6 @@ while True:
                     playerIdle = False
                 if insideShop == True:
                     interactText = False
-
             # Switch to hotbar slot 3
             if event.key == pygame.K_3 and moveAbility == True and scopeScreen == False:
                 hotbarSlot3 = not hotbarSlot3
@@ -992,7 +1022,6 @@ while True:
                 interactText = False
                 playerHolster = False
                 playerSniper = False
-
             # Switch to hotbar slot 4
             if event.key == pygame.K_4 and moveAbility == True and scopeScreen == False:
                 hotbarSlot4 = not hotbarSlot4
@@ -1004,7 +1033,6 @@ while True:
                 interactText = False
                 playerSniper = False
                 playerHolster = False
-
             # Switch to hotbar slot 5
             if event.key == pygame.K_5 and moveAbility == True and scopeScreen == False:
                 hotbarSlot5 = not hotbarSlot5
@@ -1016,7 +1044,6 @@ while True:
                 interactText = False
                 playerSniper = False
                 playerHolster = False
-
             # Switch to hotbar slot Q (6)
             if event.key == pygame.K_q and moveAbility == True and scopeScreen == False:
                 hotbarSlot6 = not hotbarSlot6
@@ -1029,7 +1056,6 @@ while True:
                 playerHolster = False
                 playerSniper = False
                 playerShoot = False
-
             # Enter Store
             if store1x <= 100 and store1x >= 0:
                 if playerShoot == False and scopeScreen == False and insideShop == False and playerSniper == False:
@@ -1048,7 +1074,6 @@ while True:
                         banHP = -50
                         ban2HP = -50
                         ban3HP = -50
-
             # Exit Store
             if insideShop == True:
                 if (store1x - 200) >= 0:
@@ -1061,7 +1086,6 @@ while True:
                         banMoveAbility = True
                         door.stop()
                         door.play()
-
             # Open Catalog
             if store1x + 420 <= 100 and store1x + 420 >= 0:
                 if playerHolster == False and playerShoot == False and insideShop == True and catalog == False\
@@ -1087,7 +1111,6 @@ while True:
                         moveAbility = True
                         openbook.stop()
                         openbook.play()
-
             # Turn Pages
             if catalog == True:
                 if catalogPage1 == True:
@@ -1176,7 +1199,6 @@ while True:
                         disableText()
                         turnpage.stop()
                         turnpage.play()
-
             # Shop Wall Collision
             if insideShop == True:
                 if (store1x + 700) <= 0:
@@ -1185,11 +1207,12 @@ while True:
                     elif event.key == pygame.K_a or event.key == pygame.K_RIGHT:
                         moveAbility = True
                         walkLeft()
+
         # Mouse Handler
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Mouse Button 1
             if event.button == 1:
-                # If game isn't started, and mouse is hovering over button
+                # Play Button
                 if startGame == False and playButtonHover == True:
                     button.play()
                     intro.play()
@@ -1215,6 +1238,13 @@ while True:
                     mainMenuButtonClicked = True
                     stopSounds()
                     intromusic.play(-1)
+                # Resume Button
+                if pause == True and resumeButtonHover == True:
+                    button.play()
+                    resumeButtonHover = False
+                    resumeButtonClicked = True
+                    resumeGame_timer.start()
+
                 # Use HP Beer
                 if hotbarSlot6 == True and hpPotionCount > 0:
                     hpPotion()
@@ -1237,6 +1267,7 @@ while True:
                         outAmmoUI = True
                         reloadUI = False
                         interactText = False
+
     # Mouse Position
     mouse_posx,mouse_posy = pygame.mouse.get_pos()
     # print(str(mouse_posx) + ", " + str(mouse_posy))
@@ -1272,10 +1303,14 @@ while True:
                 mainMenuButtonHover = False
 
     # Main Menu -------------------------------------------------------------------------------------------------
-    mainMenu()
-
+    if startGame == False and dead == False:
+        mainMenu()
+    elif startGame == True:
+        tumbleAuto = 15
+        intromusic.stop()
+    # Paused ----------------------------------------------------------------------------------------------------
     if pause == True:
-        screen.blit(asset_paused_overlay, (0, 0))
+        pauseGame()
 
     # Game Started ----------------------------------------------------------------------------------------------
     if startGame == True and pause == False:
