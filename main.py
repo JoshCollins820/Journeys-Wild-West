@@ -617,7 +617,7 @@ def stopSounds():
 
 def mainMenu():
     global startGame, tumbleAuto, playButtonHover, moveAbility, banMoveAbility, mouse_posx, mouse_posy
-    if startGame == False:
+    if startGame == False and dead == False:
         # Background
         screen.blit(asset_main_menu, (0, 0))
         # Hover Button
@@ -640,16 +640,18 @@ def mainMenu():
 
 
 def playerDead():
-    global dead, moveAbility
-    # death screen
+    global dead, moveAbility, startGame
+    dead = True
     if dead == True:
+        # death screen
         screen.blit(asset_death_screen, (300 - 300, 300 - 300))
         screen.blit(deathScore_text, (270, 350))
         moveAbility = False
-        stopSounds()
-        if playerHP == 0:
-            death.stop()
-            death.play()
+        startGame = False
+    stopSounds()
+    if playerHP == 0:
+        death.stop()
+        death.play()
 
 
 def revolver_reload_timer_handler():
@@ -1473,7 +1475,6 @@ while True:
 
         # Check if dead
         if playerHP <= 0:
-            dead = True
             playerDead()
 
         # text refresh
