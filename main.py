@@ -324,9 +324,9 @@ playerShoot = False
 playerDrink = False
 playerSniper = False
 playerGrab = False
+readyToFireRevolver = True
 playButtonHover = False
 playButtonClicked = False
-readyToFireRevolver = True
 restartButtonHover = False
 restartButtonClicked = False
 mainMenuButtonHover = False
@@ -622,6 +622,8 @@ def stopSounds():
     music.stop()
     snipershot.stop()
     shot.stop()
+    death.stop()
+    playerhit.stop()
 
 
 def mainMenu():
@@ -748,9 +750,9 @@ def resetValues():
     playerDrink = False
     playerSniper = False
     playerGrab = False
+    readyToFireRevolver = True
     playButtonHover = False
     playButtonClicked = False
-    readyToFireRevolver = True
     restartButtonHover = False
     mainMenuButtonHover = False
     mainMenuButtonClicked = False
@@ -834,6 +836,7 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
 
 # Main Menu Music
 intromusic.play(-1)
+resetValues()
 
 # Game Loop (Screen Refresh Loop)
 while True:
@@ -1189,6 +1192,8 @@ while True:
                     mainMenu_timer.start()
                     mainMenuButtonHover = False
                     mainMenuButtonClicked = True
+                    stopSounds()
+                    intromusic.play(-1)
                 # Use HP Beer
                 if hotbarSlot6 == True and hpPotionCount > 0:
                     hpPotion()
