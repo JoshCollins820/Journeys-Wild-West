@@ -788,7 +788,7 @@ while True:
                 if hotbarSlot6 == True and hpPotionCount > 0:
                     hpPotion()
                     drinkResetDelay_timer.start()
-
+                    playerIdle = False
             # Aim Sniper Rifle
             if event.key == pygame.K_w or event.key == pygame.K_UP:
                 if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True and insideShop == False:
