@@ -139,13 +139,6 @@ if collapse:
     resumeButtonHover = False
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
-# keys
-if collapse:
-    akey = simplegui.KEY_MAP['a']
-    dkey = simplegui.KEY_MAP['d']
-    leftkey = simplegui.KEY_MAP['left']
-    rightkey = simplegui.KEY_MAP['right']
-
 # audio volumes
 if collapse:
     v_step = 0.4
@@ -646,11 +639,11 @@ def mainMenu():
     # Background
     screen.blit(asset_main_menu, (0, 0))
     # Hover Button
-    if (235 <= mouse_posx <= 365) and (390 <= mouse_posy <= 435) and playButtonClicked == False:
+    if (235 <= mouse_posx <= 365) and (420 <= mouse_posy <= 465) and playButtonClicked == False:
         screen.blit(asset_button_hover, (0, 0))
         playButtonHover = True
     # Click Button
-    elif (235 <= mouse_posx <= 365) and (390 <= mouse_posy <= 435) and playButtonClicked == True:
+    elif (235 <= mouse_posx <= 365) and (420 <= mouse_posy <= 465) and playButtonClicked == True:
         screen.blit(asset_button_clicked, (0, 0))
         playButtonHover = False
     # Normal Button
@@ -870,7 +863,7 @@ drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_
 
 # timers tuple
 timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
-              drinkResetDelay_timer)
+              drinkResetDelay_timer, resumeGame_timer, mainMenu_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -884,6 +877,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.mixer.stop()
             music_timer.stop()
+            stopAllTimers(timerTuple)
             pygame.quit()
             sys.exit()
         # Keyboard Handler
