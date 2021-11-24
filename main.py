@@ -35,11 +35,12 @@ bodyWeight = 12
 moneyCount = 0
 revRoundsMag = 6
 revRoundsTotal = 24
-revolverFireRate = 200
+revolverFireRate = 190
 revolverReloadSpeed = 450
 sniperRoundsMag = 1
 sniperRoundsTotal = 3
-hpPotionCount = 0
+hpPotionCount = 5
+drinkTime = 100
 score = 0
 
 # speed
@@ -690,12 +691,20 @@ def revolverFireDelay_timer_handler():
     revolverFireDelay_timer.stop()
 
 
+def drinkResetDelay_timer_handler():
+    global playerDrink
+    playerDrink = False
+    drinkResetDelay_timer.stop()
+
+
 # timers
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
 music_timer = simplegui.create_timer(15000, music_timer_handler)
 startGame_timer = simplegui.create_timer(50, startGame_timer_handler)
 revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireDelay_timer_handler)
+drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_handler)
+
 
 # Main Menu Music
 intromusic.play(-1)
@@ -722,6 +731,7 @@ while True:
 
             # Reloading
             if event.key == pygame.K_r:
+                # Revolver
                 if hotbarSlot1 == True:
                     if revRoundsMag < 6:
                         playerHolster = True
@@ -731,6 +741,7 @@ while True:
                             reload.play()
                             reloadUI = False
                             revolver_reload_timer.start()
+                # Sniper Rifle
                 if hotbarSlot2 == True or scopeScreen == True:
                     if sniperRoundsMag < 1:
                         scopeScreen = False
@@ -766,6 +777,7 @@ while True:
                 # HP Potion is used
                 if hotbarSlot6 == True and hpPotionCount > 0:
                     hpPotion()
+                    drinkResetDelay_timer.start()
 
             # Aim Sniper Rifle
             if event.key == pygame.K_w or event.key == pygame.K_UP:
@@ -1040,6 +1052,7 @@ while True:
                     playButtonClicked = True
                 if hotbarSlot6 == True and hpPotionCount > 0:
                     hpPotion()
+                    drinkResetDelay_timer.start()
                     playerIdle = False
                 if hotbarSlot1 == True:
                     if moveAbility == True and readyToFireRevolver == True:
@@ -1441,134 +1454,138 @@ while True:
         elif banMoveAbility == False:
             banMove = 0
 
+
+
+
+        # Constant Refresh -------------------------------------------------------------------------------------
+
+        # Player Model Refresh
+        playerLegsIdle = True
+        playerWalk = False
+
+        playerGrab = False
+        if playerHolster == False and playerShoot == False and playerDrink == False:
+            playerIdle = True
+        if playerSniper == True and sniperRoundsMag > 0 and insideShop == False:
+            interactText = True
+        if (playerHolster == True or playerSniper == True) and insideShop == True:
+            screen.blit(shopWarning_text, (store1x + 527, 207))
+
+        # Check if dead
         if playerHP <= 0:
             dead = True
             playerDead()
 
-        # constant for loop
-        for i in range(0, 1):
-            time.sleep(0.04)
+        # text refresh
+        ban1HPTag = font1.render(("HP: " + str(banHP)), True, (255, 255, 255))
+        ban2HPTag = font1.render(("HP: " + str(ban2HP)), True, (255, 255, 255))
+        ban3HPTag = font1.render(("HP: " + str(ban3HP)), True, (255, 255, 255))
+        playerHP_text = font2.render((str(playerHP)), True, (255, 255, 255))
+        playerScore_text = font2.render((str(score)), True, (255, 255, 255))
+        playerMoney_text = font2.render((str(moneyCount)), True, (255, 255, 255))
+        revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255, 255, 255))
+        sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255, 255, 255))
+        potionCount_text = font1.render((str(hpPotionCount)), True, (255, 255, 255))
+        deathScore_text = font1.render(("Score: " + str(score)), True, (255, 255, 255))
 
-            # limb reset
-            playerLegsIdle = True
-            playerWalk = False
-            playerDrink = False
-            playerGrab = False
-            if playerHolster == False and playerShoot == False and playerDrink == False:
-                playerIdle = True
-            if playerSniper == True and sniperRoundsMag > 0 and insideShop == False:
-                interactText = True
-            if (playerHolster == True or playerSniper == True) and insideShop == True:
-                screen.blit(shopWarning_text, (store1x + 527, 207))
+        # building loop
+        if store2x <= -500:
+            store1x += 1900
+            store2x += 1900
+        elif store2x >= 1400:
+            store1x -= 1900
+            store2x -= 1900
+            cactusx -= 1900
+        if cactusx <= -1000:
+            cactusx += 1900
+        elif cactusx >= 900:
+            cactusx -= 1900
 
-            # text refresh
-            ban1HPTag = font1.render(("HP: " + str(banHP)), True, (255, 255, 255))
-            ban2HPTag = font1.render(("HP: " + str(ban2HP)), True, (255, 255, 255))
-            ban3HPTag = font1.render(("HP: " + str(ban3HP)), True, (255, 255, 255))
-            playerHP_text = font2.render((str(playerHP)), True, (255, 255, 255))
-            playerScore_text = font2.render((str(score)), True, (255, 255, 255))
-            playerMoney_text = font2.render((str(moneyCount)), True, (255, 255, 255))
-            revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255, 255, 255))
-            sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255, 255, 255))
-            potionCount_text = font1.render((str(hpPotionCount)), True, (255, 255, 255))
-            deathScore_text = font1.render(("Score: " + str(score)), True, (255, 255, 255))
+        # active hotbar slot position
+        if hotbarSlot1 == True:
+            activeSlotx1 = 150
+            activeSlotx2 = 200
+        elif hotbarSlot2 == True:
+            activeSlotx1 = 200
+            activeSlotx2 = 250
+        elif hotbarSlot3 == True:
+            activeSlotx1 = 250
+            activeSlotx2 = 300
+        elif hotbarSlot4 == True:
+            activeSlotx1 = 300
+            activeSlotx2 = 350
+        elif hotbarSlot5 == True:
+            activeSlotx1 = 350
+            activeSlotx2 = 400
+        elif hotbarSlot6 == True:
+            activeSlotx1 = 400
+            activeSlotx2 = 450
+        else:
+            activeSlotx1 = -500
+            activeSlotx2 = -500
 
-            # building loop
-            if store2x <= -500:
-                store1x += 1900
-                store2x += 1900
-            elif store2x >= 1400:
-                store1x -= 1900
-                store2x -= 1900
-                cactusx -= 1900
-            if cactusx <= -1000:
-                cactusx += 1900
-            elif cactusx >= 900:
-                cactusx -= 1900
+        # cloud pos
+        cloud1x -= cloudAuto
+        if cloud1x + 85 <= -100:
+            cloud1x = 800
+        cloud2x -= cloudAuto
+        if cloud2x + 85 <= -100:
+            cloud2x = 1100
 
-            # active hotbar slot position
-            if hotbarSlot1 == True:
-                activeSlotx1 = 150
-                activeSlotx2 = 200
-            elif hotbarSlot2 == True:
-                activeSlotx1 = 200
-                activeSlotx2 = 250
-            elif hotbarSlot3 == True:
-                activeSlotx1 = 250
-                activeSlotx2 = 300
-            elif hotbarSlot4 == True:
-                activeSlotx1 = 300
-                activeSlotx2 = 350
-            elif hotbarSlot5 == True:
-                activeSlotx1 = 350
-                activeSlotx2 = 400
-            elif hotbarSlot6 == True:
-                activeSlotx1 = 400
-                activeSlotx2 = 450
-            else:
-                activeSlotx1 = -500
-                activeSlotx2 = -500
+        # tumweed pos
+        tumweed1x -= tumbleAuto
+        if tumweed1x <= - 2000:
+            tumweed1x = 1100
 
-            # cloud pos
-            cloud1x -= cloudAuto
-            if cloud1x + 85 <= -100:
-                cloud1x = 800
-            cloud2x -= cloudAuto
-            if cloud2x + 85 <= -100:
-                cloud2x = 1100
+        # bullet reset
+        bulletx = -330
 
-            # tumweed pos
-            tumweed1x -= tumbleAuto
-            if tumweed1x <= - 2000:
-                tumweed1x = 1100
+        # ban 1 position
+        if banHP > 0:
+            if banx1 <= 600:
+                scopeWalk += 6
+            if banx1 >= 600 or banx1 <= 0:
+                scopeWalk = 5
+            if banx1 >= 280:
+                banx1 -= banMove
+                ban1left = False
+            if banx1 <= 220:
+                banx1 += banMove
+                ban1left = True
+        elif banHP <= 0:
+            banHP -= 1
+            # ban 2 position
+        if ban2HP > 0:
+            if banx2 <= 600:
+                scope2Walk += 6
+            if banx2 >= 600 or banx2 <= 0:
+                scope2Walk = 5
+            if banx2 >= 280:
+                banx2 -= banMove
+                ban2left = False
+            if banx2 <= 220:
+                banx2 += banMove
+                ban2left = True
+        elif ban2HP <= 0:
+            ban2HP -= 1
+        # ban 3 position
+        if ban3HP > 0:
+            if banx3 <= 600:
+                scope3Walk += 6
+            if banx3 >= 600 or banx3 <= 0:
+                scope3Walk = 5
+            if banx3 >= 280:
+                banx3 -= banMove
+                ban3left = False
+            if banx3 <= 220:
+                banx3 += banMove
+                ban3left = True
+        elif ban3HP <= 0:
+            ban3HP -= 1
 
-            # bullet reset
-            bulletx = -330
 
-            # ban 1 position
-            if banHP > 0:
-                if banx1 <= 600:
-                    scopeWalk += 6
-                if banx1 >= 600 or banx1 <= 0:
-                    scopeWalk = 5
-                if banx1 >= 280:
-                    banx1 -= banMove
-                    ban1left = False
-                if banx1 <= 220:
-                    banx1 += banMove
-                    ban1left = True
-            elif banHP <= 0:
-                banHP -= 1
-                # ban 2 position
-            if ban2HP > 0:
-                if banx2 <= 600:
-                    scope2Walk += 6
-                if banx2 >= 600 or banx2 <= 0:
-                    scope2Walk = 5
-                if banx2 >= 280:
-                    banx2 -= banMove
-                    ban2left = False
-                if banx2 <= 220:
-                    banx2 += banMove
-                    ban2left = True
-            elif ban2HP <= 0:
-                ban2HP -= 1
-            # ban 3 position
-            if ban3HP > 0:
-                if banx3 <= 600:
-                    scope3Walk += 6
-                if banx3 >= 600 or banx3 <= 0:
-                    scope3Walk = 5
-                if banx3 >= 280:
-                    banx3 -= banMove
-                    ban3left = False
-                if banx3 <= 220:
-                    banx3 += banMove
-                    ban3left = True
-            elif ban3HP <= 0:
-                ban3HP -= 1
 
     pygame.display.update()
-    clock.tick(30)
+    clock.tick(25)
 
 # End
