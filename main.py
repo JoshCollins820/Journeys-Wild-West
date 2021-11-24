@@ -27,310 +27,318 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((height, width))
 pygame.display.set_caption("JOURNEYS: WILD WEST")
 pygame.display.set_icon(pygame.image.load("assets/icon/window_icon.png"))
+collapse = True
 
+# values and statements
+if collapse:
+    # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
+    # player vals
+    playerHP = 100
+    bodyWeight = 12
+    moneyCount = 0
+    revRoundsMag = 6
+    revRoundsTotal = 24
+    revolverFireRate = 120
+    revolverReloadSpeed = 450
+    sniperRoundsMag = 1
+    sniperRoundsTotal = 3
+    hpPotionCount = 5
+    drinkTime = 100
+    score = 0
 
-# player vals
-playerHP = 100
-bodyWeight = 12
-moneyCount = 0
-revRoundsMag = 6
-revRoundsTotal = 24
-revolverFireRate = 120
-revolverReloadSpeed = 450
-sniperRoundsMag = 1
-sniperRoundsTotal = 3
-hpPotionCount = 5
-drinkTime = 100
-score = 0
+    # speed
+    speedMove = 50
+    boardWalk = 80
+    cloudMove = 8
+    cloudAuto = 0.2
+    tumbleAuto = 15
+    banMove = 8
 
-# speed
-speedMove = 50
-boardWalk = 80
-cloudMove = 8
-cloudAuto = 0.2
-tumbleAuto = 15
-banMove = 8
+    # x-pos
+    cloud1x = 100
+    cloud2x = 600
+    tumweed1x = 700
+    store1x = 700
+    store2x = 1400
+    cactusx = 450
 
-# x-pos
-cloud1x = 100
-cloud2x = 600
-tumweed1x = 700
-store1x = 700
-store2x = 1400
-cactusx = 450
+    activeSlotx1 = -50
+    activeSlotx2 = -50
+    bulletx = 330
 
-activeSlotx1 = -50
-activeSlotx2 = -50
-bulletx = 330
+    # ban 1
+    banHP = 100
+    banx1 = 1990
+    banFPx1 = 300
+    scopeWalk = 0
+    # ban 2
+    ban2HP = 100
+    banx2 = 2490
+    ban2FPx1 = 300
+    scope2Walk = 0
+    # ban 3
+    ban3HP = 100
+    banx3 = -1000
+    ban3FPx1 = 300
+    scope3Walk = 0
 
-# ban 1
-banHP = 100
-banx1 = 1990
-banFPx1 = 300
-scopeWalk = 0
-# ban 2
-ban2HP = 100
-banx2 = 2490
-ban2FPx1 = 300
-scope2Walk = 0
-# ban 3
-ban3HP = 100
-banx3 = -1000
-ban3FPx1 = 300
-scope3Walk = 0
+    # statements
+    moveAbility = True
+    banMoveAbility = True
+    interactText = False
+    buyText = False
+    sitting = False
+    standing = True
+    moneyPick = False
+    moneyPickText = False
+    showMoney = True
+    insufFundsText = False
+    purchasedText = False
+    lookingLeft = False
+    lookingRight = True
+    hotbarSlot1 = False
+    hotbarSlot2 = False
+    hotbarSlot3 = False
+    hotbarSlot4 = False
+    hotbarSlot5 = False
+    hotbarSlot6 = False
+    startGame = False
+    reloadUI = False
+    outAmmoUI = False
+    dead = False
+    scopeScreen = False
+    ban1left = False
+    ban2left = False
+    ban3left = True
+    ban1InScope = False
+    ban2InScope = False
+    ban3InScope = False
+    insideShop = False
+    ownSniperRifle = True
+    catalog = False
+    catalogPage1 = False
+    catalogPage2 = False
+    catalogPage3 = False
+    playerIdle = True
+    playerWalk = False
+    playerHolster = False
+    playerLegsIdle = True
+    playerShoot = False
+    playerDrink = False
+    playerSniper = False
+    playerGrab = False
+    readyToFireRevolver = True
+    playButtonHover = False
+    playButtonClicked = False
+    restartButtonHover = False
+    restartButtonClicked = False
+    mainMenuButtonHover = False
+    mainMenuButtonClicked = False
+    # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
 # keys
-akey = simplegui.KEY_MAP['a']
-dkey = simplegui.KEY_MAP['d']
-leftkey = simplegui.KEY_MAP['left']
-rightkey = simplegui.KEY_MAP['right']
+if collapse:
+    akey = simplegui.KEY_MAP['a']
+    dkey = simplegui.KEY_MAP['d']
+    leftkey = simplegui.KEY_MAP['left']
+    rightkey = simplegui.KEY_MAP['right']
 
 # audio volumes
-v_step = 0.4
-v_intro = 0.05
-v_button = 0.5
-v_griprevolver = 0.9
-v_shot = 0.6
-v_empty = 0.2
-v_reload = 0.2
-v_death = 0.3
-v_hurt = 0.6
-v_playerhit = 0.4
-v_banpain = 0.8
-v_snipershot = 1
-v_heartbeat = 0.5
-v_breath = 0.4
-v_intromusic = 0.1
-
+if collapse:
+    v_step = 0.4
+    v_intro = 0.05
+    v_button = 0.5
+    v_griprevolver = 0.9
+    v_shot = 0.6
+    v_empty = 0.2
+    v_reload = 0.2
+    v_death = 0.3
+    v_hurt = 0.6
+    v_playerhit = 0.4
+    v_banpain = 0.8
+    v_snipershot = 1
+    v_heartbeat = 0.5
+    v_breath = 0.4
+    v_intromusic = 0.1
 
 # audio
-step = pygame.mixer.Sound('sounds/step.wav')
-step.set_volume(0.4)
-woodstep = pygame.mixer.Sound('sounds/woodstep.wav')
-woodstep.set_volume(0.15)
-intro = pygame.mixer.Sound('sounds/intro.wav')
-intro.set_volume(0.1)
-button = pygame.mixer.Sound('sounds/button.wav')
-button.set_volume(0.5)
-griprevolver = pygame.mixer.Sound('sounds/griprevolver.wav')
-griprevolver.set_volume(0.9)
-shot = pygame.mixer.Sound('sounds/shot.wav')
-shot.set_volume(0.6)
-empty = pygame.mixer.Sound('sounds/empty.wav')
-empty.set_volume(0.2)
-reload = pygame.mixer.Sound('sounds/reload.wav')
-reload.set_volume(0.2)
-death = pygame.mixer.Sound('sounds/death.wav')
-death.set_volume(0.3)
-hurt = pygame.mixer.Sound('sounds/hurt.wav')
-hurt.set_volume(0.6)
-playerhit = pygame.mixer.Sound('sounds/playerhit.wav')
-playerhit.set_volume(0.4)
-banpain = pygame.mixer.Sound('sounds/banpain.wav')
-banpain.set_volume(0.8)
-snipershot = pygame.mixer.Sound('sounds/snipershot.wav')
-snipershot.set_volume(1)
-heartbeat = pygame.mixer.Sound('sounds/heartbeat.wav')
-heartbeat.set_volume(0.5)
-breath = pygame.mixer.Sound('sounds/breath.wav')
-breath.set_volume(0.4)
-intromusic = pygame.mixer.Sound('sounds/intromusic.wav')
-intromusic.set_volume(0.1)
-door = pygame.mixer.Sound('sounds/door.wav')
-door.set_volume(1)
-openbook = pygame.mixer.Sound('sounds/openbook.wav')
-openbook.set_volume(1)
-turnpage = pygame.mixer.Sound('sounds/turnpage.wav')
-turnpage.set_volume(0.25)
-cashregister = pygame.mixer.Sound('sounds/cashregister.wav')
-cashregister.set_volume(0.25)
-error = pygame.mixer.Sound('sounds/error.wav')
-error.set_volume(0.5)
-music = pygame.mixer.Sound('sounds/music.wav')
-music.set_volume(0.1)
-potion = pygame.mixer.Sound('sounds/beer_drink.wav')
-potion.set_volume(0.3)
-sniper_reload = pygame.mixer.Sound('sounds/sniper_reload.wav')
-sniper_reload.set_volume(0.3)
+if collapse:
+    step = pygame.mixer.Sound('sounds/step.wav')
+    step.set_volume(0.4)
+    woodstep = pygame.mixer.Sound('sounds/woodstep.wav')
+    woodstep.set_volume(0.15)
+    intro = pygame.mixer.Sound('sounds/intro.wav')
+    intro.set_volume(0.1)
+    button = pygame.mixer.Sound('sounds/button.wav')
+    button.set_volume(0.5)
+    griprevolver = pygame.mixer.Sound('sounds/griprevolver.wav')
+    griprevolver.set_volume(0.9)
+    shot = pygame.mixer.Sound('sounds/shot.wav')
+    shot.set_volume(0.6)
+    empty = pygame.mixer.Sound('sounds/empty.wav')
+    empty.set_volume(0.2)
+    reload = pygame.mixer.Sound('sounds/reload.wav')
+    reload.set_volume(0.2)
+    death = pygame.mixer.Sound('sounds/death.wav')
+    death.set_volume(0.3)
+    hurt = pygame.mixer.Sound('sounds/hurt.wav')
+    hurt.set_volume(0.6)
+    playerhit = pygame.mixer.Sound('sounds/playerhit.wav')
+    playerhit.set_volume(0.4)
+    banpain = pygame.mixer.Sound('sounds/banpain.wav')
+    banpain.set_volume(0.8)
+    snipershot = pygame.mixer.Sound('sounds/snipershot.wav')
+    snipershot.set_volume(1)
+    heartbeat = pygame.mixer.Sound('sounds/heartbeat.wav')
+    heartbeat.set_volume(0.5)
+    breath = pygame.mixer.Sound('sounds/breath.wav')
+    breath.set_volume(0.4)
+    intromusic = pygame.mixer.Sound('sounds/intromusic.wav')
+    intromusic.set_volume(0.1)
+    door = pygame.mixer.Sound('sounds/door.wav')
+    door.set_volume(1)
+    openbook = pygame.mixer.Sound('sounds/openbook.wav')
+    openbook.set_volume(1)
+    turnpage = pygame.mixer.Sound('sounds/turnpage.wav')
+    turnpage.set_volume(0.25)
+    cashregister = pygame.mixer.Sound('sounds/cashregister.wav')
+    cashregister.set_volume(0.25)
+    error = pygame.mixer.Sound('sounds/error.wav')
+    error.set_volume(0.5)
+    music = pygame.mixer.Sound('sounds/music.wav')
+    music.set_volume(0.1)
+    potion = pygame.mixer.Sound('sounds/beer_drink.wav')
+    potion.set_volume(0.3)
+    sniper_reload = pygame.mixer.Sound('sounds/sniper_reload.wav')
+    sniper_reload.set_volume(0.3)
 
 # assets
-asset_cactus = pygame.image.load("assets/vegetation/cactus.png")
-asset_cloud1 = pygame.image.load("assets/sky/cloud1.png")
-asset_cloud2 = pygame.image.load("assets/sky/cloud2.png")
-asset_saloon = pygame.image.load("assets/buildings/cianfarano_saloon.png")
-asset_store = pygame.image.load("assets/buildings/solee_os_store.png")
-asset_hotbar = pygame.image.load("assets/UI/hotbar.png")
-asset_revolver = pygame.image.load("assets/UI/revolver_icon.png")
-asset_sniper = pygame.image.load("assets/UI/sniper_rifle_icon.png")
-asset_bandit1 = pygame.image.load("assets/npc/bandit1.png")
-asset_bandit2 = pygame.image.load("assets/npc/bandit2.png")
-asset_bandit3 = pygame.image.load("assets/npc/bandit3.png")
-asset_bandit1right = pygame.image.load("assets/npc/bandit1right.png")
-asset_bandit2right = pygame.image.load("assets/npc/bandit2right.png")
-asset_bandit3right = pygame.image.load("assets/npc/bandit3right.png")
-asset_bandit1_dead = pygame.image.load("assets/npc/bandit1dead.png")
-asset_bandit2_dead = pygame.image.load("assets/npc/bandit2dead.png")
-asset_bandit3_dead = pygame.image.load("assets/npc/bandit3dead.png")
-asset_bandit1right_dead = pygame.image.load("assets/npc/bandit1rightdead.png")
-asset_bandit2right_dead = pygame.image.load("assets/npc/bandit2rightdead.png")
-asset_bandit3right_dead = pygame.image.load("assets/npc/bandit3rightdead.png")
-asset_holster_right = pygame.image.load("assets/player/holster_right.png")
-asset_bandana_right = pygame.image.load("assets/player/bandana_right.png")
-asset_bandana_left = pygame.image.load("assets/player/bandana_left.png")
-asset_revolver_vert_right = pygame.image.load("assets/weapons/revolver_vert_right.png")
-asset_revolver_vert_grip_left = pygame.image.load("assets/weapons/revolver_vert_grip_left.png")
-asset_revolver_right = pygame.image.load("assets/weapons/revolver_right.png")
-asset_revolver_left = pygame.image.load("assets/weapons/revolver_left.png")
-asset_sniper_left = pygame.image.load("assets/weapons/rolling_block_left.png")
-asset_sniper_right = pygame.image.load("assets/weapons/rolling_block_right.png")
-asset_muzzleflash_right = pygame.image.load("assets/weapons/muzzle_flash_bullet_right.png")
-asset_muzzleflash_left = pygame.image.load("assets/weapons/muzzle_flash_bullet_left.png")
-asset_sniperscope = pygame.image.load("assets/weapons/sniper_scope.png")
-asset_bandit1_fp = pygame.image.load("assets/npc/bandit1_fp.png")
-asset_bandit2_fp = pygame.image.load("assets/npc/bandit2_fp.png")
-asset_bandit3_fp = pygame.image.load("assets/npc/bandit3_fp.png")
-asset_scope_back_right = pygame.image.load("assets/weapons/scope_back_right.png")
-asset_scope_back_left = pygame.image.load("assets/weapons/scope_back_left.png")
-asset_sniper_rifle_right = pygame.image.load("assets/weapons/sniper_rifle_right.png")
-asset_sniper_rifle_left = pygame.image.load("assets/weapons/sniper_rifle_left.png")
-asset_shop_interior = pygame.image.load("assets/buildings/shop_interior.png")
-asset_text_1000_green = pygame.image.load("assets/UI/text_1000_green.png")
-asset_text_1000_red = pygame.image.load("assets/UI/text_1000_red.png")
-asset_text_100_green = pygame.image.load("assets/UI/text_100_green.png")
-asset_text_100_red = pygame.image.load("assets/UI/text_100_red.png")
-asset_text_50_green = pygame.image.load("assets/UI/text_50_green.png")
-asset_text_50_red = pygame.image.load("assets/UI/text_50_red.png")
-asset_text_owned = pygame.image.load("assets/UI/text_owned.png")
-asset_text_purchased = pygame.image.load("assets/UI/text_purchased.png")
-asset_text_insufficient = pygame.image.load("assets/UI/text_insufficient.png")
-asset_catalog_1 = pygame.image.load("assets/UI/catalog_pages_1.png")
-asset_catalog_2 = pygame.image.load("assets/UI/catalog_pages_2.png")
-asset_catalog_3 = pygame.image.load("assets/UI/catalog_pages_3.png")
-asset_hp_icon = pygame.image.load("assets/UI/player_hp.png")
-asset_money_icon = pygame.image.load("assets/UI/player_money.png")
-asset_kills_icon = pygame.image.load("assets/UI/player_kills.png")
-asset_ammo_icon = pygame.image.load("assets/UI/player_bullet.png")
-asset_journey_cover = pygame.image.load("assets/UI/Journeys_Wild_West_Cover.png")
-asset_player_right = pygame.image.load("assets/player/player_idle_right.png")
-asset_player_left = pygame.image.load("assets/player/player_idle_left.png")
-asset_player_arms_idle = pygame.image.load("assets/player/player_arms_idle.png")
-asset_player_legs_idle_right = pygame.image.load("assets/player/player_legs_idle_right.png")
-asset_player_legs_idle_left = pygame.image.load("assets/player/player_legs_idle_left.png")
-asset_player_arms_walk_right = pygame.image.load("assets/player/player_arms_walk_right.png")
-asset_player_arms_walk_left = pygame.image.load("assets/player/player_arms_walk_left.png")
-asset_player_legs_walk_right = pygame.image.load("assets/player/player_legs_walk_right.png")
-asset_player_legs_walk_left = pygame.image.load("assets/player/player_legs_walk_left.png")
-asset_player_holster_right = pygame.image.load("assets/player/player_arms_holster_right.png")
-asset_player_holster_left = pygame.image.load("assets/player/player_arms_holster_left.png")
-asset_player_holsterwalk_right = pygame.image.load("assets/player/player_arms_holsterwalk_right.png")
-asset_player_holsterwalk_left = pygame.image.load("assets/player/player_arms_holsterwalk_left.png")
-asset_player_shoot_right = pygame.image.load("assets/player/player_shoot_revolver_right.png")
-asset_player_shoot_left = pygame.image.load("assets/player/player_shoot_revolver_left.png")
-asset_player_drink_right = pygame.image.load("assets/player/player_drink_right.png")
-asset_player_drink_left = pygame.image.load("assets/player/player_drink_left.png")
-asset_hearty_beer_icon = pygame.image.load("assets/UI/hearty_beer_icon.png")
-asset_hearty_beer_right = pygame.image.load("assets/props/hearty_beer_right.png")
-asset_hearty_beer_left = pygame.image.load("assets/props/hearty_beer_left.png")
-asset_death_screen = pygame.image.load("assets/UI/death_screen.png")
-asset_sky_day = pygame.image.load("assets/sky/sky_day.png")
-asset_tumbleweed = pygame.image.load("assets/vegetation/tumbleweed.png")
-asset_ground_sand = pygame.image.load("assets/vegetation/ground_sand.png")
-asset_hotbar_select = pygame.image.load("assets/UI/hotbar_select.png")
-asset_main_menu = pygame.image.load("assets/UI/main_menu.png")
-asset_button_normal = pygame.image.load("assets/UI/button_normal.png")
-asset_button_hover = pygame.image.load("assets/UI/button_hover.png")
-asset_button_clicked = pygame.image.load("assets/UI/button_clicked.png")
-asset_restart_button_normal = pygame.image.load("assets/UI/restart_button_normal.png")
-asset_restart_button_hover = pygame.image.load("assets/UI/restart_button_hover.png")
-asset_restart_button_clicked = pygame.image.load("assets/UI/restart_button_clicked.png")
-asset_main_menu_button_normal = pygame.image.load("assets/UI/main_menu_button_normal.png")
-asset_main_menu_button_hover = pygame.image.load("assets/UI/main_menu_button_hover.png")
-asset_main_menu_button_clicked = pygame.image.load("assets/UI/main_menu_button_clicked.png")
-
+if collapse:
+    asset_cactus = pygame.image.load("assets/vegetation/cactus.png")
+    asset_cloud1 = pygame.image.load("assets/sky/cloud1.png")
+    asset_cloud2 = pygame.image.load("assets/sky/cloud2.png")
+    asset_saloon = pygame.image.load("assets/buildings/cianfarano_saloon.png")
+    asset_store = pygame.image.load("assets/buildings/solee_os_store.png")
+    asset_hotbar = pygame.image.load("assets/UI/hotbar.png")
+    asset_revolver = pygame.image.load("assets/UI/revolver_icon.png")
+    asset_sniper = pygame.image.load("assets/UI/sniper_rifle_icon.png")
+    asset_bandit1 = pygame.image.load("assets/npc/bandit1.png")
+    asset_bandit2 = pygame.image.load("assets/npc/bandit2.png")
+    asset_bandit3 = pygame.image.load("assets/npc/bandit3.png")
+    asset_bandit1right = pygame.image.load("assets/npc/bandit1right.png")
+    asset_bandit2right = pygame.image.load("assets/npc/bandit2right.png")
+    asset_bandit3right = pygame.image.load("assets/npc/bandit3right.png")
+    asset_bandit1_dead = pygame.image.load("assets/npc/bandit1dead.png")
+    asset_bandit2_dead = pygame.image.load("assets/npc/bandit2dead.png")
+    asset_bandit3_dead = pygame.image.load("assets/npc/bandit3dead.png")
+    asset_bandit1right_dead = pygame.image.load("assets/npc/bandit1rightdead.png")
+    asset_bandit2right_dead = pygame.image.load("assets/npc/bandit2rightdead.png")
+    asset_bandit3right_dead = pygame.image.load("assets/npc/bandit3rightdead.png")
+    asset_holster_right = pygame.image.load("assets/player/holster_right.png")
+    asset_bandana_right = pygame.image.load("assets/player/bandana_right.png")
+    asset_bandana_left = pygame.image.load("assets/player/bandana_left.png")
+    asset_revolver_vert_right = pygame.image.load("assets/weapons/revolver_vert_right.png")
+    asset_revolver_vert_grip_left = pygame.image.load("assets/weapons/revolver_vert_grip_left.png")
+    asset_revolver_right = pygame.image.load("assets/weapons/revolver_right.png")
+    asset_revolver_left = pygame.image.load("assets/weapons/revolver_left.png")
+    asset_sniper_left = pygame.image.load("assets/weapons/rolling_block_left.png")
+    asset_sniper_right = pygame.image.load("assets/weapons/rolling_block_right.png")
+    asset_muzzleflash_right = pygame.image.load("assets/weapons/muzzle_flash_bullet_right.png")
+    asset_muzzleflash_left = pygame.image.load("assets/weapons/muzzle_flash_bullet_left.png")
+    asset_sniperscope = pygame.image.load("assets/weapons/sniper_scope.png")
+    asset_bandit1_fp = pygame.image.load("assets/npc/bandit1_fp.png")
+    asset_bandit2_fp = pygame.image.load("assets/npc/bandit2_fp.png")
+    asset_bandit3_fp = pygame.image.load("assets/npc/bandit3_fp.png")
+    asset_scope_back_right = pygame.image.load("assets/weapons/scope_back_right.png")
+    asset_scope_back_left = pygame.image.load("assets/weapons/scope_back_left.png")
+    asset_sniper_rifle_right = pygame.image.load("assets/weapons/sniper_rifle_right.png")
+    asset_sniper_rifle_left = pygame.image.load("assets/weapons/sniper_rifle_left.png")
+    asset_shop_interior = pygame.image.load("assets/buildings/shop_interior.png")
+    asset_text_1000_green = pygame.image.load("assets/UI/text_1000_green.png")
+    asset_text_1000_red = pygame.image.load("assets/UI/text_1000_red.png")
+    asset_text_100_green = pygame.image.load("assets/UI/text_100_green.png")
+    asset_text_100_red = pygame.image.load("assets/UI/text_100_red.png")
+    asset_text_50_green = pygame.image.load("assets/UI/text_50_green.png")
+    asset_text_50_red = pygame.image.load("assets/UI/text_50_red.png")
+    asset_text_owned = pygame.image.load("assets/UI/text_owned.png")
+    asset_text_purchased = pygame.image.load("assets/UI/text_purchased.png")
+    asset_text_insufficient = pygame.image.load("assets/UI/text_insufficient.png")
+    asset_catalog_1 = pygame.image.load("assets/UI/catalog_pages_1.png")
+    asset_catalog_2 = pygame.image.load("assets/UI/catalog_pages_2.png")
+    asset_catalog_3 = pygame.image.load("assets/UI/catalog_pages_3.png")
+    asset_hp_icon = pygame.image.load("assets/UI/player_hp.png")
+    asset_money_icon = pygame.image.load("assets/UI/player_money.png")
+    asset_kills_icon = pygame.image.load("assets/UI/player_kills.png")
+    asset_ammo_icon = pygame.image.load("assets/UI/player_bullet.png")
+    asset_journey_cover = pygame.image.load("assets/UI/Journeys_Wild_West_Cover.png")
+    asset_player_right = pygame.image.load("assets/player/player_idle_right.png")
+    asset_player_left = pygame.image.load("assets/player/player_idle_left.png")
+    asset_player_arms_idle = pygame.image.load("assets/player/player_arms_idle.png")
+    asset_player_legs_idle_right = pygame.image.load("assets/player/player_legs_idle_right.png")
+    asset_player_legs_idle_left = pygame.image.load("assets/player/player_legs_idle_left.png")
+    asset_player_arms_walk_right = pygame.image.load("assets/player/player_arms_walk_right.png")
+    asset_player_arms_walk_left = pygame.image.load("assets/player/player_arms_walk_left.png")
+    asset_player_legs_walk_right = pygame.image.load("assets/player/player_legs_walk_right.png")
+    asset_player_legs_walk_left = pygame.image.load("assets/player/player_legs_walk_left.png")
+    asset_player_holster_right = pygame.image.load("assets/player/player_arms_holster_right.png")
+    asset_player_holster_left = pygame.image.load("assets/player/player_arms_holster_left.png")
+    asset_player_holsterwalk_right = pygame.image.load("assets/player/player_arms_holsterwalk_right.png")
+    asset_player_holsterwalk_left = pygame.image.load("assets/player/player_arms_holsterwalk_left.png")
+    asset_player_shoot_right = pygame.image.load("assets/player/player_shoot_revolver_right.png")
+    asset_player_shoot_left = pygame.image.load("assets/player/player_shoot_revolver_left.png")
+    asset_player_drink_right = pygame.image.load("assets/player/player_drink_right.png")
+    asset_player_drink_left = pygame.image.load("assets/player/player_drink_left.png")
+    asset_hearty_beer_icon = pygame.image.load("assets/UI/hearty_beer_icon.png")
+    asset_hearty_beer_right = pygame.image.load("assets/props/hearty_beer_right.png")
+    asset_hearty_beer_left = pygame.image.load("assets/props/hearty_beer_left.png")
+    asset_death_screen = pygame.image.load("assets/UI/death_screen.png")
+    asset_sky_day = pygame.image.load("assets/sky/sky_day.png")
+    asset_tumbleweed = pygame.image.load("assets/vegetation/tumbleweed.png")
+    asset_ground_sand = pygame.image.load("assets/vegetation/ground_sand.png")
+    asset_hotbar_select = pygame.image.load("assets/UI/hotbar_select.png")
+    asset_main_menu = pygame.image.load("assets/UI/main_menu.png")
+    asset_button_normal = pygame.image.load("assets/UI/button_normal.png")
+    asset_button_hover = pygame.image.load("assets/UI/button_hover.png")
+    asset_button_clicked = pygame.image.load("assets/UI/button_clicked.png")
+    asset_restart_button_normal = pygame.image.load("assets/UI/restart_button_normal.png")
+    asset_restart_button_hover = pygame.image.load("assets/UI/restart_button_hover.png")
+    asset_restart_button_clicked = pygame.image.load("assets/UI/restart_button_clicked.png")
+    asset_main_menu_button_normal = pygame.image.load("assets/UI/main_menu_button_normal.png")
+    asset_main_menu_button_hover = pygame.image.load("assets/UI/main_menu_button_hover.png")
+    asset_main_menu_button_clicked = pygame.image.load("assets/UI/main_menu_button_clicked.png")
 
 # fonts
-font1 = pygame.font.SysFont("Times New Roman", 13, False)
-font2 = pygame.font.SysFont("Times New Roman", 18, False)
-# syntax - (Name, Size, Bold, Italic)
+if collapse:
+    font1 = pygame.font.SysFont("Times New Roman", 13, False)
+    font2 = pygame.font.SysFont("Times New Roman", 18, False)
+    # syntax - (Name, Size, Bold, Italic)
 
 # text
-ban1Tag = font1.render("Bandit: Nicholas", True, (150,240,41))
-ban1HPTag = font1.render(("HP: " + str(banHP)), True, (255,255,255))
-ban2Tag = font1.render("Bandit: Darius", True, (150,240,41))
-ban2HPTag = font1.render(("HP: " + str(ban2HP)), True, (255,255,255))
-ban3Tag = font1.render("Bandit: Olyander", True, (150,240,41))
-ban3HPTag = font1.render(("HP: " + str(ban3HP)), True, (255,255,255))
-playerHP_text = font2.render((str(playerHP)), True, (255,255,255))
-playerScore_text = font2.render((str(score)), True, (255,255,255))
-playerMoney_text = font2.render((str(moneyCount)), True, (255,255,255))
-revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255,255,255))
-sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255,255,255))
-blankAmmo_text = font2.render("-/-", True, (255,255,255))
-reloadFront_text = font1.render("RELOAD (R)", True, (255,0,0))
-reloadBack_text = font1.render("RELOAD (R)", True, (0,0,0))
-outAmmoFront_text = font1.render("Out of Ammo", True, (255,0,0))
-outAmmoBack_text = font1.render("Out of Ammo", True, (0,0,0))
-interact_text = font1.render("INTERACT", True, (255,255,255))
-buy_text = font1.render("BUY", True, (255,255,255))
-potionCount_text = font1.render((str(hpPotionCount)), True, (255,255,255))
-clickPlay_text = font1.render("Click Here to PLAY", True, (255,255,255))
-deathScore_text = font2.render(("Score: " + str(score)), True, (255,255,255))
-shopWarning_text = font1.render("\"Take your hand off the gun, son..\"", True, (0, 0, 0))
-# syntax - (Message, AntiAliasing, Color, Background=None)
+if collapse:
+    ban1Tag = font1.render("Bandit: Nicholas", True, (150,240,41))
+    ban1HPTag = font1.render(("HP: " + str(banHP)), True, (255,255,255))
+    ban2Tag = font1.render("Bandit: Darius", True, (150,240,41))
+    ban2HPTag = font1.render(("HP: " + str(ban2HP)), True, (255,255,255))
+    ban3Tag = font1.render("Bandit: Olyander", True, (150,240,41))
+    ban3HPTag = font1.render(("HP: " + str(ban3HP)), True, (255,255,255))
+    playerHP_text = font2.render((str(playerHP)), True, (255,255,255))
+    playerScore_text = font2.render((str(score)), True, (255,255,255))
+    playerMoney_text = font2.render((str(moneyCount)), True, (255,255,255))
+    revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255,255,255))
+    sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255,255,255))
+    blankAmmo_text = font2.render("-/-", True, (255,255,255))
+    reloadFront_text = font1.render("RELOAD (R)", True, (255,0,0))
+    reloadBack_text = font1.render("RELOAD (R)", True, (0,0,0))
+    outAmmoFront_text = font1.render("Out of Ammo", True, (255,0,0))
+    outAmmoBack_text = font1.render("Out of Ammo", True, (0,0,0))
+    interact_text = font1.render("INTERACT", True, (255,255,255))
+    buy_text = font1.render("BUY", True, (255,255,255))
+    potionCount_text = font1.render((str(hpPotionCount)), True, (255,255,255))
+    clickPlay_text = font1.render("Click Here to PLAY", True, (255,255,255))
+    deathScore_text = font2.render(("Score: " + str(score)), True, (255,255,255))
+    shopWarning_text = font1.render("\"Take your hand off the gun, son..\"", True, (0, 0, 0))
+    # syntax - (Message, AntiAliasing, Color, Background=None)
 
-
-# statements
-moveAbility = True
-banMoveAbility = True
-interactText = False
-buyText = False
-sitting = False
-standing = True
-moneyPick = False
-moneyPickText = False
-showMoney = True
-insufFundsText = False
-purchasedText = False
-lookingLeft = False
-lookingRight = True
-hotbarSlot1 = False
-hotbarSlot2 = False
-hotbarSlot3 = False
-hotbarSlot4 = False
-hotbarSlot5 = False
-hotbarSlot6 = False
-startGame = False
-reloadUI = False
-outAmmoUI = False
-dead = False
-scopeScreen = False
-ban1left = False
-ban2left = False
-ban3left = True
-ban1InScope = False
-ban2InScope = False
-ban3InScope = False
-insideShop = False
-ownSniperRifle = True
-catalog = False
-catalogPage1 = False
-catalogPage2 = False
-catalogPage3 = False
-playerIdle = True
-playerWalk = False
-playerHolster = False
-playerLegsIdle = True
-playerShoot = False
-playerDrink = False
-playerSniper = False
-playerGrab = False
-readyToFireRevolver = True
-playButtonHover = False
-playButtonClicked = False
-restartButtonHover = False
-restartButtonClicked = False
-mainMenuButtonHover = False
-mainMenuButtonClicked = False
 
 
 def worldLeft():
@@ -788,7 +796,7 @@ def music_timer_handler():
 
 
 def startGame_timer_handler():
-    global tumbleAuto, moveAbility, banMoveAbility, startGame, dead, restartButtonClicked
+    global tumbleAuto, moveAbility, banMoveAbility, startGame, dead, restartButtonClicked,playButtonClicked
     tumbleAuto = 15
     startGame = True
     dead = False
@@ -1180,6 +1188,7 @@ while True:
                 # Restart Game
                 if startGame == False and dead == True and restartButtonHover == True:
                     button.play()
+                    stopSounds()
                     intro.play()
                     music_timer.start()
                     startGame_timer.start()
@@ -1249,7 +1258,6 @@ while True:
             else:
                 screen.blit(asset_main_menu_button_normal, (0, 0))
                 mainMenuButtonHover = False
-
 
     # Main Menu -------------------------------------------------------------------------------------------------
     mainMenu()

@@ -24,9 +24,9 @@
 - Fixed player model bugs
 - Fixed HP Beer animation being too short
 - Added a Restart button
-- Added working game loop
+- Added Main Menu button
 - Fixed sniper rifle firing without ammo
-- Added main menu button
+
 
 ---------------------------NOTES---------------------------
 
