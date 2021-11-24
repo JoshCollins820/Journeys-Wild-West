@@ -231,7 +231,7 @@ asset_player_drink_left = pygame.image.load("assets/player/player_drink_left.png
 asset_hearty_beer_icon = pygame.image.load("assets/UI/hearty_beer_icon.png")
 asset_hearty_beer_right = pygame.image.load("assets/props/hearty_beer_right.png")
 asset_hearty_beer_left = pygame.image.load("assets/props/hearty_beer_left.png")
-asset_death_screen = pygame.image.load("assets/UI/dead.png")
+asset_death_screen = pygame.image.load("assets/UI/death_screen.png")
 asset_sky_day = pygame.image.load("assets/sky/sky_day.png")
 asset_tumbleweed = pygame.image.load("assets/vegetation/tumbleweed.png")
 asset_ground_sand = pygame.image.load("assets/vegetation/ground_sand.png")
@@ -240,6 +240,12 @@ asset_main_menu = pygame.image.load("assets/UI/main_menu.png")
 asset_button_normal = pygame.image.load("assets/UI/button_normal.png")
 asset_button_hover = pygame.image.load("assets/UI/button_hover.png")
 asset_button_clicked = pygame.image.load("assets/UI/button_clicked.png")
+asset_restart_button_normal = pygame.image.load("assets/UI/restart_button_normal.png")
+asset_restart_button_hover = pygame.image.load("assets/UI/restart_button_hover.png")
+asset_restart_button_clicked = pygame.image.load("assets/UI/restart_button_clicked.png")
+asset_main_menu_button_normal = pygame.image.load("assets/UI/main_menu_button_normal.png")
+asset_main_menu_button_hover = pygame.image.load("assets/UI/main_menu_button_hover.png")
+asset_main_menu_button_clicked = pygame.image.load("assets/UI/main_menu_button_clicked.png")
 
 
 # fonts
@@ -321,6 +327,10 @@ playerGrab = False
 playButtonHover = False
 playButtonClicked = False
 readyToFireRevolver = True
+restartButtonHover = False
+restartButtonClicked = False
+mainMenuButtonHover = False
+mainMenuButtonClicked = False
 
 
 def worldLeft():
@@ -641,14 +651,13 @@ def mainMenu():
 def playerDead():
     global dead, moveAbility, startGame
     dead = True
-    if dead == True:
-        # death screen
-        screen.blit(asset_death_screen, (300 - 300, 300 - 300))
-        screen.blit(deathScore_text, (270, 350))
-        moveAbility = False
-        startGame = False
-        stopAllTimers(timerTuple)
-        stopSounds()
+    # death screen
+    screen.blit(asset_death_screen, (300 - 300, 300 - 300))
+    screen.blit(deathScore_text, (278, 250))
+    moveAbility = False
+    startGame = False
+    stopAllTimers(timerTuple)
+    stopSounds()
     if playerHP == 0:
         death.stop()
         death.play()
@@ -663,10 +672,10 @@ def resetValues():
         hotbarSlot5, hotbarSlot6, reloadUI, outAmmoUI, scopeScreen,ban1InScope,ban2InScope,ban3InScope,insideShop, \
         ownSniperRifle, catalog, catalogPage1, catalogPage2, catalogPage3, playerIdle, playerWalk, playerHolster, \
         playerLegsIdle, playerShoot, playerDrink, playerSniper, playerGrab, playButtonHover, playButtonClicked, \
-        readyToFireRevolver
+        readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked
 
-    startGame = True
-    dead = False
+    #startGame = True
+    #dead = False
     moveAbility = True
     banMoveAbility = True
     interactText = False
@@ -706,7 +715,9 @@ def resetValues():
     playButtonHover = False
     playButtonClicked = False
     readyToFireRevolver = True
-
+    restartButtonHover = False
+    mainMenuButtonHover = False
+    mainMenuButtonClicked = False
 
     # player vals
     playerHP = 100
@@ -777,9 +788,11 @@ def music_timer_handler():
 
 
 def startGame_timer_handler():
-    global tumbleAuto, moveAbility, banMoveAbility, startGame
+    global tumbleAuto, moveAbility, banMoveAbility, startGame, dead, restartButtonClicked
     tumbleAuto = 15
     startGame = True
+    dead = False
+    restartButtonClicked = False
     moveAbility = True
     banMoveAbility = True
     startGame_timer.stop()
@@ -1154,11 +1167,13 @@ while True:
                     playButtonHover = False
                     playButtonClicked = True
                 # Restart Game
-                if startGame == False and dead == True:
+                if startGame == False and dead == True and restartButtonHover == True:
                     button.play()
                     intro.play()
                     music_timer.start()
                     startGame_timer.start()
+                    restartButtonHover = False
+                    restartButtonClicked = True
                     resetValues()
                 if hotbarSlot6 == True and hpPotionCount > 0:
                     hpPotion()
@@ -1173,6 +1188,22 @@ while True:
                     fire()
     # Mouse Position
     mouse_posx,mouse_posy = pygame.mouse.get_pos()
+    #print(str(mouse_posx) + ", " + str(mouse_posy))
+
+    # Death Buttons
+    if dead == True:
+        # Hover Button
+        if (237 <= mouse_posx <= 363) and (313 <= mouse_posy <= 354) and restartButtonClicked == False:
+            screen.blit(asset_restart_button_hover, (0, 0))
+            restartButtonHover = True
+        # Click Button
+        elif (237 <= mouse_posx <= 363) and (313 <= mouse_posy <= 354) and restartButtonClicked == True:
+            screen.blit(asset_restart_button_clicked, (0, 0))
+            restartButtonHover = False
+        # Normal Button
+        else:
+            screen.blit(asset_restart_button_normal, (0, 0))
+            restartButtonHover = False
 
     # Main Menu -------------------------------------------------------------------------------------------------
     mainMenu()

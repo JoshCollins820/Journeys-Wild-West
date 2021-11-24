@@ -6,7 +6,6 @@
 - Object oriented enemies
 
 ----------------------------ADD----------------------------
-- Game Loop
 - Pause Menu
 - Volume for sounds
 - Continuous Walking
@@ -24,6 +23,8 @@
 - Added fire rate cap to revolver
 - Fixed player model bugs
 - Fixed HP Beer animation being too short
+- Added a Restart button
+- Added working game loop
 
 ---------------------------NOTES---------------------------
 
@@ -32,3 +33,15 @@ Play Button Dimensions:
 - Top Right: (365, 390)
 - Bottom Left: (235, 435)
 - Bottom Right: (365, 435)
+
+Restart Button Dimensions:
+- Top Left: (237, 313)
+- Top Right: (363, 313)
+- Bottom Left: (237, 354)
+- Bottom Right: (363, 354)
+
+Main Menu Button Dimensions:
+- Top Left: (238, 394)
+- Top Right: (364, 394)
+- Bottom Left: (238, 438)
+- Bottom Right: (364, 438)
