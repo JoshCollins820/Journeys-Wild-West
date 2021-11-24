@@ -137,7 +137,6 @@ if collapse:
     mainMenuButtonClicked = False
     pause = False
     resumeButtonHover = False
-    resumeButtonClicked = False
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
 # keys
@@ -314,7 +313,6 @@ if collapse:
     asset_paused_darken = pygame.image.load("assets/UI/pause_darken.png")
     asset_resume_button_normal = pygame.image.load("assets/UI/resume_button_normal.png")
     asset_resume_button_hover = pygame.image.load("assets/UI/resume_button_hover.png")
-    asset_resume_button_clicked = pygame.image.load("assets/UI/resume_button_clicked.png")
 
 # fonts
 if collapse:
@@ -661,21 +659,18 @@ def mainMenu():
         playButtonHover = False
     moveAbility = False
     banMoveAbility = False
-
+    music_timer.stop()
 
 
 def pauseGame():
-    global resumeButtonClicked, resumeButtonHover
+    global resumeButtonHover
+
     screen.blit(asset_paused_overlay, (0, 0))
     # Resume Button
     # Hover Button
-    if (239 <= mouse_posx <= 365) and (312 <= mouse_posy <= 353) and resumeButtonClicked == False:
+    if (239 <= mouse_posx <= 365) and (312 <= mouse_posy <= 353):
         screen.blit(asset_resume_button_hover, (0, 0))
         resumeButtonHover = True
-    # Click Button
-    elif (239 <= mouse_posx <= 365) and (312 <= mouse_posy <= 353) and resumeButtonClicked == True:
-        resumeButtonHover = False
-        screen.blit(asset_resume_button_clicked, (0, 0))
     # Normal Button
     else:
         screen.blit(asset_resume_button_normal, (0, 0))
@@ -707,7 +702,7 @@ def resetValues():
         ownSniperRifle, catalog, catalogPage1, catalogPage2, catalogPage3, playerIdle, playerWalk, playerHolster, \
         playerLegsIdle, playerShoot, playerDrink, playerSniper, playerGrab, playButtonHover, playButtonClicked, \
         readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked, \
-        resumeButtonHover, resumeButtonClicked
+        resumeButtonHover
 
     # player vals
     playerHP = 100
@@ -727,8 +722,8 @@ def resetValues():
     store1x = 700
     store2x = 1400
     cactusx = 450
-    activeSlotx1 = 0
-    activeSlotx2 = 0
+    activeSlotx1 = -50
+    activeSlotx2 = -50
     bulletx = 330
 
     # ban 1
@@ -791,7 +786,6 @@ def resetValues():
     mainMenuButtonClicked = False
     pause = False
     resumeButtonHover = False
-    resumeButtonClicked = False
 
 
 def stopAllTimers(tup):
@@ -846,8 +840,7 @@ def mainMenu_timer_handler():
 
 
 def resumeGame_timer_handler():
-    global pause, resumeButtonClicked
-    resumeButtonClicked = False
+    global pause
     pause = False
     pygame.mixer.unpause()
     resumeGame_timer.stop()
@@ -1219,7 +1212,6 @@ while True:
                     music_timer.start()
                     startGame_timer.start()
                     playButtonHover = False
-                    playButtonClicked = True
                 # Restart Game
                 if startGame == False and dead == True and restartButtonHover == True:
                     button.play()
@@ -1241,9 +1233,9 @@ while True:
                 # Resume Button
                 if pause == True and resumeButtonHover == True:
                     button.play()
-                    resumeButtonHover = False
-                    resumeButtonClicked = True
                     resumeGame_timer.start()
+                    resumeButtonClicked = True
+                    resumeButtonHover = False
 
                 # Use HP Beer
                 if hotbarSlot6 == True and hpPotionCount > 0:
