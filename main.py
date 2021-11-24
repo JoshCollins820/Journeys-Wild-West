@@ -1212,6 +1212,7 @@ while True:
                     music_timer.start()
                     startGame_timer.start()
                     playButtonHover = False
+                    playButtonClicked = True
                 # Restart Game
                 if startGame == False and dead == True and restartButtonHover == True:
                     button.play()
@@ -1234,7 +1235,6 @@ while True:
                 if pause == True and resumeButtonHover == True:
                     button.play()
                     resumeGame_timer.start()
-                    resumeButtonClicked = True
                     resumeButtonHover = False
 
                 # Use HP Beer
