@@ -242,7 +242,6 @@ asset_button_hover = pygame.image.load("assets/UI/button_hover.png")
 asset_button_clicked = pygame.image.load("assets/UI/button_clicked.png")
 
 
-
 # fonts
 font1 = pygame.font.SysFont("Times New Roman", 13, False)
 font2 = pygame.font.SysFont("Times New Roman", 18, False)
@@ -648,10 +647,16 @@ def playerDead():
         screen.blit(deathScore_text, (270, 350))
         moveAbility = False
         startGame = False
-    stopSounds()
+        stopAllTimers(timerTuple)
+        stopSounds()
     if playerHP == 0:
         death.stop()
         death.play()
+
+
+def stopAllTimers(tup):
+    for timer in tuple(tup):
+        timer.stop()
 
 
 def revolver_reload_timer_handler():
@@ -707,6 +712,9 @@ startGame_timer = simplegui.create_timer(50, startGame_timer_handler)
 revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireDelay_timer_handler)
 drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_handler)
 
+# timers tuple
+timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
+              drinkResetDelay_timer)
 
 # Main Menu Music
 intromusic.play(-1)
