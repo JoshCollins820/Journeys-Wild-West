@@ -25,6 +25,7 @@
 - Fixed HP Beer animation being too short
 - Added a Restart button
 - Added working game loop
+- Fixed sniper rifle firing without ammo
 
 ---------------------------NOTES---------------------------
 

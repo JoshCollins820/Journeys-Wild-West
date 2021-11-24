@@ -674,8 +674,6 @@ def resetValues():
         playerLegsIdle, playerShoot, playerDrink, playerSniper, playerGrab, playButtonHover, playButtonClicked, \
         readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked
 
-    #startGame = True
-    #dead = False
     moveAbility = True
     banMoveAbility = True
     interactText = False
@@ -825,8 +823,7 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
 # Main Menu Music
 intromusic.play(-1)
 
-
-# Screen Refresh Loop
+# Game Loop (Screen Refresh Loop)
 while True:
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
@@ -882,7 +879,7 @@ while True:
                             outAmmoUI = True
                             reloadUI = False
                 # Sniper Rifle fires
-                if hotbarSlot2 == True and ownSniperRifle == True:
+                if hotbarSlot2 == True and ownSniperRifle == True and sniperRoundsMag >= 1:
                     fire()
                     if sniperRoundsMag <= 0:
                         reloadUI = True
@@ -924,7 +921,6 @@ while True:
                 playerSniper = False
                 if revRoundsMag <= 0 and revRoundsTotal > 0:
                     reloadUI = True
-
                 if hotbarSlot1 == False:
                     playerShoot = False
                     playerHolster = False
@@ -1175,20 +1171,31 @@ while True:
                     restartButtonHover = False
                     restartButtonClicked = True
                     resetValues()
+                # Use HP Beer
                 if hotbarSlot6 == True and hpPotionCount > 0:
                     hpPotion()
                     drinkResetDelay_timer.start()
                     playerIdle = False
+                # Fire Revolver
                 if hotbarSlot1 == True:
                     if moveAbility == True and readyToFireRevolver == True:
                         fire()
                         readyToFireRevolver = False
                         revolverFireDelay_timer.start()
-                if hotbarSlot2 == True:
+                # Fire Sniper Rifle
+                if hotbarSlot2 == True and ownSniperRifle == True and sniperRoundsMag >= 1:
                     fire()
+                    if sniperRoundsMag <= 0:
+                        reloadUI = True
+                        outAmmoUI = False
+                        interactText = False
+                    if sniperRoundsTotal <= 0:
+                        outAmmoUI = True
+                        reloadUI = False
+                        interactText = False
     # Mouse Position
     mouse_posx,mouse_posy = pygame.mouse.get_pos()
-    #print(str(mouse_posx) + ", " + str(mouse_posy))
+    # print(str(mouse_posx) + ", " + str(mouse_posy))
 
     # Death Buttons
     if dead == True:
