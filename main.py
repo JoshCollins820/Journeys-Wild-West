@@ -654,6 +654,99 @@ def playerDead():
         death.play()
 
 
+def resetValues():
+    global playerHP, moneyCount, revRoundsMag, revRoundsTotal, revolverFireRate, sniperRoundsMag, sniperRoundsTotal, \
+        hpPotionCount, score, cloud1x, cloud2x, tumweed1x, store1x, store2x, cactusx, activeSlotx1, activeSlotx2, \
+        bulletx, banHP, banx1, banFPx1, scopeWalk, ban2HP, banx2, ban2FPx1, scope2Walk, ban3HP, banx3, ban3FPx1, \
+        scope3Walk, startGame, dead, moveAbility, banMoveAbility, interactText, buyText, sitting, standing, \
+        insufFundsText, purchasedText, lookingLeft, lookingRight, hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, \
+        hotbarSlot5, hotbarSlot6, reloadUI, outAmmoUI, scopeScreen,ban1InScope,ban2InScope,ban3InScope,insideShop, \
+        ownSniperRifle, catalog, catalogPage1, catalogPage2, catalogPage3, playerIdle, playerWalk, playerHolster, \
+        playerLegsIdle, playerShoot, playerDrink, playerSniper, playerGrab, playButtonHover, playButtonClicked, \
+        readyToFireRevolver
+
+    startGame = True
+    dead = False
+    moveAbility = True
+    banMoveAbility = True
+    interactText = False
+    buyText = False
+    sitting = False
+    standing = True
+    insufFundsText = False
+    purchasedText = False
+    lookingLeft = False
+    lookingRight = True
+    hotbarSlot1 = False
+    hotbarSlot2 = False
+    hotbarSlot3 = False
+    hotbarSlot4 = False
+    hotbarSlot5 = False
+    hotbarSlot6 = False
+    reloadUI = False
+    outAmmoUI = False
+    scopeScreen = False
+    ban1InScope = False
+    ban2InScope = False
+    ban3InScope = False
+    insideShop = False
+    ownSniperRifle = True
+    catalog = False
+    catalogPage1 = False
+    catalogPage2 = False
+    catalogPage3 = False
+    playerIdle = True
+    playerWalk = False
+    playerHolster = False
+    playerLegsIdle = True
+    playerShoot = False
+    playerDrink = False
+    playerSniper = False
+    playerGrab = False
+    playButtonHover = False
+    playButtonClicked = False
+    readyToFireRevolver = True
+
+
+    # player vals
+    playerHP = 100
+    moneyCount = 0
+    revRoundsMag = 6
+    revRoundsTotal = 24
+    revolverFireRate = 190
+    sniperRoundsMag = 1
+    sniperRoundsTotal = 3
+    hpPotionCount = 0
+    score = 0
+
+    # x-pos
+    cloud1x = 100
+    cloud2x = 600
+    tumweed1x = 700
+    store1x = 700
+    store2x = 1400
+    cactusx = 450
+    activeSlotx1 = 0
+    activeSlotx2 = 0
+    bulletx = 330
+
+    # ban 1
+    banHP = 100
+    banx1 = 1990
+    banFPx1 = 300
+    scopeWalk = 0
+    # ban 2
+    ban2HP = 100
+    banx2 = 2490
+    ban2FPx1 = 300
+    scope2Walk = 0
+    # ban 3
+    ban3HP = 100
+    banx3 = -1000
+    ban3FPx1 = 300
+    scope3Walk = 0
+
+
 def stopAllTimers(tup):
     for timer in tuple(tup):
         timer.stop()
@@ -1060,6 +1153,13 @@ while True:
                     startGame_timer.start()
                     playButtonHover = False
                     playButtonClicked = True
+                # Restart Game
+                if startGame == False and dead == True:
+                    button.play()
+                    intro.play()
+                    music_timer.start()
+                    startGame_timer.start()
+                    resetValues()
                 if hotbarSlot6 == True and hpPotionCount > 0:
                     hpPotion()
                     drinkResetDelay_timer.start()
