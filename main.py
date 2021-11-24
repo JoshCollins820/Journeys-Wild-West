@@ -35,7 +35,7 @@ bodyWeight = 12
 moneyCount = 0
 revRoundsMag = 6
 revRoundsTotal = 24
-revolverFireRate = 190
+revolverFireRate = 120
 revolverReloadSpeed = 450
 sniperRoundsMag = 1
 sniperRoundsTotal = 3
@@ -59,8 +59,8 @@ store1x = 700
 store2x = 1400
 cactusx = 450
 
-activeSlotx1 = 0
-activeSlotx2 = 0
+activeSlotx1 = -50
+activeSlotx2 = -50
 bulletx = 330
 
 # ban 1
@@ -674,6 +674,44 @@ def resetValues():
         playerLegsIdle, playerShoot, playerDrink, playerSniper, playerGrab, playButtonHover, playButtonClicked, \
         readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked
 
+    # player vals
+    playerHP = 100
+    moneyCount = 0
+    revRoundsMag = 6
+    revRoundsTotal = 24
+    revolverFireRate = 120
+    sniperRoundsMag = 1
+    sniperRoundsTotal = 3
+    hpPotionCount = 0
+    score = 0
+
+    # x-pos
+    cloud1x = 100
+    cloud2x = 600
+    tumweed1x = 700
+    store1x = 700
+    store2x = 1400
+    cactusx = 450
+    activeSlotx1 = 0
+    activeSlotx2 = 0
+    bulletx = 330
+
+    # ban 1
+    banHP = 100
+    banx1 = 1990
+    banFPx1 = 300
+    scopeWalk = 0
+    # ban 2
+    ban2HP = 100
+    banx2 = 2490
+    ban2FPx1 = 300
+    scope2Walk = 0
+    # ban 3
+    ban3HP = 100
+    banx3 = -1000
+    ban3FPx1 = 300
+    scope3Walk = 0
+
     moveAbility = True
     banMoveAbility = True
     interactText = False
@@ -717,44 +755,6 @@ def resetValues():
     mainMenuButtonHover = False
     mainMenuButtonClicked = False
 
-    # player vals
-    playerHP = 100
-    moneyCount = 0
-    revRoundsMag = 6
-    revRoundsTotal = 24
-    revolverFireRate = 190
-    sniperRoundsMag = 1
-    sniperRoundsTotal = 3
-    hpPotionCount = 0
-    score = 0
-
-    # x-pos
-    cloud1x = 100
-    cloud2x = 600
-    tumweed1x = 700
-    store1x = 700
-    store2x = 1400
-    cactusx = 450
-    activeSlotx1 = 0
-    activeSlotx2 = 0
-    bulletx = 330
-
-    # ban 1
-    banHP = 100
-    banx1 = 1990
-    banFPx1 = 300
-    scopeWalk = 0
-    # ban 2
-    ban2HP = 100
-    banx2 = 2490
-    ban2FPx1 = 300
-    scope2Walk = 0
-    # ban 3
-    ban3HP = 100
-    banx3 = -1000
-    ban3FPx1 = 300
-    scope3Walk = 0
-
 
 def stopAllTimers(tup):
     for timer in tuple(tup):
@@ -790,10 +790,21 @@ def startGame_timer_handler():
     tumbleAuto = 15
     startGame = True
     dead = False
+    playButtonClicked = False
     restartButtonClicked = False
     moveAbility = True
     banMoveAbility = True
     startGame_timer.stop()
+
+
+def mainMenu_timer_handler():
+    global startGame, dead
+    startGame = False
+    dead = False
+    resetValues()
+    mainMenuButtonClicked = False
+    mainMenu()
+    mainMenu_timer.stop()
 
 
 def revolverFireDelay_timer_handler():
@@ -813,6 +824,7 @@ revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_rel
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
 music_timer = simplegui.create_timer(15000, music_timer_handler)
 startGame_timer = simplegui.create_timer(50, startGame_timer_handler)
+mainMenu_timer = simplegui.create_timer(50, mainMenu_timer_handler)
 revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireDelay_timer_handler)
 drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_handler)
 
@@ -1171,6 +1183,12 @@ while True:
                     restartButtonHover = False
                     restartButtonClicked = True
                     resetValues()
+                # Main Menu Button
+                if startGame == False and dead == True and mainMenuButtonHover == True:
+                    button.play()
+                    mainMenu_timer.start()
+                    mainMenuButtonHover = False
+                    mainMenuButtonClicked = True
                 # Use HP Beer
                 if hotbarSlot6 == True and hpPotionCount > 0:
                     hpPotion()
@@ -1199,6 +1217,7 @@ while True:
 
     # Death Buttons
     if dead == True:
+        # Restart Button
         # Hover Button
         if (237 <= mouse_posx <= 363) and (313 <= mouse_posy <= 354) and restartButtonClicked == False:
             screen.blit(asset_restart_button_hover, (0, 0))
@@ -1211,6 +1230,21 @@ while True:
         else:
             screen.blit(asset_restart_button_normal, (0, 0))
             restartButtonHover = False
+
+        # Main Menu Button
+            # Hover Button
+            if (238 <= mouse_posx <= 364) and (394 <= mouse_posy <= 438) and mainMenuButtonClicked == False:
+                screen.blit(asset_main_menu_button_hover, (0, 0))
+                mainMenuButtonHover = True
+            # Click Button
+            elif (238 <= mouse_posx <= 364) and (394 <= mouse_posy <= 438) and mainMenuButtonClicked == True:
+                screen.blit(asset_main_menu_button_clicked, (0, 0))
+                mainMenuButtonHover = False
+            # Normal Button
+            else:
+                screen.blit(asset_main_menu_button_normal, (0, 0))
+                mainMenuButtonHover = False
+
 
     # Main Menu -------------------------------------------------------------------------------------------------
     mainMenu()
