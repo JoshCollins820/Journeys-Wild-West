@@ -1,6 +1,7 @@
-### JOURNEY'S WILD WEST
-## BY JOSH COLLINS
-# VERSION 0.4.5
+## JOURNEY'S WILD WEST
+## v0.4
+## Developed by: Josh Collins
+## ---------------------------
 
 # Modules
 import pygame
@@ -28,7 +29,7 @@ screen = pygame.display.set_mode((height, width))
 pygame.display.set_caption("JOURNEYS: WILD WEST")
 pygame.display.set_icon(pygame.image.load("assets/icon/window_icon.png"))
 collapse = True
-version = "0.4.5"
+version = "0.4"
 
 # values and statements
 if collapse:
@@ -137,6 +138,7 @@ if collapse:
     mainMenuButtonClicked = False
     pause = False
     resumeButtonHover = False
+    resumeButtonClicked = False
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
 # audio
@@ -287,6 +289,7 @@ if collapse:
     asset_paused_darken = pygame.image.load("assets/UI/pause_darken.png")
     asset_resume_button_normal = pygame.image.load("assets/UI/resume_button_normal.png")
     asset_resume_button_hover = pygame.image.load("assets/UI/resume_button_hover.png")
+    asset_resume_button_clicked = pygame.image.load("assets/UI/resume_button_clicked.png")
 
 # text
 if collapse:
@@ -642,9 +645,13 @@ def pauseGame():
     screen.blit(asset_paused_overlay, (0, 0))
     # Resume Button
     # Hover Button
-    if (239 <= mouse_posx <= 365) and (312 <= mouse_posy <= 353):
+    if (239 <= mouse_posx <= 365) and (312 <= mouse_posy <= 353) and resumeButtonClicked == False:
         screen.blit(asset_resume_button_hover, (0, 0))
         resumeButtonHover = True
+    # Click Button
+    elif (239 <= mouse_posx <= 365) and (312 <= mouse_posy <= 353) and resumeButtonClicked == True:
+        screen.blit(asset_resume_button_clicked, (0, 0))
+        resumeButtonHover = False
     # Normal Button
     else:
         screen.blit(asset_resume_button_normal, (0, 0))
@@ -685,7 +692,7 @@ def resetValues():
         ownSniperRifle, catalog, catalogPage1, catalogPage2, catalogPage3, playerIdle, playerWalk, playerHolster, \
         playerLegsIdle, playerShoot, playerDrink, playerSniper, playerGrab, playButtonHover, playButtonClicked, \
         readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked, \
-        resumeButtonHover
+        resumeButtonHover, resumeButtonClicked
 
     # player vals
     playerHP = 100
@@ -769,6 +776,7 @@ def resetValues():
     mainMenuButtonClicked = False
     pause = False
     resumeButtonHover = False
+    resumeButtonClicked = False
 
 
 def stopAllTimers(tup):
@@ -824,10 +832,12 @@ def mainMenu_timer_handler():
 
 
 def resumeGame_timer_handler():
-    global pause
+    global pause, resumeButtonClicked
     pause = False
+    resumeButtonClicked = False
     pygame.mixer.unpause()
     resumeGame_timer.stop()
+
 
 
 def revolverFireDelay_timer_handler():
@@ -1219,6 +1229,7 @@ while True:
                     button.play()
                     resumeGame_timer.start()
                     resumeButtonHover = False
+                    resumeButtonClicked = True
 
                 # Use HP Beer
                 if hotbarSlot6 == True and hpPotionCount > 0:
