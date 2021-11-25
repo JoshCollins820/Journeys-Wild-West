@@ -25,13 +25,14 @@
 - Fixed player model bugs
 - Fixed HP Beer animation being too short
 - Added a Restart button
-- Added Main Menu button
 - Added Pause Menu
+- Added Main Menu button in death screen and pause menu
 - Fixed sniper rifle firing without ammo
 - Rebalanced audio
 
 
 ---------------------------NOTES---------------------------
+
 
 
 

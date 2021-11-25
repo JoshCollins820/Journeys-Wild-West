@@ -147,6 +147,7 @@ if collapse:
     confirmYesButtonClicked = False
     confirmNoButtonHover = False
     confirmNoButtonClicked = False
+    confirmationBox = False
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
 # audio
@@ -310,6 +311,7 @@ if collapse:
     asset_confirm_no_button_normal = pygame.image.load("assets/UI/confirm_no_button_normal.png")
     asset_confirm_no_button_hover = pygame.image.load("assets/UI/confirm_no_button_hover.png")
     asset_confirm_no_button_clicked = pygame.image.load("assets/UI/confirm_no_button_clicked.png")
+    asset_confirmation_box = pygame.image.load("assets/UI/confirmation.png")
 
 # text
 if collapse:
@@ -660,12 +662,15 @@ def mainMenu():
 
 
 def pauseGame():
-    global resumeButtonHover
+    global resumeButtonHover, settingsButtonHover, mainMenu2ButtonHover, confirmYesButtonHover, \
+        confirmNoButtonHover
 
+    # Pause Screen -------------------------------------------------------------------------------
     screen.blit(asset_paused_overlay, (0, 0))
-    # Resume Button
+    # Resume Button ------------------------------------------------------------------------------
     # Hover Button
-    if (235 <= mouse_posx <= 367) and (257 <= mouse_posy <= 302) and resumeButtonClicked == False:
+    if (235 <= mouse_posx <= 367) and (257 <= mouse_posy <= 302) and resumeButtonClicked == False \
+            and confirmationBox == False:
         screen.blit(asset_resume_button_hover, (0, 0))
         resumeButtonHover = True
     # Click Button
@@ -677,9 +682,10 @@ def pauseGame():
         screen.blit(asset_resume_button_normal, (0, 0))
         resumeButtonHover = False
 
-    # Settings
+    # Settings Button -------------------------------------------------------------------------------
     # Hover Button
-    if (235 <= mouse_posx <= 367) and (324 <= mouse_posy <= 370) and settingsButtonClicked == False:
+    if (235 <= mouse_posx <= 367) and (324 <= mouse_posy <= 370) and settingsButtonClicked == False \
+            and confirmationBox == False:
         screen.blit(asset_settings_button_hover, (0, 0))
         settingsButtonHover = True
     # Click Button
@@ -691,9 +697,10 @@ def pauseGame():
         screen.blit(asset_settings_button_normal, (0, 0))
         settingsButtonHover = False
 
-    # Main Menu
+    # Main Menu Button ------------------------------------------------------------------------------
     # Hover Button
-    if (235 <= mouse_posx <= 367) and (393 <= mouse_posy <= 438) and mainMenu2ButtonClicked == False:
+    if (235 <= mouse_posx <= 367) and (393 <= mouse_posy <= 438) and mainMenu2ButtonClicked == False \
+            and confirmationBox == False:
         screen.blit(asset_main_menu2_button_hover, (0, 0))
         mainMenu2ButtonHover = True
     # Click Button
@@ -704,6 +711,36 @@ def pauseGame():
     else:
         screen.blit(asset_main_menu2_button_normal, (0, 0))
         mainMenu2ButtonHover = False
+
+    # Confirmation Screen --------------------------------------------------------------------------------
+    if confirmationBox == True:
+        screen.blit(asset_confirmation_box, (0, 0))
+        # Yes --------------------------------------------------------------------------------------------
+        # Hover Button
+        if (189 <= mouse_posx <= 267) and (292 <= mouse_posy <= 329) and confirmYesButtonClicked == False:
+            screen.blit(asset_confirm_yes_button_hover, (0, 0))
+            confirmYesButtonHover = True
+        # Click Button
+        elif (189 <= mouse_posx <= 267) and (292 <= mouse_posy <= 329) and confirmYesButtonClicked == True:
+            screen.blit(asset_confirm_yes_button_clicked, (0, 0))
+            confirmYesButtonHover = False
+        # Normal Button
+        else:
+            screen.blit(asset_confirm_yes_button_normal, (0, 0))
+            confirmYesButtonHover = False
+        # No --------------------------------------------------------------------------------------------
+        # Hover Button
+        if (333 <= mouse_posx <= 412) and (292 <= mouse_posy <= 329) and confirmNoButtonClicked == False:
+            screen.blit(asset_confirm_no_button_hover, (0, 0))
+            confirmNoButtonHover = True
+        # Click Button
+        elif (333 <= mouse_posx <= 412) and (292 <= mouse_posy <= 329) and confirmNoButtonClicked == True:
+            screen.blit(asset_confirm_no_button_clicked, (0, 0))
+            confirmNoButtonHover = False
+        # Normal Button
+        else:
+            screen.blit(asset_confirm_no_button_normal, (0, 0))
+            confirmNoButtonHover = False
 
 
 def playerHit(damage):
@@ -741,7 +778,7 @@ def resetValues():
         readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked, \
         resumeButtonHover, resumeButtonClicked, settingsButtonHover, settingsButtonClicked, mainMenu2ButtonHover, \
         mainMenu2ButtonClicked, confirmYesButtonHover, confirmYesButtonClicked, confirmNoButtonHover, \
-        confirmNoButtonClicked
+        confirmNoButtonClicked, confirmationBox
 
     # player vals
     playerHP = 100
@@ -834,6 +871,7 @@ def resetValues():
     confirmYesButtonClicked = False
     confirmNoButtonHover = False
     confirmNoButtonClicked = False
+    confirmationBox = False
 
 
 def stopAllTimers(tup):
@@ -879,12 +917,15 @@ def startGame_timer_handler():
 
 
 def mainMenu_timer_handler():
-    global startGame, dead
+    global startGame, dead, mainMenuButtonClicked, mainMenu2ButtonClicked, pause
     startGame = False
     dead = False
     resetValues()
     mainMenuButtonClicked = False
+    mainMenu2ButtonClicked = False
+    pause = False
     mainMenu()
+    intromusic.play(-1)
     mainMenu_timer.stop()
 
 
@@ -917,6 +958,13 @@ def playerHitSound_timer_handler():
         playerHitSound_timer.stop()
 
 
+def confirmationBox_timer_handler():
+    global confirmationBox, mainMenu2ButtonClicked
+    confirmationBox = True
+    mainMenu2ButtonClicked = False
+    confirmationBox_timer.stop()
+
+
 # timers
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -924,13 +972,14 @@ music_timer = simplegui.create_timer(15000, music_timer_handler)
 startGame_timer = simplegui.create_timer(50, startGame_timer_handler)
 mainMenu_timer = simplegui.create_timer(50, mainMenu_timer_handler)
 resumeGame_timer = simplegui.create_timer(50, resumeGame_timer_handler)
+confirmationBox_timer = simplegui.create_timer(50, confirmationBox_timer_handler)
 revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireDelay_timer_handler)
 drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_handler)
 playerHitSound_timer = simplegui.create_timer(100, playerHitSound_timer_handler)
 
 # timers tuple
 timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
-              drinkResetDelay_timer, resumeGame_timer, mainMenu_timer)
+              drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -1266,6 +1315,7 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Mouse Button 1
             if event.button == 1:
+                # In Main Menu Screen
                 # Play Button
                 if startGame == False and playButtonHover == True:
                     button.play()
@@ -1273,6 +1323,8 @@ while True:
                     startGame_timer.start()
                     playButtonHover = False
                     playButtonClicked = True
+
+                # In Death Screen
                 # Restart Game
                 if startGame == False and dead == True and restartButtonHover == True:
                     button.play()
@@ -1285,17 +1337,37 @@ while True:
                 # Main Menu Button
                 if startGame == False and dead == True and mainMenuButtonHover == True:
                     button.play()
-                    intromusic.play(-1)
+                    stopSounds()
                     mainMenu_timer.start()
                     mainMenuButtonHover = False
                     mainMenuButtonClicked = True
-                    stopSounds()
+
+                # In Pause Screen
                 # Resume Button
-                if pause == True and resumeButtonHover == True:
+                if pause == True and confirmationBox == False and resumeButtonHover == True:
                     button.play()
                     resumeGame_timer.start()
                     resumeButtonHover = False
                     resumeButtonClicked = True
+                # Main Menu
+                if pause == True and confirmationBox == False and mainMenu2ButtonHover == True:
+                    button.play()
+                    confirmationBox_timer.start()
+                    mainMenu2ButtonHover = False
+                    mainMenu2ButtonClicked = True
+                # In Confirmation Box
+                if pause == True and confirmationBox == True:
+                    # Yes Button
+                    if confirmYesButtonHover == True:
+                        button.play()
+                        stopSounds()
+                        mainMenu_timer.start()
+                        confirmYesButtonHover = False
+                        confirmYesButtonClicked = True
+                    # No Button
+                    if confirmNoButtonHover == True:
+                        button.play()
+                        confirmationBox = False
 
                 # Use HP Beer
                 if hotbarSlot6 == True and hpPotionCount > 0:
