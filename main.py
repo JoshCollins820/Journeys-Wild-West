@@ -1,6 +1,6 @@
 ### JOURNEY'S WILD WEST
 ## BY JOSH COLLINS
-# VERSION 1.15
+# VERSION 0.4.5
 
 # Modules
 import pygame
@@ -28,7 +28,7 @@ screen = pygame.display.set_mode((height, width))
 pygame.display.set_caption("JOURNEYS: WILD WEST")
 pygame.display.set_icon(pygame.image.load("assets/icon/window_icon.png"))
 collapse = True
-
+version = "0.4.5"
 
 # values and statements
 if collapse:
@@ -288,14 +288,12 @@ if collapse:
     asset_resume_button_normal = pygame.image.load("assets/UI/resume_button_normal.png")
     asset_resume_button_hover = pygame.image.load("assets/UI/resume_button_hover.png")
 
-# fonts
+# text
 if collapse:
     font1 = pygame.font.SysFont("Times New Roman", 13, False)
     font2 = pygame.font.SysFont("Times New Roman", 18, False)
     # syntax - (Name, Size, Bold, Italic)
 
-# text
-if collapse:
     ban1Tag = font1.render("Bandit: Nicholas", True, (150,240,41))
     ban1HPTag = font1.render(("HP: " + str(banHP)), True, (255,255,255))
     ban2Tag = font1.render("Bandit: Darius", True, (150,240,41))
@@ -318,8 +316,8 @@ if collapse:
     clickPlay_text = font1.render("Click Here to PLAY", True, (255,255,255))
     deathScore_text = font2.render(("Score: " + str(score)), True, (255,255,255))
     shopWarning_text = font1.render("\"Take your hand off the gun, son..\"", True, (0, 0, 0))
+    version_text = font1.render(("v " + version), True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
-
 
 
 def worldLeft():
@@ -619,6 +617,8 @@ def mainMenu():
     global startGame, tumbleAuto, playButtonHover, moveAbility, banMoveAbility, mouse_posx, mouse_posy
     # Background
     screen.blit(asset_main_menu, (0, 0))
+    # Version Number
+    screen.blit(version_text, (6, 580))
     # Hover Button
     if (235 <= mouse_posx <= 365) and (420 <= mouse_posy <= 465) and playButtonClicked == False:
         screen.blit(asset_button_hover, (0, 0))
@@ -649,6 +649,15 @@ def pauseGame():
     else:
         screen.blit(asset_resume_button_normal, (0, 0))
         resumeButtonHover = False
+
+
+def playerHit(damage):
+    global playerHP
+
+    if playerHP > 0:
+        playerHP -= damage
+        playerhit.stop()
+        playerhit.play()
 
 
 def playerDead():
@@ -1530,10 +1539,7 @@ while True:
         # ban 1 damage range
         if banHP > 0:
             if banx1 <= 290 and banx1 >= 210 and insideShop == False:
-                playerHP -= 4
-                if playerHP > 0:
-                    playerhit.stop()
-                    playerhit.play()
+                playerHit(4)
         elif banHP == -50:
             banMove += 5
             banHP = 100
@@ -1542,10 +1548,7 @@ while True:
         # ban 2 damage range
         if ban2HP > 0:
             if banx2 <= 290 and banx2 >= 210 and insideShop == False:
-                playerHP -= 4
-                if playerHP > 0:
-                    playerhit.stop()
-                    playerhit.play()
+                playerHit(4)
         elif ban2HP == -50:
             banMove += 5
             ban2HP = 100
@@ -1554,10 +1557,7 @@ while True:
         # ban 3 damage range
         if ban3HP > 0:
             if banx3 <= 290 and banx3 >= 210 and insideShop == False:
-                playerHP -= 4
-                if playerHP > 0:
-                    playerhit.stop()
-                    playerhit.play()
+                playerHit(4)
         elif ban3HP == -50:
             banMove += 5
             ban3HP = 100
