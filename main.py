@@ -649,13 +649,15 @@ def stopSounds():
 
 
 def mainMenu():
-    global startGame, tumbleAuto, playButtonHover, moveAbility, banMoveAbility, mouse_posx, mouse_posy
+    global startGame, tumbleAuto, playButtonHover, moveAbility, banMoveAbility, mouse_posx, mouse_posy, \
+        settingsButtonHover
     # Background
     screen.blit(asset_main_menu, (0, 0))
     # Version Number
     screen.blit(version_text, (6, 580))
+    # Play Button ---------------------------------------------------------------------------------
     # Hover Button
-    if (235 <= mouse_posx <= 365) and (420 <= mouse_posy <= 465) and playButtonClicked == False:
+    if (235 <= mouse_posx <= 365) and (420 <= mouse_posy <= 465) and settings == False and playButtonClicked == False:
         screen.blit(asset_button_hover, (0, 0))
         playButtonHover = True
     # Click Button
@@ -666,6 +668,23 @@ def mainMenu():
     else:
         screen.blit(asset_button_normal, (0, 0))
         playButtonHover = False
+    # Settings Button -------------------------------------------------------------------------------
+    # Hover Button
+    if (235 <= mouse_posx <= 367) and (494 <= mouse_posy <= 540) and settingsButtonClicked == False \
+            and settings == False:
+        screen.blit(asset_settings_button_hover, (0, 170))
+        settingsButtonHover = True
+    # Click Button
+    elif (235 <= mouse_posx <= 367) and (494 <= mouse_posy <= 540) and settingsButtonClicked == True:
+        screen.blit(asset_settings_button_clicked, (0, 170))
+        settingsButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_settings_button_normal, (0, 170))
+        settingsButtonHover = False
+    # In Settings Menu
+    if settings == True:
+        showSettings()
     moveAbility = False
     banMoveAbility = False
     music_timer.stop()
@@ -752,110 +771,117 @@ def pauseGame():
         else:
             screen.blit(asset_confirm_no_button_normal, (0, 0))
             confirmNoButtonHover = False
-
     # Settings Menu ----------------------------------------------------------------------------------
     if settings == True:
-        masterVolumePercent = round(masterVolume*100)
-        musicVolumePercent = round(musicVolume*100)
-        masterVolume_text = font3.render((str(masterVolumePercent) + "%"), True, (255, 255, 255))
-        musicVolume_text = font3.render((str(musicVolumePercent) + "%"), True, (255, 255, 255))
-        masterVolumeBack_text = font3.render((str(masterVolumePercent) + "%"), True, (18, 15, 23))
-        musicVolumeBack_text = font3.render((str(musicVolumePercent) + "%"), True, (18, 15, 23))
+        showSettings()
 
-        screen.blit(asset_settings_menu, (0, 0))
-        screen.blit(masterVolumeBack_text, (406, 191))
-        screen.blit(masterVolume_text, (408, 190))
-        screen.blit(musicVolumeBack_text, (394, 243))
-        screen.blit(musicVolume_text, (396, 242))
-        # Done Button ---------------------------------------------------------------------------------
-        # Hover Button
-        if (235 <= mouse_posx <= 367) and (433 <= mouse_posy <= 471) and settingsDoneButtonClicked == False:
-            screen.blit(asset_settings_done_button_hover, (0, 0))
-            settingsDoneButtonHover = True
-        # Click Button
-        elif (235 <= mouse_posx <= 367) and (433 <= mouse_posy <= 471) and settingsDoneButtonClicked == True:
-            screen.blit(asset_settings_done_button_clicked, (0, 0))
-            settingsDoneButtonHover = False
-        # Normal Button
-        else:
-            screen.blit(asset_settings_done_button_normal, (0, 0))
-            settingsDoneButtonHover = False
-        # Master Left -----------------------------------------------------------------------------------
-        # Hover Button
-        if (112 <= mouse_posx <= 140) and (187 <= mouse_posy <= 217) and masterLeftButtonClicked == False:
-            screen.blit(asset_master_left_button_hover, (0, 0))
-            masterLeftButtonHover = True
-        # Click Button
-        elif (112 <= mouse_posx <= 140) and (187 <= mouse_posy <= 217) and masterLeftButtonClicked == True:
-            screen.blit(asset_master_left_button_clicked, (0, 0))
-            masterLeftButtonHover = False
-        # Normal Button
-        else:
-            screen.blit(asset_master_left_button_normal, (0, 0))
-            masterLeftButtonHover = False
-        # Master Right -----------------------------------------------------------------------------------
-        # Hover Button
-        if (474 <= mouse_posx <= 504) and (187 <= mouse_posy <= 217) and masterRightButtonClicked == False:
-            screen.blit(asset_master_right_button_hover, (0, 0))
-            masterRightButtonHover = True
-        # Click Button
-        elif (474 <= mouse_posx <= 504) and (187 <= mouse_posy <= 217) and masterRightButtonClicked == True:
-            screen.blit(asset_master_right_button_clicked, (0, 0))
-            masterRightButtonHover = False
-        # Normal Button
-        else:
-            screen.blit(asset_master_right_button_normal, (0, 0))
-            masterRightButtonHover = False
-        # Music Left -----------------------------------------------------------------------------------
-        # Hover Button
-        if (112 <= mouse_posx <= 140) and (239 <= mouse_posy <= 270) and musicLeftButtonClicked == False:
-            screen.blit(asset_music_left_button_hover, (0, 0))
-            musicLeftButtonHover = True
-        # Click Button
-        elif (112 <= mouse_posx <= 140) and (239 <= mouse_posy <= 270) and musicLeftButtonClicked == True:
-            screen.blit(asset_music_left_button_clicked, (0, 0))
-            musicLeftButtonHover = False
-        # Normal Button
-        else:
-            screen.blit(asset_music_left_button_normal, (0, 0))
-            musicLeftButtonHover = False
-        # Music Right -----------------------------------------------------------------------------------
-        # Hover Button
-        if (474 <= mouse_posx <= 504) and (239 <= mouse_posy <= 270) and musicRightButtonClicked == False:
-            screen.blit(asset_music_right_button_hover, (0, 0))
-            musicRightButtonHover = True
-        # Click Button
-        elif (474 <= mouse_posx <= 504) and (239 <= mouse_posy <= 270) and musicRightButtonClicked == True:
-            screen.blit(asset_music_right_button_clicked, (0, 0))
-            musicRightButtonHover = False
-        # Normal Button
-        else:
-            screen.blit(asset_music_right_button_normal, (0, 0))
-            musicRightButtonHover = False
-        # volume refresh
-        step.set_volume(masterVolume)
-        woodstep.set_volume(masterVolume)
-        intro.set_volume(musicVolume)
-        button.set_volume(masterVolume)
-        griprevolver.set_volume(masterVolume)
-        shot.set_volume(masterVolume)
-        empty.set_volume(masterVolume)
-        reload.set_volume(masterVolume)
-        death.set_volume(masterVolume)
-        playerhit.set_volume(masterVolume)
-        banpain.set_volume(masterVolume)
-        snipershot.set_volume(masterVolume)
-        heartbeat.set_volume(masterVolume)
-        breath.set_volume(masterVolume)
-        intromusic.set_volume(musicVolume)
-        door.set_volume(masterVolume)
-        openbook.set_volume(masterVolume)
-        turnpage.set_volume(masterVolume)
-        cashregister.set_volume(masterVolume)
-        error.set_volume(masterVolume)
-        music.set_volume(musicVolume)
-        potion.set_volume(masterVolume)
-        sniper_reload.set_volume(masterVolume)
+
+def showSettings():
+    global resumeButtonHover, settingsButtonHover, mainMenu2ButtonHover, confirmYesButtonHover, \
+        confirmNoButtonHover, settingsDoneButtonHover, masterLeftButtonHover, masterRightButtonHover, \
+        musicLeftButtonHover, musicRightButtonHover
+
+    masterVolumePercent = round(masterVolume * 100)
+    musicVolumePercent = round(musicVolume * 100)
+    masterVolume_text = font3.render((str(masterVolumePercent) + "%"), True, (255, 255, 255))
+    musicVolume_text = font3.render((str(musicVolumePercent) + "%"), True, (255, 255, 255))
+    masterVolumeBack_text = font3.render((str(masterVolumePercent) + "%"), True, (18, 15, 23))
+    musicVolumeBack_text = font3.render((str(musicVolumePercent) + "%"), True, (18, 15, 23))
+
+    screen.blit(asset_settings_menu, (0, 0))
+    screen.blit(masterVolumeBack_text, (406, 191))
+    screen.blit(masterVolume_text, (408, 190))
+    screen.blit(musicVolumeBack_text, (394, 243))
+    screen.blit(musicVolume_text, (396, 242))
+    # Done Button ---------------------------------------------------------------------------------
+    # Hover Button
+    if (235 <= mouse_posx <= 367) and (433 <= mouse_posy <= 471) and settingsDoneButtonClicked == False:
+        screen.blit(asset_settings_done_button_hover, (0, 0))
+        settingsDoneButtonHover = True
+    # Click Button
+    elif (235 <= mouse_posx <= 367) and (433 <= mouse_posy <= 471) and settingsDoneButtonClicked == True:
+        screen.blit(asset_settings_done_button_clicked, (0, 0))
+        settingsDoneButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_settings_done_button_normal, (0, 0))
+        settingsDoneButtonHover = False
+    # Master Left -----------------------------------------------------------------------------------
+    # Hover Button
+    if (112 <= mouse_posx <= 140) and (187 <= mouse_posy <= 217) and masterLeftButtonClicked == False:
+        screen.blit(asset_master_left_button_hover, (0, 0))
+        masterLeftButtonHover = True
+    # Click Button
+    elif (112 <= mouse_posx <= 140) and (187 <= mouse_posy <= 217) and masterLeftButtonClicked == True:
+        screen.blit(asset_master_left_button_clicked, (0, 0))
+        masterLeftButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_master_left_button_normal, (0, 0))
+        masterLeftButtonHover = False
+    # Master Right -----------------------------------------------------------------------------------
+    # Hover Button
+    if (474 <= mouse_posx <= 504) and (187 <= mouse_posy <= 217) and masterRightButtonClicked == False:
+        screen.blit(asset_master_right_button_hover, (0, 0))
+        masterRightButtonHover = True
+    # Click Button
+    elif (474 <= mouse_posx <= 504) and (187 <= mouse_posy <= 217) and masterRightButtonClicked == True:
+        screen.blit(asset_master_right_button_clicked, (0, 0))
+        masterRightButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_master_right_button_normal, (0, 0))
+        masterRightButtonHover = False
+    # Music Left -----------------------------------------------------------------------------------
+    # Hover Button
+    if (112 <= mouse_posx <= 140) and (239 <= mouse_posy <= 270) and musicLeftButtonClicked == False:
+        screen.blit(asset_music_left_button_hover, (0, 0))
+        musicLeftButtonHover = True
+    # Click Button
+    elif (112 <= mouse_posx <= 140) and (239 <= mouse_posy <= 270) and musicLeftButtonClicked == True:
+        screen.blit(asset_music_left_button_clicked, (0, 0))
+        musicLeftButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_music_left_button_normal, (0, 0))
+        musicLeftButtonHover = False
+    # Music Right -----------------------------------------------------------------------------------
+    # Hover Button
+    if (474 <= mouse_posx <= 504) and (239 <= mouse_posy <= 270) and musicRightButtonClicked == False:
+        screen.blit(asset_music_right_button_hover, (0, 0))
+        musicRightButtonHover = True
+    # Click Button
+    elif (474 <= mouse_posx <= 504) and (239 <= mouse_posy <= 270) and musicRightButtonClicked == True:
+        screen.blit(asset_music_right_button_clicked, (0, 0))
+        musicRightButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_music_right_button_normal, (0, 0))
+        musicRightButtonHover = False
+    # volume refresh
+    step.set_volume(masterVolume)
+    woodstep.set_volume(masterVolume)
+    intro.set_volume(musicVolume)
+    button.set_volume(masterVolume)
+    griprevolver.set_volume(masterVolume)
+    shot.set_volume(masterVolume)
+    empty.set_volume(masterVolume)
+    reload.set_volume(masterVolume)
+    death.set_volume(masterVolume)
+    playerhit.set_volume(masterVolume)
+    banpain.set_volume(masterVolume)
+    snipershot.set_volume(masterVolume)
+    heartbeat.set_volume(masterVolume)
+    breath.set_volume(masterVolume)
+    intromusic.set_volume(musicVolume)
+    door.set_volume(masterVolume)
+    openbook.set_volume(masterVolume)
+    turnpage.set_volume(masterVolume)
+    cashregister.set_volume(masterVolume)
+    error.set_volume(masterVolume)
+    music.set_volume(musicVolume)
+    potion.set_volume(masterVolume)
+    sniper_reload.set_volume(masterVolume)
 
 
 def playerHit(damage):
@@ -1185,8 +1211,11 @@ while True:
                 screen.blit(asset_paused_darken, (0, 0))
                 pause = True
             # Unpause Game
-            elif event.key == pygame.K_ESCAPE and pause == True:
+            elif event.key == pygame.K_ESCAPE and pause == True and settings == False:
                 resumeGame_timer.start()
+            # Exit settings
+            elif event.key == pygame.K_ESCAPE and settings == True:
+                settings = False
             if pause == False:
                 # Walk left
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
@@ -1498,12 +1527,17 @@ while True:
             if event.button == 1:
                 # In Main Menu Screen
                 # Play Button
-                if startGame == False and playButtonHover == True:
+                if startGame == False and settings == False and playButtonHover == True:
                     button.play()
                     intro.play()
                     startGame_timer.start()
                     playButtonHover = False
                     playButtonClicked = True
+                if settings == False and settingsButtonHover == True:
+                    button.play()
+                    settingsMenu_timer.start()
+                    settingsButtonHover = False
+                    settingsButtonClicked = True
 
                 # In Death Screen
                 # Restart Game
@@ -1530,7 +1564,8 @@ while True:
                     resumeGame_timer.start()
                     resumeButtonHover = False
                     resumeButtonClicked = True
-                if pause == True and confirmationBox == False and settings == False and settingsButtonHover == True:
+                # Settings Button
+                if confirmationBox == False and settings == False and settingsButtonHover == True:
                     button.play()
                     settingsMenu_timer.start()
                     settingsButtonHover = False
@@ -1555,7 +1590,7 @@ while True:
                         button.play()
                         confirmationBox = False
                 # In Settings
-                if pause == True and settings == True:
+                if settings == True:
                     # Done Button
                     if settingsDoneButtonHover == True:
                         button.play()
