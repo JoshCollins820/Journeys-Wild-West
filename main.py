@@ -39,7 +39,7 @@ if collapse:
     moneyCount = 0
     revRoundsMag = 6
     revRoundsTotal = 24
-    revolverFireRate = 120
+    revolverFireRate = 12
     revolverReloadSpeed = 450
     sniperRoundsMag = 1
     sniperRoundsTotal = 3
@@ -139,74 +139,55 @@ if collapse:
     resumeButtonHover = False
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
-# audio volumes
-if collapse:
-    v_step = 0.4
-    v_intro = 0.05
-    v_button = 0.5
-    v_griprevolver = 0.9
-    v_shot = 0.6
-    v_empty = 0.2
-    v_reload = 0.2
-    v_death = 0.3
-    v_hurt = 0.6
-    v_playerhit = 0.4
-    v_banpain = 0.8
-    v_snipershot = 1
-    v_heartbeat = 0.5
-    v_breath = 0.4
-    v_intromusic = 0.1
-
 # audio
 if collapse:
+    volume = 1  # (0-1)
     step = pygame.mixer.Sound('sounds/step.wav')
-    step.set_volume(0.4)
+    step.set_volume(volume)
     woodstep = pygame.mixer.Sound('sounds/woodstep.wav')
-    woodstep.set_volume(0.15)
+    woodstep.set_volume(volume)
     intro = pygame.mixer.Sound('sounds/intro.wav')
-    intro.set_volume(0.1)
+    intro.set_volume(volume)
     button = pygame.mixer.Sound('sounds/button.wav')
-    button.set_volume(0.5)
+    button.set_volume(volume)
     griprevolver = pygame.mixer.Sound('sounds/griprevolver.wav')
-    griprevolver.set_volume(0.9)
+    griprevolver.set_volume(volume)
     shot = pygame.mixer.Sound('sounds/shot.wav')
-    shot.set_volume(0.6)
+    shot.set_volume(volume)
     empty = pygame.mixer.Sound('sounds/empty.wav')
-    empty.set_volume(0.2)
+    empty.set_volume(volume)
     reload = pygame.mixer.Sound('sounds/reload.wav')
-    reload.set_volume(0.2)
+    reload.set_volume(volume)
     death = pygame.mixer.Sound('sounds/death.wav')
-    death.set_volume(0.3)
-    hurt = pygame.mixer.Sound('sounds/hurt.wav')
-    hurt.set_volume(0.6)
+    death.set_volume(volume)
     playerhit = pygame.mixer.Sound('sounds/playerhit.wav')
-    playerhit.set_volume(0.4)
+    playerhit.set_volume(volume)
     banpain = pygame.mixer.Sound('sounds/banpain.wav')
-    banpain.set_volume(0.8)
+    banpain.set_volume(volume)
     snipershot = pygame.mixer.Sound('sounds/snipershot.wav')
-    snipershot.set_volume(1)
+    snipershot.set_volume(volume)
     heartbeat = pygame.mixer.Sound('sounds/heartbeat.wav')
-    heartbeat.set_volume(0.5)
+    heartbeat.set_volume(volume)
     breath = pygame.mixer.Sound('sounds/breath.wav')
-    breath.set_volume(0.4)
+    breath.set_volume(volume)
     intromusic = pygame.mixer.Sound('sounds/intromusic.wav')
-    intromusic.set_volume(0.1)
+    intromusic.set_volume(volume)
     door = pygame.mixer.Sound('sounds/door.wav')
-    door.set_volume(1)
+    door.set_volume(volume)
     openbook = pygame.mixer.Sound('sounds/openbook.wav')
-    openbook.set_volume(1)
+    openbook.set_volume(volume)
     turnpage = pygame.mixer.Sound('sounds/turnpage.wav')
-    turnpage.set_volume(0.25)
+    turnpage.set_volume(volume)
     cashregister = pygame.mixer.Sound('sounds/cashregister.wav')
-    cashregister.set_volume(0.25)
+    cashregister.set_volume(volume)
     error = pygame.mixer.Sound('sounds/error.wav')
-    error.set_volume(0.5)
+    error.set_volume(volume)
     music = pygame.mixer.Sound('sounds/music.wav')
-    music.set_volume(0.1)
+    music.set_volume(volume)
     potion = pygame.mixer.Sound('sounds/beer_drink.wav')
-    potion.set_volume(0.3)
+    potion.set_volume(volume)
     sniper_reload = pygame.mixer.Sound('sounds/sniper_reload.wav')
-    sniper_reload.set_volume(0.3)
+    sniper_reload.set_volume(volume)
 
 # assets
 if collapse:
@@ -292,7 +273,7 @@ if collapse:
     asset_tumbleweed = pygame.image.load("assets/vegetation/tumbleweed.png")
     asset_ground_sand = pygame.image.load("assets/vegetation/ground_sand.png")
     asset_hotbar_select = pygame.image.load("assets/UI/hotbar_select.png")
-    asset_main_menu = pygame.image.load("assets/UI/main_menu.png")
+    asset_main_menu = pygame.image.load("assets/UI/main_menu2.png")
     asset_button_normal = pygame.image.load("assets/UI/button_normal.png")
     asset_button_hover = pygame.image.load("assets/UI/button_hover.png")
     asset_button_clicked = pygame.image.load("assets/UI/button_clicked.png")
