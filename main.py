@@ -148,57 +148,69 @@ if collapse:
     confirmNoButtonHover = False
     confirmNoButtonClicked = False
     confirmationBox = False
+    settings = False
+    settingsDoneButtonHover = False
+    settingsDoneButtonClicked = False
+    masterLeftButtonHover = False
+    masterLeftButtonClicked = False
+    masterRightButtonHover = False
+    masterRightButtonClicked = False
+    musicLeftButtonHover = False
+    musicLeftButtonClicked = False
+    musicRightButtonHover = False
+    musicRightButtonClicked = False
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
 # audio
 if collapse:
-    volume = 1  # (0-1)
+    masterVolume = 1  # (0-1)
+    musicVolume = 1  # (0-1)
     step = pygame.mixer.Sound('sounds/step.wav')
-    step.set_volume(volume)
+    step.set_volume(masterVolume)
     woodstep = pygame.mixer.Sound('sounds/woodstep.wav')
-    woodstep.set_volume(volume)
+    woodstep.set_volume(masterVolume)
     intro = pygame.mixer.Sound('sounds/start_music.wav')
-    intro.set_volume(volume)
+    intro.set_volume(musicVolume)
     button = pygame.mixer.Sound('sounds/button.wav')
-    button.set_volume(volume)
+    button.set_volume(masterVolume)
     griprevolver = pygame.mixer.Sound('sounds/griprevolver.wav')
-    griprevolver.set_volume(volume)
+    griprevolver.set_volume(masterVolume)
     shot = pygame.mixer.Sound('sounds/shot.wav')
-    shot.set_volume(volume)
+    shot.set_volume(masterVolume)
     empty = pygame.mixer.Sound('sounds/empty.wav')
-    empty.set_volume(volume)
+    empty.set_volume(masterVolume)
     reload = pygame.mixer.Sound('sounds/reload.wav')
-    reload.set_volume(volume)
+    reload.set_volume(masterVolume)
     death = pygame.mixer.Sound('sounds/death.wav')
-    death.set_volume(volume)
+    death.set_volume(masterVolume)
     playerhit = pygame.mixer.Sound('sounds/playerhit.wav')
-    playerhit.set_volume(volume)
+    playerhit.set_volume(masterVolume)
     banpain = pygame.mixer.Sound('sounds/banpain.wav')
-    banpain.set_volume(volume)
+    banpain.set_volume(masterVolume)
     snipershot = pygame.mixer.Sound('sounds/snipershot.wav')
-    snipershot.set_volume(volume)
+    snipershot.set_volume(masterVolume)
     heartbeat = pygame.mixer.Sound('sounds/heartbeat.wav')
-    heartbeat.set_volume(volume)
+    heartbeat.set_volume(masterVolume)
     breath = pygame.mixer.Sound('sounds/breath.wav')
-    breath.set_volume(volume)
+    breath.set_volume(masterVolume)
     intromusic = pygame.mixer.Sound('sounds/menu_music.wav')
-    intromusic.set_volume(volume)
+    intromusic.set_volume(musicVolume)
     door = pygame.mixer.Sound('sounds/door.wav')
-    door.set_volume(volume)
+    door.set_volume(masterVolume)
     openbook = pygame.mixer.Sound('sounds/openbook.wav')
-    openbook.set_volume(volume)
+    openbook.set_volume(masterVolume)
     turnpage = pygame.mixer.Sound('sounds/turnpage.wav')
-    turnpage.set_volume(volume)
+    turnpage.set_volume(masterVolume)
     cashregister = pygame.mixer.Sound('sounds/cashregister.wav')
-    cashregister.set_volume(volume)
+    cashregister.set_volume(masterVolume)
     error = pygame.mixer.Sound('sounds/error.wav')
-    error.set_volume(volume)
+    error.set_volume(masterVolume)
     music = pygame.mixer.Sound('sounds/bg_music.wav')
-    music.set_volume(volume)
+    music.set_volume(musicVolume)
     potion = pygame.mixer.Sound('sounds/beer_drink.wav')
-    potion.set_volume(volume)
+    potion.set_volume(masterVolume)
     sniper_reload = pygame.mixer.Sound('sounds/sniper_reload.wav')
-    sniper_reload.set_volume(volume)
+    sniper_reload.set_volume(masterVolume)
 
 # assets
 if collapse:
@@ -312,6 +324,22 @@ if collapse:
     asset_confirm_no_button_hover = pygame.image.load("assets/UI/confirm_no_button_hover.png")
     asset_confirm_no_button_clicked = pygame.image.load("assets/UI/confirm_no_button_clicked.png")
     asset_confirmation_box = pygame.image.load("assets/UI/confirmation.png")
+    asset_settings_menu = pygame.image.load("assets/UI/settings.png")
+    asset_settings_done_button_normal = pygame.image.load("assets/UI/settings_done_button_normal.png")
+    asset_settings_done_button_hover = pygame.image.load("assets/UI/settings_done_button_hover.png")
+    asset_settings_done_button_clicked = pygame.image.load("assets/UI/settings_done_button_clicked.png")
+    asset_master_left_button_normal = pygame.image.load("assets/UI/master_left_button_normal.png")
+    asset_master_left_button_hover = pygame.image.load("assets/UI/master_left_button_hover.png")
+    asset_master_left_button_clicked = pygame.image.load("assets/UI/master_left_button_clicked.png")
+    asset_master_right_button_normal = pygame.image.load("assets/UI/master_right_button_normal.png")
+    asset_master_right_button_hover = pygame.image.load("assets/UI/master_right_button_hover.png")
+    asset_master_right_button_clicked = pygame.image.load("assets/UI/master_right_button_clicked.png")
+    asset_music_left_button_normal = pygame.image.load("assets/UI/music_left_button_normal.png")
+    asset_music_left_button_hover = pygame.image.load("assets/UI/music_left_button_hover.png")
+    asset_music_left_button_clicked = pygame.image.load("assets/UI/music_left_button_clicked.png")
+    asset_music_right_button_normal = pygame.image.load("assets/UI/music_right_button_normal.png")
+    asset_music_right_button_hover = pygame.image.load("assets/UI/music_right_button_hover.png")
+    asset_music_right_button_clicked = pygame.image.load("assets/UI/music_right_button_clicked.png")
 
 # text
 if collapse:
@@ -778,7 +806,9 @@ def resetValues():
         readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked, \
         resumeButtonHover, resumeButtonClicked, settingsButtonHover, settingsButtonClicked, mainMenu2ButtonHover, \
         mainMenu2ButtonClicked, confirmYesButtonHover, confirmYesButtonClicked, confirmNoButtonHover, \
-        confirmNoButtonClicked, confirmationBox
+        confirmNoButtonClicked, confirmationBox, settings, settingsDoneButtonHover, settingsDoneButtonClicked, \
+        masterLeftButtonHover, masterLeftButtonClicked, masterRightButtonHover, masterRightButtonClicked, \
+        musicLeftButtonHover, musicLeftButtonClicked, musicRightButtonHover, musicRightButtonClicked
 
     # player vals
     playerHP = 100
@@ -872,6 +902,17 @@ def resetValues():
     confirmNoButtonHover = False
     confirmNoButtonClicked = False
     confirmationBox = False
+    settings = False
+    settingsDoneButtonHover = False
+    settingsDoneButtonClicked = False
+    masterLeftButtonHover = False
+    masterLeftButtonClicked = False
+    masterRightButtonHover = False
+    masterRightButtonClicked = False
+    musicLeftButtonHover = False
+    musicLeftButtonClicked = False
+    musicRightButtonHover = False
+    musicRightButtonClicked = False
 
 
 def stopAllTimers(tup):
