@@ -161,56 +161,35 @@ if collapse:
     musicRightButtonClicked = False
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
+
 # audio
 if collapse:
     masterVolume = 1  # (0-1)
     musicVolume = 1  # (0-1)
     step = pygame.mixer.Sound('sounds/step.wav')
-    step.set_volume(masterVolume)
     woodstep = pygame.mixer.Sound('sounds/woodstep.wav')
-    woodstep.set_volume(masterVolume)
     intro = pygame.mixer.Sound('sounds/start_music.wav')
-    intro.set_volume(musicVolume)
     button = pygame.mixer.Sound('sounds/button.wav')
-    button.set_volume(masterVolume)
     griprevolver = pygame.mixer.Sound('sounds/griprevolver.wav')
-    griprevolver.set_volume(masterVolume)
     shot = pygame.mixer.Sound('sounds/shot.wav')
-    shot.set_volume(masterVolume)
     empty = pygame.mixer.Sound('sounds/empty.wav')
-    empty.set_volume(masterVolume)
     reload = pygame.mixer.Sound('sounds/reload.wav')
-    reload.set_volume(masterVolume)
     death = pygame.mixer.Sound('sounds/death.wav')
-    death.set_volume(masterVolume)
     playerhit = pygame.mixer.Sound('sounds/playerhit.wav')
-    playerhit.set_volume(masterVolume)
     banpain = pygame.mixer.Sound('sounds/banpain.wav')
-    banpain.set_volume(masterVolume)
     snipershot = pygame.mixer.Sound('sounds/snipershot.wav')
-    snipershot.set_volume(masterVolume)
     heartbeat = pygame.mixer.Sound('sounds/heartbeat.wav')
-    heartbeat.set_volume(masterVolume)
     breath = pygame.mixer.Sound('sounds/breath.wav')
-    breath.set_volume(masterVolume)
     intromusic = pygame.mixer.Sound('sounds/menu_music.wav')
-    intromusic.set_volume(musicVolume)
     door = pygame.mixer.Sound('sounds/door.wav')
-    door.set_volume(masterVolume)
     openbook = pygame.mixer.Sound('sounds/openbook.wav')
-    openbook.set_volume(masterVolume)
     turnpage = pygame.mixer.Sound('sounds/turnpage.wav')
-    turnpage.set_volume(masterVolume)
     cashregister = pygame.mixer.Sound('sounds/cashregister.wav')
-    cashregister.set_volume(masterVolume)
     error = pygame.mixer.Sound('sounds/error.wav')
-    error.set_volume(masterVolume)
     music = pygame.mixer.Sound('sounds/bg_music.wav')
-    music.set_volume(musicVolume)
     potion = pygame.mixer.Sound('sounds/beer_drink.wav')
-    potion.set_volume(masterVolume)
     sniper_reload = pygame.mixer.Sound('sounds/sniper_reload.wav')
-    sniper_reload.set_volume(masterVolume)
+
 
 # assets
 if collapse:
@@ -345,6 +324,7 @@ if collapse:
 if collapse:
     font1 = pygame.font.SysFont("Times New Roman", 13, False)
     font2 = pygame.font.SysFont("Times New Roman", 18, False)
+    font3 = pygame.font.SysFont("ebrima", 20, True)
     # syntax - (Name, Size, Bold, Italic)
 
     ban1Tag = font1.render("Bandit: Nicholas", True, (150,240,41))
@@ -370,6 +350,8 @@ if collapse:
     deathScore_text = font2.render(("Score: " + str(score)), True, (255,255,255))
     shopWarning_text = font1.render("\"Take your hand off the gun, son..\"", True, (0, 0, 0))
     version_text = font1.render(("v " + version), True, (255, 255, 255))
+    masterVolume_text = font1.render((str(masterVolume)), True, (255, 255, 255))
+    musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 
@@ -443,7 +425,7 @@ def walkRight():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster, playerSniper
 
-    if moveAbility == True:
+    if moveAbility == True and pause == False:
         if scopeScreen == False:
             worldRight()
             disableText()
@@ -466,7 +448,7 @@ def walkLeft():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster
 
-    if moveAbility == True:
+    if moveAbility == True and pause == False:
         if scopeScreen == False:
             worldLeft()
             disableText()
@@ -691,7 +673,8 @@ def mainMenu():
 
 def pauseGame():
     global resumeButtonHover, settingsButtonHover, mainMenu2ButtonHover, confirmYesButtonHover, \
-        confirmNoButtonHover
+        confirmNoButtonHover, settingsDoneButtonHover, masterLeftButtonHover, masterRightButtonHover, \
+        musicLeftButtonHover, musicRightButtonHover
 
     # Pause Screen -------------------------------------------------------------------------------
     screen.blit(asset_paused_overlay, (0, 0))
@@ -769,6 +752,110 @@ def pauseGame():
         else:
             screen.blit(asset_confirm_no_button_normal, (0, 0))
             confirmNoButtonHover = False
+
+    # Settings Menu ----------------------------------------------------------------------------------
+    if settings == True:
+        masterVolumePercent = round(masterVolume*100)
+        musicVolumePercent = round(musicVolume*100)
+        masterVolume_text = font3.render((str(masterVolumePercent) + "%"), True, (255, 255, 255))
+        musicVolume_text = font3.render((str(musicVolumePercent) + "%"), True, (255, 255, 255))
+        masterVolumeBack_text = font3.render((str(masterVolumePercent) + "%"), True, (18, 15, 23))
+        musicVolumeBack_text = font3.render((str(musicVolumePercent) + "%"), True, (18, 15, 23))
+
+        screen.blit(asset_settings_menu, (0, 0))
+        screen.blit(masterVolumeBack_text, (406, 191))
+        screen.blit(masterVolume_text, (408, 190))
+        screen.blit(musicVolumeBack_text, (394, 243))
+        screen.blit(musicVolume_text, (396, 242))
+        # Done Button ---------------------------------------------------------------------------------
+        # Hover Button
+        if (235 <= mouse_posx <= 367) and (433 <= mouse_posy <= 471) and settingsDoneButtonClicked == False:
+            screen.blit(asset_settings_done_button_hover, (0, 0))
+            settingsDoneButtonHover = True
+        # Click Button
+        elif (235 <= mouse_posx <= 367) and (433 <= mouse_posy <= 471) and settingsDoneButtonClicked == True:
+            screen.blit(asset_settings_done_button_clicked, (0, 0))
+            settingsDoneButtonHover = False
+        # Normal Button
+        else:
+            screen.blit(asset_settings_done_button_normal, (0, 0))
+            settingsDoneButtonHover = False
+        # Master Left -----------------------------------------------------------------------------------
+        # Hover Button
+        if (112 <= mouse_posx <= 140) and (187 <= mouse_posy <= 217) and masterLeftButtonClicked == False:
+            screen.blit(asset_master_left_button_hover, (0, 0))
+            masterLeftButtonHover = True
+        # Click Button
+        elif (112 <= mouse_posx <= 140) and (187 <= mouse_posy <= 217) and masterLeftButtonClicked == True:
+            screen.blit(asset_master_left_button_clicked, (0, 0))
+            masterLeftButtonHover = False
+        # Normal Button
+        else:
+            screen.blit(asset_master_left_button_normal, (0, 0))
+            masterLeftButtonHover = False
+        # Master Right -----------------------------------------------------------------------------------
+        # Hover Button
+        if (474 <= mouse_posx <= 504) and (187 <= mouse_posy <= 217) and masterRightButtonClicked == False:
+            screen.blit(asset_master_right_button_hover, (0, 0))
+            masterRightButtonHover = True
+        # Click Button
+        elif (474 <= mouse_posx <= 504) and (187 <= mouse_posy <= 217) and masterRightButtonClicked == True:
+            screen.blit(asset_master_right_button_clicked, (0, 0))
+            masterRightButtonHover = False
+        # Normal Button
+        else:
+            screen.blit(asset_master_right_button_normal, (0, 0))
+            masterRightButtonHover = False
+        # Music Left -----------------------------------------------------------------------------------
+        # Hover Button
+        if (112 <= mouse_posx <= 140) and (239 <= mouse_posy <= 270) and musicLeftButtonClicked == False:
+            screen.blit(asset_music_left_button_hover, (0, 0))
+            musicLeftButtonHover = True
+        # Click Button
+        elif (112 <= mouse_posx <= 140) and (239 <= mouse_posy <= 270) and musicLeftButtonClicked == True:
+            screen.blit(asset_music_left_button_clicked, (0, 0))
+            musicLeftButtonHover = False
+        # Normal Button
+        else:
+            screen.blit(asset_music_left_button_normal, (0, 0))
+            musicLeftButtonHover = False
+        # Music Right -----------------------------------------------------------------------------------
+        # Hover Button
+        if (474 <= mouse_posx <= 504) and (239 <= mouse_posy <= 270) and musicRightButtonClicked == False:
+            screen.blit(asset_music_right_button_hover, (0, 0))
+            musicRightButtonHover = True
+        # Click Button
+        elif (474 <= mouse_posx <= 504) and (239 <= mouse_posy <= 270) and musicRightButtonClicked == True:
+            screen.blit(asset_music_right_button_clicked, (0, 0))
+            musicRightButtonHover = False
+        # Normal Button
+        else:
+            screen.blit(asset_music_right_button_normal, (0, 0))
+            musicRightButtonHover = False
+        # volume refresh
+        step.set_volume(masterVolume)
+        woodstep.set_volume(masterVolume)
+        intro.set_volume(musicVolume)
+        button.set_volume(masterVolume)
+        griprevolver.set_volume(masterVolume)
+        shot.set_volume(masterVolume)
+        empty.set_volume(masterVolume)
+        reload.set_volume(masterVolume)
+        death.set_volume(masterVolume)
+        playerhit.set_volume(masterVolume)
+        banpain.set_volume(masterVolume)
+        snipershot.set_volume(masterVolume)
+        heartbeat.set_volume(masterVolume)
+        breath.set_volume(masterVolume)
+        intromusic.set_volume(musicVolume)
+        door.set_volume(masterVolume)
+        openbook.set_volume(masterVolume)
+        turnpage.set_volume(masterVolume)
+        cashregister.set_volume(masterVolume)
+        error.set_volume(masterVolume)
+        music.set_volume(musicVolume)
+        potion.set_volume(masterVolume)
+        sniper_reload.set_volume(masterVolume)
 
 
 def playerHit(damage):
@@ -920,6 +1007,39 @@ def stopAllTimers(tup):
         timer.stop()
 
 
+def masterVolumeDown():
+    global masterVolume
+    if masterVolume > 0.1:
+        masterVolume = masterVolume - 0.1
+
+
+def masterVolumeUp():
+    global masterVolume
+    if masterVolume < 1:
+        masterVolume = masterVolume + 0.1
+
+
+def musicVolumeDown():
+    global musicVolume
+    if musicVolume > 0.1:
+        musicVolume = musicVolume - 0.1
+
+
+def musicVolumeUp():
+    global musicVolume
+    if musicVolume < 1:
+        musicVolume = musicVolume + 0.1
+
+
+
+def volumeButtonReset_timer_handler():
+    global masterRightButtonClicked, musicRightButtonClicked, masterLeftButtonClicked, musicLeftButtonClicked
+    masterLeftButtonClicked = False
+    musicLeftButtonClicked = False
+    masterRightButtonClicked = False
+    musicRightButtonClicked = False
+
+
 def revolver_reload_timer_handler():
     global revRoundsMag, revRoundsTotal
     if revRoundsTotal > 0:
@@ -970,9 +1090,25 @@ def mainMenu_timer_handler():
     mainMenu_timer.stop()
 
 
+def settingsMenu_timer_handler():
+    global settingsButtonClicked, settings
+    settings = True
+    settingsButtonClicked = False
+    settingsMenu_timer.stop()
+
+
+def settingsDone_timer_handler():
+    global settingsDoneButtonClicked, settings
+    settings = False
+    settingsDoneButtonClicked = False
+    settingsDone_timer.stop()
+
+
 def resumeGame_timer_handler():
-    global pause, resumeButtonClicked
+    global pause, resumeButtonClicked, confirmationBox, settings
     pause = False
+    settings = False
+    confirmationBox = False
     resumeButtonClicked = False
     pygame.mixer.unpause()
     resumeGame_timer.stop()
@@ -1012,15 +1148,20 @@ sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
 music_timer = simplegui.create_timer(15000, music_timer_handler)
 startGame_timer = simplegui.create_timer(50, startGame_timer_handler)
 mainMenu_timer = simplegui.create_timer(50, mainMenu_timer_handler)
+settingsMenu_timer = simplegui.create_timer(50, settingsMenu_timer_handler)
+settingsDone_timer = simplegui.create_timer(50, settingsDone_timer_handler)
+volumeButtonReset_timer = simplegui.create_timer(50, volumeButtonReset_timer_handler)
 resumeGame_timer = simplegui.create_timer(50, resumeGame_timer_handler)
 confirmationBox_timer = simplegui.create_timer(50, confirmationBox_timer_handler)
 revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireDelay_timer_handler)
 drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_handler)
 playerHitSound_timer = simplegui.create_timer(100, playerHitSound_timer_handler)
 
+
 # timers tuple
 timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
-              drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer)
+              drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
+              volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -1047,311 +1188,311 @@ while True:
             # Unpause Game
             elif event.key == pygame.K_ESCAPE and pause == True:
                 resumeGame_timer.start()
-            # Walk left
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                walkLeft()
-            # Walk right
-            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                walkRight()
+            if pause == False:
+                # Walk left
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    walkLeft()
+                # Walk right
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    walkRight()
 
-            # Reloading
-            if event.key == pygame.K_r:
-                # Revolver
-                if hotbarSlot1 == True:
-                    if revRoundsMag < 6:
-                        playerHolster = True
-                        playerShoot = False
-                        if revRoundsTotal > 0:
-                            reload.stop()
-                            reload.play()
-                            reloadUI = False
-                            revolver_reload_timer.start()
-                # Sniper Rifle
-                if hotbarSlot2 == True or scopeScreen == True:
-                    if sniperRoundsMag < 1:
-                        scopeScreen = False
-                        playerSniper = True
-                        if sniperRoundsTotal > 0:
-                            sniper_reload.stop()
-                            sniper_reload.play()
-                            reloadUI = False
-                            sniper_reload_timer.start()
-            # Use Item (Space)
-            if event.key == pygame.K_SPACE:
-                # Revolver fire
-                if hotbarSlot1 == True:
-                    if moveAbility == True and readyToFireRevolver == True:
+                # Reloading
+                if event.key == pygame.K_r:
+                    # Revolver
+                    if hotbarSlot1 == True:
+                        if revRoundsMag < 6:
+                            playerHolster = True
+                            playerShoot = False
+                            if revRoundsTotal > 0:
+                                reload.stop()
+                                reload.play()
+                                reloadUI = False
+                                revolver_reload_timer.start()
+                    # Sniper Rifle
+                    if hotbarSlot2 == True or scopeScreen == True:
+                        if sniperRoundsMag < 1:
+                            scopeScreen = False
+                            playerSniper = True
+                            if sniperRoundsTotal > 0:
+                                sniper_reload.stop()
+                                sniper_reload.play()
+                                reloadUI = False
+                                sniper_reload_timer.start()
+                # Use Item (Space)
+                if event.key == pygame.K_SPACE:
+                    # Revolver fire
+                    if hotbarSlot1 == True:
+                        if moveAbility == True and readyToFireRevolver == True:
+                            fire()
+                            readyToFireRevolver = False
+                            revolverFireDelay_timer.start()
+                            if revRoundsMag <= 0:
+                                reloadUI = True
+                                outAmmoUI = False
+                            if revRoundsTotal <= 0:
+                                outAmmoUI = True
+                                reloadUI = False
+                    # Sniper Rifle fires
+                    if hotbarSlot2 == True and ownSniperRifle == True and sniperRoundsMag >= 1:
                         fire()
-                        readyToFireRevolver = False
-                        revolverFireDelay_timer.start()
-                        if revRoundsMag <= 0:
+                        if sniperRoundsMag <= 0:
                             reloadUI = True
                             outAmmoUI = False
-                        if revRoundsTotal <= 0:
+                        if sniperRoundsTotal <= 0:
                             outAmmoUI = True
                             reloadUI = False
-                # Sniper Rifle fires
-                if hotbarSlot2 == True and ownSniperRifle == True and sniperRoundsMag >= 1:
-                    fire()
-                    if sniperRoundsMag <= 0:
-                        reloadUI = True
-                        outAmmoUI = False
-                    if sniperRoundsTotal <= 0:
-                        outAmmoUI = True
-                        reloadUI = False
-                # HP Potion is used
-                if hotbarSlot6 == True and hpPotionCount > 0:
-                    hpPotion()
-                    drinkResetDelay_timer.start()
-                    playerIdle = False
-            # Aim Sniper Rifle
-            if event.key == pygame.K_w or event.key == pygame.K_UP:
-                if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True and insideShop == False:
-                    scopeScreen = not scopeScreen
-                    if scopeScreen == True:
-                        breath.stop()
-                        breath.play()
-                        heartbeat.stop()
-                        heartbeat.play()
-                        ban1InScope = False
-                        ban2InScope = False
-                        ban3InScope = False
-            # Switch to hotbar slot 1
-            if event.key == pygame.K_1 and moveAbility == True and scopeScreen == False:
-                hotbarSlot1 = not hotbarSlot1
-                hotbarSlot2 = False
-                hotbarSlot3 = False
-                hotbarSlot4 = False
-                hotbarSlot5 = False
-                hotbarSlot6 = False
-                griprevolver.stop()
-                griprevolver.play()
-                interactText = False
-                playerHolster = not playerHolster
-                playerIdle = not playerIdle
-                playerSniper = False
-                if revRoundsMag <= 0 and revRoundsTotal > 0:
-                    reloadUI = True
-                if hotbarSlot1 == False:
-                    playerShoot = False
-                    playerHolster = False
-            # Switch to hotbar slot 2
-            if event.key == pygame.K_2 and moveAbility == True:
-                hotbarSlot2 = not hotbarSlot2
-                hotbarSlot1 = False
-                hotbarSlot3 = False
-                hotbarSlot4 = False
-                hotbarSlot5 = False
-                hotbarSlot6 = False
-                playerHolster = False
-                playerShoot = False
-                if ownSniperRifle == True:
-                    if sniperRoundsMag <= 0 and sniperRoundsTotal > 0:
-                        reloadUI = True
-                    playerSniper = not playerSniper
-                    playerGrab = True
+                    # HP Potion is used
+                    if hotbarSlot6 == True and hpPotionCount > 0:
+                        hpPotion()
+                        drinkResetDelay_timer.start()
+                        playerIdle = False
+                # Aim Sniper Rifle
+                if event.key == pygame.K_w or event.key == pygame.K_UP:
+                    if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True and insideShop == False:
+                        scopeScreen = not scopeScreen
+                        if scopeScreen == True:
+                            breath.stop()
+                            breath.play()
+                            heartbeat.stop()
+                            heartbeat.play()
+                            ban1InScope = False
+                            ban2InScope = False
+                            ban3InScope = False
+                # Switch to hotbar slot 1
+                if event.key == pygame.K_1 and moveAbility == True and scopeScreen == False:
+                    hotbarSlot1 = not hotbarSlot1
+                    hotbarSlot2 = False
+                    hotbarSlot3 = False
+                    hotbarSlot4 = False
+                    hotbarSlot5 = False
+                    hotbarSlot6 = False
                     griprevolver.stop()
                     griprevolver.play()
-                    playerIdle = False
-                if insideShop == True:
                     interactText = False
-            # Switch to hotbar slot 3
-            if event.key == pygame.K_3 and moveAbility == True and scopeScreen == False:
-                hotbarSlot3 = not hotbarSlot3
-                hotbarSlot1 = False
-                hotbarSlot2 = False
-                hotbarSlot4 = False
-                hotbarSlot5 = False
-                hotbarSlot6 = False
-                interactText = False
-                playerHolster = False
-                playerSniper = False
-            # Switch to hotbar slot 4
-            if event.key == pygame.K_4 and moveAbility == True and scopeScreen == False:
-                hotbarSlot4 = not hotbarSlot4
-                hotbarSlot1 = False
-                hotbarSlot2 = False
-                hotbarSlot3 = False
-                hotbarSlot5 = False
-                hotbarSlot6 = False
-                interactText = False
-                playerSniper = False
-                playerHolster = False
-            # Switch to hotbar slot 5
-            if event.key == pygame.K_5 and moveAbility == True and scopeScreen == False:
-                hotbarSlot5 = not hotbarSlot5
-                hotbarSlot1 = False
-                hotbarSlot2 = False
-                hotbarSlot3 = False
-                hotbarSlot4 = False
-                hotbarSlot6 = False
-                interactText = False
-                playerSniper = False
-                playerHolster = False
-            # Switch to hotbar slot Q (6)
-            if event.key == pygame.K_q and moveAbility == True and scopeScreen == False:
-                hotbarSlot6 = not hotbarSlot6
-                hotbarSlot1 = False
-                hotbarSlot2 = False
-                hotbarSlot3 = False
-                hotbarSlot4 = False
-                hotbarSlot5 = False
-                interactText = False
-                playerHolster = False
-                playerSniper = False
-                playerShoot = False
-            # Enter Store
-            if store1x <= 100 and store1x >= 0:
-                if playerShoot == False and scopeScreen == False and insideShop == False and playerSniper == False:
-                    interactText = True
-                    if event.key == pygame.K_UP or event.key == pygame.K_w:
-                        insideShop = True
-                        lookingRight = True
-                        lookingLeft = False
+                    playerHolster = not playerHolster
+                    playerIdle = not playerIdle
+                    playerSniper = False
+                    if revRoundsMag <= 0 and revRoundsTotal > 0:
+                        reloadUI = True
+                    if hotbarSlot1 == False:
+                        playerShoot = False
+                        playerHolster = False
+                # Switch to hotbar slot 2
+                if event.key == pygame.K_2 and moveAbility == True:
+                    hotbarSlot2 = not hotbarSlot2
+                    hotbarSlot1 = False
+                    hotbarSlot3 = False
+                    hotbarSlot4 = False
+                    hotbarSlot5 = False
+                    hotbarSlot6 = False
+                    playerHolster = False
+                    playerShoot = False
+                    if ownSniperRifle == True:
+                        if sniperRoundsMag <= 0 and sniperRoundsTotal > 0:
+                            reloadUI = True
+                        playerSniper = not playerSniper
+                        playerGrab = True
+                        griprevolver.stop()
+                        griprevolver.play()
+                        playerIdle = False
+                    if insideShop == True:
                         interactText = False
-                        banMoveAbility = False
-                        store1x = 150
-                        store2x = 850
-                        cactusx = -100
-                        door.stop()
-                        door.play()
-                        banHP = -50
-                        ban2HP = -50
-                        ban3HP = -50
-            # Exit Store
-            if insideShop == True:
-                if (store1x - 200) >= 0:
-                    if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                        insideShop = False
-                        store1x = 50
-                        store2x = 750
-                        cactusx = -200
+                # Switch to hotbar slot 3
+                if event.key == pygame.K_3 and moveAbility == True and scopeScreen == False:
+                    hotbarSlot3 = not hotbarSlot3
+                    hotbarSlot1 = False
+                    hotbarSlot2 = False
+                    hotbarSlot4 = False
+                    hotbarSlot5 = False
+                    hotbarSlot6 = False
+                    interactText = False
+                    playerHolster = False
+                    playerSniper = False
+                # Switch to hotbar slot 4
+                if event.key == pygame.K_4 and moveAbility == True and scopeScreen == False:
+                    hotbarSlot4 = not hotbarSlot4
+                    hotbarSlot1 = False
+                    hotbarSlot2 = False
+                    hotbarSlot3 = False
+                    hotbarSlot5 = False
+                    hotbarSlot6 = False
+                    interactText = False
+                    playerSniper = False
+                    playerHolster = False
+                # Switch to hotbar slot 5
+                if event.key == pygame.K_5 and moveAbility == True and scopeScreen == False:
+                    hotbarSlot5 = not hotbarSlot5
+                    hotbarSlot1 = False
+                    hotbarSlot2 = False
+                    hotbarSlot3 = False
+                    hotbarSlot4 = False
+                    hotbarSlot6 = False
+                    interactText = False
+                    playerSniper = False
+                    playerHolster = False
+                # Switch to hotbar slot Q (6)
+                if event.key == pygame.K_q and moveAbility == True and scopeScreen == False:
+                    hotbarSlot6 = not hotbarSlot6
+                    hotbarSlot1 = False
+                    hotbarSlot2 = False
+                    hotbarSlot3 = False
+                    hotbarSlot4 = False
+                    hotbarSlot5 = False
+                    interactText = False
+                    playerHolster = False
+                    playerSniper = False
+                    playerShoot = False
+                # Enter Store
+                if store1x <= 100 and store1x >= 0:
+                    if playerShoot == False and scopeScreen == False and insideShop == False and playerSniper == False:
                         interactText = True
-                        banMoveAbility = True
-                        door.stop()
-                        door.play()
-            # Open Catalog
-            if store1x + 420 <= 100 and store1x + 420 >= 0:
-                if playerHolster == False and playerShoot == False and insideShop == True and catalog == False\
-                        and playerSniper == False:
-                    interactText = True
-                    if event.key == pygame.K_UP or event.key == pygame.K_w:
-                        catalog = not catalog
-                        catalogPage1 = True
-                        interactText = False
-                        moveAbility = False
-                        disableText()
-                        openbook.stop()
-                        openbook.play()
-                elif playerHolster == False and playerShoot == False and insideShop == True and catalog == True\
-                        and playerSniper == False:
-                    if event.key == pygame.K_UP or event.key == pygame.K_w:
-                        catalog = False
-                        catalogPage1 = False
-                        catalogPage2 = False
-                        catalogPage3 = False
-                        disableText()
+                        if event.key == pygame.K_UP or event.key == pygame.K_w:
+                            insideShop = True
+                            lookingRight = True
+                            lookingLeft = False
+                            interactText = False
+                            banMoveAbility = False
+                            store1x = 150
+                            store2x = 850
+                            cactusx = -100
+                            door.stop()
+                            door.play()
+                            banHP = -50
+                            ban2HP = -50
+                            ban3HP = -50
+                # Exit Store
+                if insideShop == True:
+                    if (store1x - 200) >= 0:
+                        if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                            insideShop = False
+                            store1x = 50
+                            store2x = 750
+                            cactusx = -200
+                            interactText = True
+                            banMoveAbility = True
+                            door.stop()
+                            door.play()
+                # Open Catalog
+                if store1x + 420 <= 100 and store1x + 420 >= 0:
+                    if playerHolster == False and playerShoot == False and insideShop == True and catalog == False\
+                            and playerSniper == False:
                         interactText = True
-                        moveAbility = True
-                        openbook.stop()
-                        openbook.play()
-            # Turn Pages
-            if catalog == True:
-                if catalogPage1 == True:
-                    if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                        catalogPage1 = False
-                        catalogPage2 = True
-                        catalogPage3 = False
-                        disableText()
-                        turnpage.stop()
-                        turnpage.play()
-                elif catalogPage2 == True:
-                    # Purchase Sniper Rifle
-                    if event.key == pygame.K_2:
-                        if moneyCount >= 1000 and ownSniperRifle == False:
-                            purchasedText = True
-                            ownSniperRifle = True
-                            hotbarSlot2 = False
-                            moneyCount -= 1000
-                            cashregister.stop()
-                            cashregister.play()
-                        elif moneyCount < 1000 and ownSniperRifle == False:
-                            insufFundsText = True
-                            error.stop()
-                            error.play()
-                    if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                        catalogPage1 = False
-                        catalogPage2 = False
-                        catalogPage3 = True
-                        disableText()
-                        turnpage.stop()
-                        turnpage.play()
-                    if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                        catalogPage1 = True
-                        catalogPage2 = False
-                        catalogPage3 = False
-                        disableText()
-                        turnpage.stop()
-                        turnpage.play()
-                elif catalogPage3 == True:
-                    # Purchase Revolver Rounds
-                    if event.key == pygame.K_1:
-                        if moneyCount >= 50:
-                            insufFundsText = False
-                            purchasedText = True
-                            revRoundsTotal += 24
-                            moneyCount -= 50
-                            cashregister.stop()
-                            cashregister.play()
-                        elif moneyCount < 50:
-                            purchasedText = False
-                            insufFundsText = True
-                            error.stop()
-                            error.play()
-                    # Purchase Sniper Rifle Rounds
-                    if event.key == pygame.K_2:
-                        if moneyCount >= 100:
-                            insufFundsText = False
-                            purchasedText = True
-                            sniperRoundsTotal += 6
-                            moneyCount -= 100
-                            cashregister.stop()
-                            cashregister.play()
-                        elif moneyCount < 100:
-                            purchasedText = False
-                            insufFundsText = True
-                            error.stop()
-                            error.play()
-                    # Purchase HP Potion
-                    if event.key == pygame.K_4:
-                        if moneyCount >= 100:
-                            insufFundsText = False
-                            purchasedText = True
-                            hpPotionCount += 1
-                            moneyCount -= 100
-                            cashregister.stop()
-                            cashregister.play()
-                        elif moneyCount < 100:
-                            purchasedText = False
-                            insufFundsText = True
-                            error.stop()
-                            error.play()
-                    if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                        catalogPage1 = False
-                        catalogPage2 = True
-                        catalogPage3 = False
-                        disableText()
-                        turnpage.stop()
-                        turnpage.play()
-            # Shop Wall Collision
-            if insideShop == True:
-                if (store1x + 700) <= 0:
-                    if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                        moveAbility = False
-                    elif event.key == pygame.K_a or event.key == pygame.K_RIGHT:
-                        moveAbility = True
-                        walkLeft()
-
+                        if event.key == pygame.K_UP or event.key == pygame.K_w:
+                            catalog = not catalog
+                            catalogPage1 = True
+                            interactText = False
+                            moveAbility = False
+                            disableText()
+                            openbook.stop()
+                            openbook.play()
+                    elif playerHolster == False and playerShoot == False and insideShop == True and catalog == True\
+                            and playerSniper == False:
+                        if event.key == pygame.K_UP or event.key == pygame.K_w:
+                            catalog = False
+                            catalogPage1 = False
+                            catalogPage2 = False
+                            catalogPage3 = False
+                            disableText()
+                            interactText = True
+                            moveAbility = True
+                            openbook.stop()
+                            openbook.play()
+                # Turn Pages
+                if catalog == True:
+                    if catalogPage1 == True:
+                        if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                            catalogPage1 = False
+                            catalogPage2 = True
+                            catalogPage3 = False
+                            disableText()
+                            turnpage.stop()
+                            turnpage.play()
+                    elif catalogPage2 == True:
+                        # Purchase Sniper Rifle
+                        if event.key == pygame.K_2:
+                            if moneyCount >= 1000 and ownSniperRifle == False:
+                                purchasedText = True
+                                ownSniperRifle = True
+                                hotbarSlot2 = False
+                                moneyCount -= 1000
+                                cashregister.stop()
+                                cashregister.play()
+                            elif moneyCount < 1000 and ownSniperRifle == False:
+                                insufFundsText = True
+                                error.stop()
+                                error.play()
+                        if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                            catalogPage1 = False
+                            catalogPage2 = False
+                            catalogPage3 = True
+                            disableText()
+                            turnpage.stop()
+                            turnpage.play()
+                        if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                            catalogPage1 = True
+                            catalogPage2 = False
+                            catalogPage3 = False
+                            disableText()
+                            turnpage.stop()
+                            turnpage.play()
+                    elif catalogPage3 == True:
+                        # Purchase Revolver Rounds
+                        if event.key == pygame.K_1:
+                            if moneyCount >= 50:
+                                insufFundsText = False
+                                purchasedText = True
+                                revRoundsTotal += 24
+                                moneyCount -= 50
+                                cashregister.stop()
+                                cashregister.play()
+                            elif moneyCount < 50:
+                                purchasedText = False
+                                insufFundsText = True
+                                error.stop()
+                                error.play()
+                        # Purchase Sniper Rifle Rounds
+                        if event.key == pygame.K_2:
+                            if moneyCount >= 100:
+                                insufFundsText = False
+                                purchasedText = True
+                                sniperRoundsTotal += 6
+                                moneyCount -= 100
+                                cashregister.stop()
+                                cashregister.play()
+                            elif moneyCount < 100:
+                                purchasedText = False
+                                insufFundsText = True
+                                error.stop()
+                                error.play()
+                        # Purchase HP Potion
+                        if event.key == pygame.K_4:
+                            if moneyCount >= 100:
+                                insufFundsText = False
+                                purchasedText = True
+                                hpPotionCount += 1
+                                moneyCount -= 100
+                                cashregister.stop()
+                                cashregister.play()
+                            elif moneyCount < 100:
+                                purchasedText = False
+                                insufFundsText = True
+                                error.stop()
+                                error.play()
+                        if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                            catalogPage1 = False
+                            catalogPage2 = True
+                            catalogPage3 = False
+                            disableText()
+                            turnpage.stop()
+                            turnpage.play()
+                # Shop Wall Collision
+                if insideShop == True:
+                    if (store1x + 700) <= 0:
+                        if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                            moveAbility = False
+                        elif event.key == pygame.K_a or event.key == pygame.K_RIGHT:
+                            moveAbility = True
+                            walkLeft()
         # Mouse Handler
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Mouse Button 1
@@ -1385,13 +1526,18 @@ while True:
 
                 # In Pause Screen
                 # Resume Button
-                if pause == True and confirmationBox == False and resumeButtonHover == True:
+                if pause == True and confirmationBox == False and settings == False and resumeButtonHover == True:
                     button.play()
                     resumeGame_timer.start()
                     resumeButtonHover = False
                     resumeButtonClicked = True
-                # Main Menu
-                if pause == True and confirmationBox == False and mainMenu2ButtonHover == True:
+                if pause == True and confirmationBox == False and settings == False and settingsButtonHover == True:
+                    button.play()
+                    settingsMenu_timer.start()
+                    settingsButtonHover = False
+                    settingsButtonClicked = True
+                # Main Menu Button
+                if pause == True and confirmationBox == False and settings == False and mainMenu2ButtonHover == True:
                     button.play()
                     confirmationBox_timer.start()
                     mainMenu2ButtonHover = False
@@ -1409,6 +1555,43 @@ while True:
                     if confirmNoButtonHover == True:
                         button.play()
                         confirmationBox = False
+                # In Settings
+                if pause == True and settings == True:
+                    # Done Button
+                    if settingsDoneButtonHover == True:
+                        button.play()
+                        settingsDone_timer.start()
+                        settingsDoneButtonHover = False
+                        settingsDoneButtonClicked = True
+                    # Master Down Button
+                    if masterLeftButtonHover == True:
+                        button.play()
+                        masterVolumeDown()
+                        volumeButtonReset_timer.start()
+                        masterLeftButtonHover = False
+                        masterLeftButtonClicked = True
+                    # Master Up Button
+                    if masterRightButtonHover == True:
+                        button.play()
+                        masterVolumeUp()
+                        volumeButtonReset_timer.start()
+                        masterRightButtonHover = False
+                        masterRightButtonClicked = True
+                    # Music Down Button
+                    if musicLeftButtonHover == True:
+                        button.play()
+                        musicVolumeDown()
+                        volumeButtonReset_timer.start()
+                        musicLeftButtonHover = False
+                        musicLeftButtonClicked = True
+                    # Music Up Button
+                    if musicRightButtonHover == True:
+                        button.play()
+                        musicVolumeUp()
+                        volumeButtonReset_timer.start()
+                        musicRightButtonHover = False
+                        musicRightButtonClicked = True
+
 
                 # Use HP Beer
                 if hotbarSlot6 == True and hpPotionCount > 0:
@@ -1885,6 +2068,33 @@ while True:
         sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255, 255, 255))
         potionCount_text = font1.render((str(hpPotionCount)), True, (255, 255, 255))
         deathScore_text = font1.render(("Score: " + str(score)), True, (255, 255, 255))
+        masterVolume_text = font1.render((str(masterVolume)), True, (255, 255, 255))
+        musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
+
+        # volume refresh
+        step.set_volume(masterVolume)
+        woodstep.set_volume(masterVolume)
+        intro.set_volume(musicVolume)
+        button.set_volume(masterVolume)
+        griprevolver.set_volume(masterVolume)
+        shot.set_volume(masterVolume)
+        empty.set_volume(masterVolume)
+        reload.set_volume(masterVolume)
+        death.set_volume(masterVolume)
+        playerhit.set_volume(masterVolume)
+        banpain.set_volume(masterVolume)
+        snipershot.set_volume(masterVolume)
+        heartbeat.set_volume(masterVolume)
+        breath.set_volume(masterVolume)
+        intromusic.set_volume(musicVolume)
+        door.set_volume(masterVolume)
+        openbook.set_volume(masterVolume)
+        turnpage.set_volume(masterVolume)
+        cashregister.set_volume(masterVolume)
+        error.set_volume(masterVolume)
+        music.set_volume(musicVolume)
+        potion.set_volume(masterVolume)
+        sniper_reload.set_volume(masterVolume)
 
         # building loop
         if store2x <= -500:

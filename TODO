@@ -6,7 +6,6 @@
 - Object oriented enemies
 
 ----------------------------ADD----------------------------
-- Volume for sounds
 - Combat roll
 - Robbing the store clerk
   (minigame for pursuading him to give free items/money)
@@ -29,10 +28,9 @@
 - Added Main Menu button in death screen and pause menu
 - Fixed sniper rifle firing without ammo
 - Rebalanced audio
-
+- Added Volume Adjustment
 
 ---------------------------NOTES---------------------------
-
 
 
 
