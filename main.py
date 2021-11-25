@@ -146,7 +146,7 @@ if collapse:
     step.set_volume(volume)
     woodstep = pygame.mixer.Sound('sounds/woodstep.wav')
     woodstep.set_volume(volume)
-    intro = pygame.mixer.Sound('sounds/intro.wav')
+    intro = pygame.mixer.Sound('sounds/start_music.wav')
     intro.set_volume(volume)
     button = pygame.mixer.Sound('sounds/button.wav')
     button.set_volume(volume)
@@ -170,7 +170,7 @@ if collapse:
     heartbeat.set_volume(volume)
     breath = pygame.mixer.Sound('sounds/breath.wav')
     breath.set_volume(volume)
-    intromusic = pygame.mixer.Sound('sounds/intromusic.wav')
+    intromusic = pygame.mixer.Sound('sounds/menu_music.wav')
     intromusic.set_volume(volume)
     door = pygame.mixer.Sound('sounds/door.wav')
     door.set_volume(volume)
@@ -182,7 +182,7 @@ if collapse:
     cashregister.set_volume(volume)
     error = pygame.mixer.Sound('sounds/error.wav')
     error.set_volume(volume)
-    music = pygame.mixer.Sound('sounds/music.wav')
+    music = pygame.mixer.Sound('sounds/bg_music.wav')
     music.set_volume(volume)
     potion = pygame.mixer.Sound('sounds/beer_drink.wav')
     potion.set_volume(volume)
@@ -800,6 +800,7 @@ def startGame_timer_handler():
     restartButtonClicked = False
     moveAbility = True
     banMoveAbility = True
+    music_timer.start()
     startGame_timer.stop()
 
 
@@ -1184,7 +1185,6 @@ while True:
                 if startGame == False and playButtonHover == True:
                     button.play()
                     intro.play()
-                    music_timer.start()
                     startGame_timer.start()
                     playButtonHover = False
                     playButtonClicked = True
@@ -1193,7 +1193,6 @@ while True:
                     button.play()
                     stopSounds()
                     intro.play()
-                    music_timer.start()
                     startGame_timer.start()
                     restartButtonHover = False
                     restartButtonClicked = True
