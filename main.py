@@ -139,6 +139,14 @@ if collapse:
     pause = False
     resumeButtonHover = False
     resumeButtonClicked = False
+    settingsButtonHover = False
+    settingsButtonClicked = False
+    mainMenu2ButtonHover = False
+    mainMenu2ButtonClicked = False
+    confirmYesButtonHover = False
+    confirmYesButtonClicked = False
+    confirmNoButtonHover = False
+    confirmNoButtonClicked = False
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
 # audio
@@ -290,6 +298,18 @@ if collapse:
     asset_resume_button_normal = pygame.image.load("assets/UI/resume_button_normal.png")
     asset_resume_button_hover = pygame.image.load("assets/UI/resume_button_hover.png")
     asset_resume_button_clicked = pygame.image.load("assets/UI/resume_button_clicked.png")
+    asset_settings_button_normal = pygame.image.load("assets/UI/settings_button_normal.png")
+    asset_settings_button_hover = pygame.image.load("assets/UI/settings_button_hover.png")
+    asset_settings_button_clicked = pygame.image.load("assets/UI/settings_button_clicked.png")
+    asset_main_menu2_button_normal = pygame.image.load("assets/UI/main_menu2_button_normal.png")
+    asset_main_menu2_button_hover = pygame.image.load("assets/UI/main_menu2_button_hover.png")
+    asset_main_menu2_button_clicked = pygame.image.load("assets/UI/main_menu2_button_clicked.png")
+    asset_confirm_yes_button_normal = pygame.image.load("assets/UI/confirm_yes_button_normal.png")
+    asset_confirm_yes_button_hover = pygame.image.load("assets/UI/confirm_yes_button_hover.png")
+    asset_confirm_yes_button_clicked = pygame.image.load("assets/UI/confirm_yes_button_clicked.png")
+    asset_confirm_no_button_normal = pygame.image.load("assets/UI/confirm_no_button_normal.png")
+    asset_confirm_no_button_hover = pygame.image.load("assets/UI/confirm_no_button_hover.png")
+    asset_confirm_no_button_clicked = pygame.image.load("assets/UI/confirm_no_button_clicked.png")
 
 # text
 if collapse:
@@ -645,11 +665,11 @@ def pauseGame():
     screen.blit(asset_paused_overlay, (0, 0))
     # Resume Button
     # Hover Button
-    if (239 <= mouse_posx <= 365) and (312 <= mouse_posy <= 353) and resumeButtonClicked == False:
+    if (235 <= mouse_posx <= 367) and (257 <= mouse_posy <= 302) and resumeButtonClicked == False:
         screen.blit(asset_resume_button_hover, (0, 0))
         resumeButtonHover = True
     # Click Button
-    elif (239 <= mouse_posx <= 365) and (312 <= mouse_posy <= 353) and resumeButtonClicked == True:
+    elif (235 <= mouse_posx <= 367) and (257 <= mouse_posy <= 302) and resumeButtonClicked == True:
         screen.blit(asset_resume_button_clicked, (0, 0))
         resumeButtonHover = False
     # Normal Button
@@ -657,14 +677,41 @@ def pauseGame():
         screen.blit(asset_resume_button_normal, (0, 0))
         resumeButtonHover = False
 
+    # Settings
+    # Hover Button
+    if (235 <= mouse_posx <= 367) and (324 <= mouse_posy <= 370) and settingsButtonClicked == False:
+        screen.blit(asset_settings_button_hover, (0, 0))
+        settingsButtonHover = True
+    # Click Button
+    elif (235 <= mouse_posx <= 367) and (324 <= mouse_posy <= 370) and settingsButtonClicked == True:
+        screen.blit(asset_settings_button_clicked, (0, 0))
+        settingsButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_settings_button_normal, (0, 0))
+        settingsButtonHover = False
+
+    # Main Menu
+    # Hover Button
+    if (235 <= mouse_posx <= 367) and (393 <= mouse_posy <= 438) and mainMenu2ButtonClicked == False:
+        screen.blit(asset_main_menu2_button_hover, (0, 0))
+        mainMenu2ButtonHover = True
+    # Click Button
+    elif (235 <= mouse_posx <= 367) and (393 <= mouse_posy <= 438) and mainMenu2ButtonClicked == True:
+        screen.blit(asset_main_menu2_button_clicked, (0, 0))
+        mainMenu2ButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_main_menu2_button_normal, (0, 0))
+        mainMenu2ButtonHover = False
+
 
 def playerHit(damage):
     global playerHP
 
     if playerHP > 0:
         playerHP -= damage
-        playerhit.stop()
-        playerhit.play()
+        playerHitSound_timer.start()
 
 
 def playerDead():
@@ -692,7 +739,9 @@ def resetValues():
         ownSniperRifle, catalog, catalogPage1, catalogPage2, catalogPage3, playerIdle, playerWalk, playerHolster, \
         playerLegsIdle, playerShoot, playerDrink, playerSniper, playerGrab, playButtonHover, playButtonClicked, \
         readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked, \
-        resumeButtonHover, resumeButtonClicked
+        resumeButtonHover, resumeButtonClicked, settingsButtonHover, settingsButtonClicked, mainMenu2ButtonHover, \
+        mainMenu2ButtonClicked, confirmYesButtonHover, confirmYesButtonClicked, confirmNoButtonHover, \
+        confirmNoButtonClicked
 
     # player vals
     playerHP = 100
@@ -777,6 +826,14 @@ def resetValues():
     pause = False
     resumeButtonHover = False
     resumeButtonClicked = False
+    settingsButtonHover = False
+    settingsButtonClicked = False
+    mainMenu2ButtonHover = False
+    mainMenu2ButtonClicked = False
+    confirmYesButtonHover = False
+    confirmYesButtonClicked = False
+    confirmNoButtonHover = False
+    confirmNoButtonClicked = False
 
 
 def stopAllTimers(tup):
@@ -839,7 +896,6 @@ def resumeGame_timer_handler():
     resumeGame_timer.stop()
 
 
-
 def revolverFireDelay_timer_handler():
     global readyToFireRevolver
     readyToFireRevolver = True
@@ -852,6 +908,15 @@ def drinkResetDelay_timer_handler():
     drinkResetDelay_timer.stop()
 
 
+def playerHitSound_timer_handler():
+    global playerHP
+    if playerHP > 0:
+        playerhit.play()
+        playerHitSound_timer.stop()
+    else:
+        playerHitSound_timer.stop()
+
+
 # timers
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -861,6 +926,7 @@ mainMenu_timer = simplegui.create_timer(50, mainMenu_timer_handler)
 resumeGame_timer = simplegui.create_timer(50, resumeGame_timer_handler)
 revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireDelay_timer_handler)
 drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_handler)
+playerHitSound_timer = simplegui.create_timer(100, playerHitSound_timer_handler)
 
 # timers tuple
 timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
@@ -1219,11 +1285,11 @@ while True:
                 # Main Menu Button
                 if startGame == False and dead == True and mainMenuButtonHover == True:
                     button.play()
+                    intromusic.play(-1)
                     mainMenu_timer.start()
                     mainMenuButtonHover = False
                     mainMenuButtonClicked = True
                     stopSounds()
-                    intromusic.play(-1)
                 # Resume Button
                 if pause == True and resumeButtonHover == True:
                     button.play()
@@ -1399,7 +1465,6 @@ while True:
                             screen.blit(asset_revolver_vert_right, (246 - 9.5, 364 - 19.5))
                         screen.blit(asset_holster_right, (250 - 32.5, 335 - 75.5))
                         screen.blit(asset_player_holsterwalk_right, (250-32.5, 329-76))
-
 
                     else:
                         # hp beer in hand right
@@ -1675,7 +1740,6 @@ while True:
             banMove = 8
         elif banMoveAbility == False:
             banMove = 0
-
 
 
 
