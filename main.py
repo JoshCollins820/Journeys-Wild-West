@@ -1031,7 +1031,6 @@ def musicVolumeUp():
         musicVolume = musicVolume + 0.1
 
 
-
 def volumeButtonReset_timer_handler():
     global masterRightButtonClicked, musicRightButtonClicked, masterLeftButtonClicked, musicLeftButtonClicked
     masterLeftButtonClicked = False
@@ -1637,18 +1636,18 @@ while True:
             restartButtonHover = False
 
         # Main Menu Button
-            # Hover Button
-            if (238 <= mouse_posx <= 364) and (394 <= mouse_posy <= 438) and mainMenuButtonClicked == False:
-                screen.blit(asset_main_menu_button_hover, (0, 0))
-                mainMenuButtonHover = True
-            # Click Button
-            elif (238 <= mouse_posx <= 364) and (394 <= mouse_posy <= 438) and mainMenuButtonClicked == True:
-                screen.blit(asset_main_menu_button_clicked, (0, 0))
-                mainMenuButtonHover = False
-            # Normal Button
-            else:
-                screen.blit(asset_main_menu_button_normal, (0, 0))
-                mainMenuButtonHover = False
+        # Hover Button
+        if (238 <= mouse_posx <= 364) and (394 <= mouse_posy <= 438) and mainMenuButtonClicked == False:
+            screen.blit(asset_main_menu_button_hover, (0, 0))
+            mainMenuButtonHover = True
+        # Click Button
+        elif (238 <= mouse_posx <= 364) and (394 <= mouse_posy <= 438) and mainMenuButtonClicked == True:
+            screen.blit(asset_main_menu_button_clicked, (0, 0))
+            mainMenuButtonHover = False
+        # Normal Button
+        else:
+            screen.blit(asset_main_menu_button_normal, (0, 0))
+            mainMenuButtonHover = False
 
     # Main Menu -------------------------------------------------------------------------------------------------
     if startGame == False and dead == False:
