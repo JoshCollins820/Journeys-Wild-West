@@ -1167,7 +1167,7 @@ def confirmationBox_timer_handler():
     confirmationBox_timer.stop()
 
 
-# timers
+# timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
 music_timer = simplegui.create_timer(15000, music_timer_handler)

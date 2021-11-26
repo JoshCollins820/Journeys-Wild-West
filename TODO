@@ -18,17 +18,29 @@
 - Missions
 
 -------------------------CHANGELOG-------------------------
-+ v0.4:
-- Added Main Menu
+v0.4
+New Features
+- Added a Main Menu
+- Added a Pause Menu
+- Added a Settings Menu
+- Added a Restart button
+- Added a Return to Main Menu button
+- Added Volume Adjustment
+
+Balance
 - Added fire rate cap to revolver
+- Rebalanced audio
+
+Bug Fixes
 - Fixed player model bugs
 - Fixed HP Beer animation being too short
-- Added a Restart button
-- Added Pause Menu
-- Added Main Menu button in death screen and pause menu
 - Fixed sniper rifle firing without ammo
-- Rebalanced audio
-- Added Volume Adjustment
+
+Known Bugs
+- Enemies do not appear to walk towards you when looking at
+  them through the sniper scope
+
+
 
 ---------------------------NOTES---------------------------
 
