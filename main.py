@@ -73,16 +73,25 @@ if collapse:
     banx1 = 1990
     banFPx1 = 300
     scopeWalk = 0
+    ban1W = 200
+    ban1H = 330
+
     # ban 2
     ban2HP = 100
     banx2 = 2490
     ban2FPx1 = 300
     scope2Walk = 0
+    ban2W = 200
+    ban2H = 330
+
     # ban 3
     ban3HP = 100
     banx3 = -1000
     ban3FPx1 = 300
     scope3Walk = 0
+    ban3W = 200
+    ban3H = 330
+
 
     # statements
     moveAbility = True
@@ -355,6 +364,7 @@ if collapse:
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 
+
 def worldLeft():
     global height, width, cloud1x, cloud2x, speedMove, cloudMove, cloudAuto, interactText, moveAbility, sitting,\
         standing, bodyWeight, moneyCount, showMoney, moneyPickText, purchasedText, insufFundsText, buyText,\
@@ -562,20 +572,20 @@ def fire():
             empty.stop()
             empty.play()
         if lookingRight:
-            if banx1 <= 600 and banx1 >= 250:
+            if banx1 <= 700 and banx1 >= 250:
                 if banHP > -10:
                     banHP -= 100
                     if banHP == 0:
                         banpain.play()
                         score += 1
                         giveMoney()
-            if banx2 <= 600 and banx2 >= 250:
+            if banx2 <= 700 and banx2 >= 250:
                 if ban2HP > -10:
                     ban2HP -= 100
                     if ban2HP == 0:
                         banpain.play()
                         score += 1
-            if banx3 <= 600 and banx3 >= 250:
+            if banx3 <= 700 and banx3 >= 250:
                 if ban3HP > -10:
                     ban3HP -= 100
                     if ban3HP == 0:
@@ -583,21 +593,21 @@ def fire():
                         score += 1
                         giveMoney()
         if lookingLeft:
-            if banx1 >= 0 and banx1 <= 250:
+            if banx1 >= -100 and banx1 <= 250:
                 if banHP > -10:
                     banHP -= 100
                     if banHP == 0:
                         banpain.play()
                         score += 1
                         giveMoney()
-            if banx2 >= 0 and banx2 <= 250:
+            if banx2 >= -100 and banx2 <= 250:
                 if ban2HP > -10:
                     ban2HP -= 100
                     if ban2HP == 0:
                         banpain.play()
                         score += 1
                         giveMoney()
-            if banx3 >= 0 and banx3 <= 250:
+            if banx3 >= -100 and banx3 <= 250:
                 if ban3HP > -10:
                     ban3HP -= 100
                     if ban3HP == 0:
@@ -921,7 +931,8 @@ def resetValues():
         mainMenu2ButtonClicked, confirmYesButtonHover, confirmYesButtonClicked, confirmNoButtonHover, \
         confirmNoButtonClicked, confirmationBox, settings, settingsDoneButtonHover, settingsDoneButtonClicked, \
         masterLeftButtonHover, masterLeftButtonClicked, masterRightButtonHover, masterRightButtonClicked, \
-        musicLeftButtonHover, musicLeftButtonClicked, musicRightButtonHover, musicRightButtonClicked
+        musicLeftButtonHover, musicLeftButtonClicked, musicRightButtonHover, musicRightButtonClicked, \
+        ban1H, ban1W, ban2H, ban2W, ban3H, ban3W
 
     # player vals
     playerHP = 100
@@ -950,16 +961,22 @@ def resetValues():
     banx1 = 1990
     banFPx1 = 300
     scopeWalk = 0
+    ban1W = 200
+    ban1H = 330
     # ban 2
     ban2HP = 100
     banx2 = 2490
     ban2FPx1 = 300
     scope2Walk = 0
+    ban2W = 200
+    ban2H = 330
     # ban 3
     ban3HP = 100
     banx3 = -1000
     ban3FPx1 = 300
     scope3Walk = 0
+    ban3W = 200
+    ban3H = 330
 
     moveAbility = True
     banMoveAbility = True
@@ -2032,36 +2049,42 @@ while True:
         # sniper scope
         if ownSniperRifle == True:
             if scopeScreen == True:
+                # update bandit scale
+                asset_ban1_fp = pygame.transform.scale(asset_bandit1_fp, (ban1W+(scopeWalk*0.7), ban1H+scopeWalk))
+                asset_ban1_fp_rect = asset_ban1_fp.get_rect(center=[300,330])
+                asset_ban2_fp = pygame.transform.scale(asset_bandit2_fp, (ban2W+(scope2Walk*0.7), ban2H+scope2Walk))
+                asset_ban2_fp_rect = asset_ban2_fp.get_rect(center=[300,330])
+                asset_ban3_fp = pygame.transform.scale(asset_bandit3_fp, (ban3W+(scope3Walk*0.7), ban3H+scope3Walk))
+                asset_ban3_fp_rect = asset_ban3_fp.get_rect(center=[300,330])
                 # backdrop
                 if lookingRight == True:
-                    screen.blit(asset_scope_back_right, (300-300, 300-300))
+                    screen.blit(asset_scope_back_right, (0, 0))
                 if lookingLeft == True:
-                    screen.blit(asset_scope_back_left, (300-300, 300-300))
+                    screen.blit(asset_scope_back_left, (0, 0))
 
                 # fp bandits
-                if banx1 <= 600 and ban2InScope == False and ban3InScope == False:
-                    if banx1 <= 600 and banx1 >= 250 and lookingRight == True or banx1 >= 0 and banx1 <= 250 and lookingLeft == True:
-                        if banHP > 0:
-                            ban1InScope = True
-                            screen.blit(asset_bandit1_fp, (300-115, 350-180))
+                if banHP > 0 and ban2InScope == False and ban3InScope == False:
+                    if banx1 <= 700 and banx1 >= 250 and lookingRight == True\
+                            or banx1 >= -100 and banx1 <= 250 and lookingLeft == True:
+                        ban1InScope = True
+                        screen.blit(asset_ban1_fp, asset_ban1_fp_rect)
 
-                if banx2 <= 600 and ban3InScope == False and ban1InScope == False:
-                    if banx2 <= 600 and banx2 >= 250 and lookingRight == True or banx2 >= 0 and banx2 <= 250 and lookingLeft == True:
-                        if ban2HP > 0:
-                            ban2InScope = True
-                            screen.blit(asset_bandit2_fp, (300-115, 350-180))
+                if ban2HP > 0 and ban1InScope == False and ban3InScope == False:
+                    if banx2 <= 700 and banx2 >= 250 and lookingRight == True\
+                            or banx2 >= -100 and banx2 <= 250 and lookingLeft == True:
+                        ban2InScope = True
+                        screen.blit(asset_ban2_fp, asset_ban2_fp_rect)
 
-                if banx3 <= 600 and ban1InScope == False and ban2InScope == False:
-                    if banx3 <= 600 and banx3 >= 250 and lookingRight == True or banx3 >= 0 and banx3 <= 250 and lookingLeft == True:
-                        if ban3HP > 0:
-                            ban3InScope = True
-                            screen.blit(asset_bandit3_fp, (300-115, 350-180))
+                if ban3HP > 0 and ban1InScope == False and ban2InScope == False:
+                    if banx3 <= 700 and banx3 >= 250 and lookingRight == True\
+                            or banx3 >= -100 and banx3 <= 250 and lookingLeft == True:
+                        ban3InScope = True
+                        screen.blit(asset_ban3_fp, asset_ban3_fp_rect)
 
-                            # scope
-                screen.blit(asset_sniperscope, (300-300, 300-300))
-                if hotbarSlot2 == True:
-                    screen.blit(asset_ammo_icon, (25-12.5, 583-10))
-                    screen.blit(sniperAmmo_text, (41, 571))
+                # scope
+                screen.blit(asset_sniperscope, (0, 0))
+                screen.blit(asset_ammo_icon, (25-12.5, 583-10))
+                screen.blit(sniperAmmo_text, (41, 571))
             else:
                 breath.stop()
                 heartbeat.stop()
@@ -2184,10 +2207,15 @@ while True:
 
         # ban 1 position
         if banHP > 0:
-            if banx1 <= 600:
-                scopeWalk += 6
-            if banx1 >= 600 or banx1 <= 0:
-                scopeWalk = 5
+            # if out of scope range
+            if banx1 > 700 or banx1 < -100:
+                scopeWalk = 0
+            # if in melee range of player
+            elif banx1 <= 290 and banx1 >= 210:
+                scopeWalk += 0
+            # if in scope range
+            elif banx1 <= 700 or banx1 >= -100:
+                scopeWalk += 15
             if banx1 >= 280:
                 banx1 -= banMove
                 ban1left = False
@@ -2198,10 +2226,15 @@ while True:
             banHP -= 1
             # ban 2 position
         if ban2HP > 0:
-            if banx2 <= 600:
-                scope2Walk += 6
-            if banx2 >= 600 or banx2 <= 0:
-                scope2Walk = 5
+            # if out of scope range
+            if banx2 > 700 or banx2 < -100:
+                scope2Walk = 0
+            # if in melee range of player
+            elif banx2 <= 290 and banx2 >= 210:
+                scope2Walk += 0
+            # if in scope range
+            elif banx2 <= 700 or banx2 >= -100:
+                scope2Walk += 15
             if banx2 >= 280:
                 banx2 -= banMove
                 ban2left = False
@@ -2212,10 +2245,15 @@ while True:
             ban2HP -= 1
         # ban 3 position
         if ban3HP > 0:
-            if banx3 <= 600:
-                scope3Walk += 6
-            if banx3 >= 600 or banx3 <= 0:
-                scope3Walk = 5
+            # if out of scope range
+            if banx3 > 700 or banx3 < -100:
+                scope3Walk = 0
+            # if in melee range of player
+            elif banx3 <= 290 and banx3 >= 210:
+                scope3Walk += 0
+            # if in scope range
+            elif banx3 <= 700 or banx3 >= -100:
+                scope3Walk += 15
             if banx3 >= 280:
                 banx3 -= banMove
                 ban3left = False

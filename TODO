@@ -1,9 +1,9 @@
 ------------------------ KNOWN BUGS------------------------
-- Scoped bandits not getting larger
-  (Convert into rectangles)
+
 
 --------------------------IMPROVE--------------------------
 - Object oriented enemies
+- Optimize assets by simplifying coords
 
 ----------------------------ADD----------------------------
 - Combat roll
@@ -35,10 +35,10 @@ Bug Fixes
 - Fixed player model bugs
 - Fixed HP Beer animation being too short
 - Fixed sniper rifle firing without ammo
+- Fixed enemies in sniper scope not moving
 
 Known Bugs
-- Enemies do not appear to walk towards you when looking at
-  them through the sniper scope
+-
 
 
 
