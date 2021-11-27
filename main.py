@@ -208,6 +208,7 @@ if collapse:
     music = pygame.mixer.Sound('sounds/bg_music.wav')
     potion = pygame.mixer.Sound('sounds/beer_drink.wav')
     sniper_reload = pygame.mixer.Sound('sounds/sniper_reload.wav')
+    combatroll = pygame.mixer.Sound('sounds/combatroll.wav')
 
 # assets
 if collapse:
@@ -700,6 +701,7 @@ def stopSounds():
     shot.stop()
     death.stop()
     playerhit.stop()
+    combatroll.stop()
 
 
 def mainMenu():
@@ -1302,6 +1304,7 @@ def rollStart_timer_handler():
     rollReady = False
     cooldown_sweat_y = 252
     disableText()
+    combatroll.play()
     if lookingRight == True:
         playerRoll1Right = True
         worldRight(1)
@@ -2358,6 +2361,7 @@ while True:
         music.set_volume(musicVolume)
         potion.set_volume(masterVolume)
         sniper_reload.set_volume(masterVolume)
+        combatroll.set_volume(masterVolume)
 
         # building loop
         if store2x <= -500:

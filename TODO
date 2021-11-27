@@ -7,7 +7,6 @@
 
 ----------------------------ADD----------------------------
 - Looting
-- Leaderboard or High Score
 - Robbing the store clerk
   (minigame for pursuading him to give free items/money)
 - Continuous Walking
@@ -40,7 +39,7 @@ Bug Fixes
 - Fixed enemies in sniper scope not moving
 
 Known Bugs
--
+- Reloading sound does not always play
 
 
 
