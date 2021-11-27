@@ -1,7 +1,7 @@
 ## JOURNEY'S WILD WEST
 ## v0.4
 ## Developed by: Josh Collins
-## ---------------------------
+## --------------------------
 
 # Modules
 import pygame
