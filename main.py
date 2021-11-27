@@ -1,4 +1,4 @@
-## JOURNEY'S WILD WEST
+## JOURNEYS WILD WEST
 ## v0.4
 ## Developed by: Josh Collins
 ## --------------------------
