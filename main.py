@@ -520,6 +520,15 @@ def walkLeft():
             walkLeft()
 
 
+def checkWalkBoth():
+    global walkingBoth
+    # If trying to walk both left and right
+    if walkingLeft and walkingRight:
+        walkingBoth = True
+    else:
+        walkingBoth = False
+
+
 def roll():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster, playerSniper
@@ -1495,6 +1504,8 @@ while True:
             stopAllTimers(timerTuple)
             pygame.quit()
             sys.exit()
+        # Check Walk Both (Fixes bug where player gets stuck when switching directions)
+        checkWalkBoth()
         # Key Down Handler
         if event.type == pygame.KEYDOWN:
             # Pause Game
@@ -1692,7 +1703,6 @@ while True:
                             banHP = -50
                             ban2HP = -50
                             ban3HP = -50
-
                 # Open Catalog
                 if store1x + 420 <= 100 and store1x + 420 >= 0:
                     if playerHolster == False and playerShoot == False and insideShop == True and catalog == False\
@@ -1807,30 +1817,28 @@ while True:
         # Key Up Handler
         if event.type == pygame.KEYUP:
             # Let go of walk left
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+            if walkingBoth == False and (event.key == pygame.K_LEFT or event.key == pygame.K_a):
                 walkingLeft = False
                 walk2_timer.stop()
                 walk1_timer.stop()
-            # Let go of walk right
-            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                walkingRight = False
-                walk2_timer.stop()
-                walk1_timer.stop()
             # Let go of walk left while holding both
-            if walkingBoth == True and (event.key == pygame.K_LEFT or event.key == pygame.K_a):
+            elif walkingBoth == True and (event.key == pygame.K_LEFT or event.key == pygame.K_a):
                 walk2_timer.stop()
                 walk1_timer.stop()
                 walkingLeft = False
                 walkingRight = True
-                walkingBoth = False
                 walk1_timer.start()
+            # Let go of walk right
+            if walkingBoth == False and (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+                walkingRight = False
+                walk2_timer.stop()
+                walk1_timer.stop()
             # Let go of walk right while holding both
-            if walkingBoth == True and (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+            elif walkingBoth == True and (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
                 walk2_timer.stop()
                 walk1_timer.stop()
                 walkingRight = False
                 walkingLeft = True
-                walkingBoth = False
                 walk1_timer.start()
 
         # Mouse Handler
@@ -2402,6 +2410,8 @@ while True:
         # If trying to walk both left and right
         if walkingLeft and walkingRight:
             walkingBoth = True
+        else:
+            walkingBoth = False
 
         # Check if dead
         if playerHP <= 0:
