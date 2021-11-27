@@ -22,16 +22,16 @@
 -------------------------CHANGELOG-------------------------
 v0.4
 New Features
-- Added Combat Rolling
-- Added a Main Menu
-- Added a Pause Menu
-- Added a Settings Menu
-- Added a Restart button
-- Added a Return to Main Menu button
-- Added Volume Adjustment
+- Combat Rolling
+- Main Menu
+- Pause Menu
+- Settings Menu
+- Restart button
+- Return to Main Menu button
+- Volume Adjustment
 
 Balance
-- Added fire rate cap to revolver
+- Fire rate cap to revolver
 - Rebalanced audio
 
 Bug Fixes

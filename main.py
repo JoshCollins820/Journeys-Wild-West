@@ -172,8 +172,10 @@ if collapse:
     musicRightButtonClicked = False
     playerRoll1Right = False
     playerRoll2Right = False
+    playerRoll3Right = False
     playerRoll1Left = False
     playerRoll2Left = False
+    playerRoll3Left = False
     rollReady = True
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
@@ -283,8 +285,10 @@ if collapse:
     asset_player_drink_left = pygame.image.load("assets/player/player_drink_left.png")
     asset_player_roll1_right = pygame.image.load("assets/player/player_roll1_right.png")
     asset_player_roll2_right = pygame.image.load("assets/player/player_roll2_right.png")
+    asset_player_roll3_right = pygame.image.load("assets/player/player_roll3_right.png")
     asset_player_roll1_left = pygame.image.load("assets/player/player_roll1_left.png")
     asset_player_roll2_left = pygame.image.load("assets/player/player_roll2_left.png")
+    asset_player_roll3_left = pygame.image.load("assets/player/player_roll3_left.png")
     asset_player_cooldown_sweat_right = pygame.image.load("assets/player/cooldown_sweat_right.png")
     asset_player_cooldown_sweat_left = pygame.image.load("assets/player/cooldown_sweat_left.png")
     asset_hearty_beer_icon = pygame.image.load("assets/UI/hearty_beer_icon.png")
@@ -489,7 +493,7 @@ def roll():
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster, playerSniper
     if lookingRight:
         if moveAbility == True and pause == False:
-            if rollReady == True and scopeScreen == False:
+            if rollReady == True:
                 disableText()
                 # start roll
                 rollStart_timer.start()
@@ -505,7 +509,7 @@ def roll():
                     woodstep.play()
     elif lookingLeft:
         if moveAbility == True and pause == False:
-            if rollReady == True and scopeScreen == False:
+            if rollReady == True:
                 disableText()
                 # start roll
                 rollStart_timer.start()
@@ -519,8 +523,6 @@ def roll():
                 elif insideShop == True:
                     woodstep.stop()
                     woodstep.play()
-    # Clear any possible previous player animations
-    playerShoot = False
 
 
 def disableText():
@@ -1009,8 +1011,8 @@ def resetValues():
         confirmNoButtonClicked, confirmationBox, settings, settingsDoneButtonHover, settingsDoneButtonClicked, \
         masterLeftButtonHover, masterLeftButtonClicked, masterRightButtonHover, masterRightButtonClicked, \
         musicLeftButtonHover, musicLeftButtonClicked, musicRightButtonHover, musicRightButtonClicked, \
-        ban1H, ban1W, ban2H, ban2W, ban3H, ban3W, playerRoll1Right, playerRoll2Right, playerRoll1Left, \
-        playerRoll2Left, rolling, rollReady, cooldown_sweat_y
+        ban1H, ban1W, ban2H, ban2W, ban3H, ban3W, playerRoll1Right, playerRoll2Right, playerRoll3Right,\
+        playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y
 
     # player vals
     playerHP = 100
@@ -1126,8 +1128,10 @@ def resetValues():
     musicRightButtonClicked = False
     playerRoll1Right = False
     playerRoll2Right = False
+    playerRoll3Right = False
     playerRoll1Left = False
     playerRoll2Left = False
+    playerRoll3Left = False
     rollReady = True
 
 
@@ -1271,54 +1275,76 @@ def confirmationBox_timer_handler():
 
 
 def rollStart_timer_handler():
-    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, invincibility, \
-        rollReady, cooldown_sweat_y
+    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll3Left, playerRoll1Right, interactText,\
+        playerRoll2Right, playerRoll3Right,invincibility, rollReady, cooldown_sweat_y,playerShoot, scopeScreen
     standing = False
     rolling = True
     invincibility = True
+    playerShoot = False
+    scopeScreen = False
     rollReady = False
     cooldown_sweat_y = 252
     disableText()
     if lookingRight == True:
         playerRoll1Right = True
-        worldRight(2)
+        worldRight(1)
     elif lookingLeft == True:
         playerRoll1Left = True
-        worldLeft(2)
-    rollMid_timer.start()
+        worldLeft(1)
+    rollMid1_timer.start()
     rollStart_timer.stop()
 
 
-def rollMid_timer_handler():
-    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right
+def rollMid1_timer_handler():
+    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, \
+        playerRoll3Right,playerRoll3Left
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = True
-        worldRight(2)
+        worldRight(1)
     elif lookingLeft == True:
         playerRoll1Left = False
         playerRoll2Left = True
-        worldLeft(2)
+        worldLeft(1)
+    rollMid2_timer.start()
+    rollMid1_timer.stop()
+
+
+def rollMid2_timer_handler():
+    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right,\
+        playerRoll3Right,playerRoll3Left
+    if lookingRight == True:
+        playerRoll2Right = False
+        playerRoll3Right = True
+        worldRight(1)
+    elif lookingLeft == True:
+        playerRoll2Left = False
+        playerRoll3Left = True
+        worldLeft(1)
     rollEnd_timer.start()
-    rollMid_timer.stop()
+    rollMid2_timer.stop()
 
 
 def rollEnd_timer_handler():
-    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, invincibility,\
-        interactText
-    standing = True
-    rolling = False
-    invincibility = False
+    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, \
+        playerRoll3Right, invincibility,interactText,playerRoll3Left
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = False
+        playerRoll3Right = False
+        worldRight(1)
     elif lookingLeft == True:
         playerRoll1Left = False
         playerRoll2Left = False
+        playerRoll3Left = False
+        worldLeft(1)
     # if land on entrance of store
     if store1x <= 100 and store1x >= 0:
         if playerHolster == False and playerShoot == False and scopeScreen == False and insideShop == False:
             interactText = True
+    standing = True
+    rolling = False
+    invincibility = False
     rollCooldown_timer.start()
     rollEnd_timer.stop()
 
@@ -1344,15 +1370,16 @@ revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireD
 drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_handler)
 playerHitSound_timer = simplegui.create_timer(100, playerHitSound_timer_handler)
 rollStart_timer = simplegui.create_timer(1, rollStart_timer_handler)
-rollMid_timer = simplegui.create_timer(90, rollMid_timer_handler)
-rollEnd_timer = simplegui.create_timer(100, rollEnd_timer_handler)
+rollMid1_timer = simplegui.create_timer(75, rollMid1_timer_handler)
+rollMid2_timer = simplegui.create_timer(75, rollMid2_timer_handler)
+rollEnd_timer = simplegui.create_timer(75, rollEnd_timer_handler)
 rollCooldown_timer = simplegui.create_timer(1500, rollCooldown_timer_handler)
 
 
 # timers tuple
 timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
               drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
-              volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid_timer,
+              volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
               rollEnd_timer, rollCooldown_timer)
 
 # Main Menu Music
@@ -1445,7 +1472,8 @@ while True:
                         playerIdle = False
                 # Aim Sniper Rifle
                 if event.key == pygame.K_w or event.key == pygame.K_UP:
-                    if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True and insideShop == False:
+                    if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True \
+                            and insideShop == False and rolling == False:
                         scopeScreen = not scopeScreen
                         if scopeScreen == True:
                             breath.stop()
@@ -1484,6 +1512,7 @@ while True:
                     hotbarSlot6 = False
                     playerHolster = False
                     playerShoot = False
+                    interactText = False
                     if ownSniperRifle == True:
                         if sniperRoundsMag <= 0 and sniperRoundsTotal > 0:
                             reloadUI = True
@@ -2057,11 +2086,15 @@ while True:
                     screen.blit(asset_player_roll1_right, (150, 265))
                 if playerRoll2Right == True:
                     screen.blit(asset_player_roll2_right, (150, 265))
+                if playerRoll3Right == True:
+                    screen.blit(asset_player_roll3_right, (150, 265))
             if lookingLeft == True:
                 if playerRoll1Left == True:
                     screen.blit(asset_player_roll1_left, (150, 265))
                 if playerRoll2Left == True:
                     screen.blit(asset_player_roll2_left, (150, 265))
+                if playerRoll3Left == True:
+                    screen.blit(asset_player_roll3_left, (150, 265))
         # Cooldown sweat
         if standing == True and rollReady == False:
             if lookingRight:
@@ -2169,7 +2202,7 @@ while True:
         if moneyPick == True:
             showMoney = False
 
-        if interactText == True:
+        if interactText == True and rolling == False:
             if sitting == True:
                 screen.blit(interact_text, (218, 265))
             else:
