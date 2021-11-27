@@ -366,10 +366,8 @@ if collapse:
 
 
 def worldLeft():
-    global height, width, cloud1x, cloud2x, speedMove, cloudMove, cloudAuto, interactText, moveAbility, sitting,\
-        standing, bodyWeight, moneyCount, showMoney, moneyPickText, purchasedText, insufFundsText, buyText,\
-        cactusx, store1x, store2x, tumweed1x, startGame, banx1, banHP, banx2, ban2HP, ban3HP, banx3, ban3FPx1, \
-        scope3Walk, playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
+    global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, banx1, banx2, banx3, \
+        playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
 
     if standing == True:
         playerIdle = False
@@ -398,10 +396,8 @@ def worldLeft():
 
 
 def worldRight():
-    global height, width, cloud1x, cloud2x, speedMove, cloudMove, cloudAuto, interactText, moveAbility, sitting,\
-        standing, bodyWeight, moneyCount, showMoney, moneyPickText, purchasedText,insufFundsText,\
-        buyText, cactusx, store1x, store2x, tumweed1x, startGame, banx1, banHP, banx2, ban2HP,ban3HP, banx3, \
-        ban3FPx1,scope3Walk, playerIdle, playerWalk, playerLegsIdle, playerShoot,playerHolster, playerSniper
+    global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, banx1, banx2, banx3, \
+        playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
 
     if standing == True:
         playerIdle = False
@@ -892,6 +888,37 @@ def showSettings():
     music.set_volume(musicVolume)
     potion.set_volume(masterVolume)
     sniper_reload.set_volume(masterVolume)
+
+
+def showHUD():
+    # hp
+    screen.blit(asset_hp_icon, (25 - 12.5, 517 - 10))
+    screen.blit(playerHP_text, (38, 505))
+    # kills
+    screen.blit(asset_kills_icon, (24 - 12.5, 540 - 10))
+    screen.blit(playerScore_text, (40, 529))
+    # money
+    screen.blit(asset_money_icon, (24 - 12.5, 562 - 10))
+    screen.blit(playerMoney_text, (40, 551))
+    # ammo
+    screen.blit(asset_ammo_icon, (25 - 12.5, 583 - 10))
+    if hotbarSlot1 == True:
+        screen.blit(revolverAmmo_text, (41, 571))
+    elif hotbarSlot2 == True:
+        screen.blit(sniperAmmo_text, (41, 571))
+    else:
+        screen.blit(blankAmmo_text, (41, 570))
+    if reloadUI == True:
+        if revRoundsMag <= 0 and hotbarSlot1 == True or sniperRoundsMag <= 0 and hotbarSlot2 == True:
+            screen.blit(reloadBack_text, (215.8, 233.8))
+            screen.blit(reloadFront_text, (215, 233))
+    if outAmmoUI == True:
+        if revRoundsTotal <= 0 and revRoundsMag <= 0 and hotbarSlot1 == True:
+            screen.blit(outAmmoBack_text, (215.8, 233.8))
+            screen.blit(outAmmoFront_text, (215, 233))
+        if sniperRoundsTotal <= 0 and sniperRoundsMag <= 0 and hotbarSlot2 == True:
+            screen.blit(outAmmoBack_text, (215.8, 233.8))
+            screen.blit(outAmmoFront_text, (215, 233))
 
 
 def playerHit(damage):
@@ -1988,34 +2015,7 @@ while True:
 
         # HUD
         if startGame == True:
-            # hp
-            screen.blit(asset_hp_icon, (25-12.5, 517-10))
-            screen.blit(playerHP_text, (38, 505))
-            # kills
-            screen.blit(asset_kills_icon, (24-12.5, 540-10))
-            screen.blit(playerScore_text, (40, 529))
-            # money
-            screen.blit(asset_money_icon, (24-12.5, 562-10))
-            screen.blit(playerMoney_text, (40, 551))
-            # ammo
-            screen.blit(asset_ammo_icon, (25-12.5, 583-10))
-            if hotbarSlot1 == True:
-                screen.blit(revolverAmmo_text, (41, 571))
-            elif hotbarSlot2 == True:
-                screen.blit(sniperAmmo_text, (41, 571))
-            else:
-                screen.blit(blankAmmo_text, (41, 570))
-            if reloadUI == True:
-                if revRoundsMag <= 0 and hotbarSlot1 == True or sniperRoundsMag <= 0 and hotbarSlot2 == True:
-                    screen.blit(reloadBack_text, (215.8, 233.8))
-                    screen.blit(reloadFront_text, (215, 233))
-            if outAmmoUI == True:
-                if revRoundsTotal <= 0 and revRoundsMag <= 0 and hotbarSlot1 == True:
-                    screen.blit(outAmmoBack_text, (215.8, 233.8))
-                    screen.blit(outAmmoFront_text, (215, 233))
-                if sniperRoundsTotal <= 0 and sniperRoundsMag <= 0 and hotbarSlot2 == True:
-                    screen.blit(outAmmoBack_text, (215.8, 233.8))
-                    screen.blit(outAmmoFront_text, (215, 233))
+            showHUD()
         # popup text
         if purchasedText == True:
             screen.blit(asset_text_purchased, (300-98.5, 70-9.5))
