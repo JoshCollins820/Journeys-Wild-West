@@ -374,7 +374,7 @@ if collapse:
 
 
 
-def worldLeft():
+def worldLeft(multiplier=1):
     global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, banx1, banx2, banx3, \
         playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
 
@@ -389,22 +389,22 @@ def worldLeft():
         if lookingLeft == True:
             playerWalk = True
 
-    cloud1x += cloudMove
+    cloud1x += cloudMove*multiplier
     if cloud1x + 85 >= 800:
         cloud1x = -100
-    cloud2x += cloudMove
+    cloud2x += cloudMove*multiplier
     if cloud2x + 85 >= 800:
         cloud2x = -100
-    cactusx += speedMove
-    store1x += speedMove
-    store2x += speedMove
-    tumweed1x += speedMove
-    banx1 += speedMove
-    banx2 += speedMove
-    banx3 += speedMove
+    cactusx += speedMove*multiplier
+    store1x += speedMove*multiplier
+    store2x += speedMove*multiplier
+    tumweed1x += speedMove*multiplier
+    banx1 += speedMove*multiplier
+    banx2 += speedMove*multiplier
+    banx3 += speedMove*multiplier
 
 
-def worldRight():
+def worldRight(multiplier=1):
     global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, banx1, banx2, banx3, \
         playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
 
@@ -421,19 +421,19 @@ def worldRight():
         if playerShoot == True:
             playerHolster = True
 
-    cloud1x -= cloudMove
+    cloud1x -= cloudMove*multiplier
     if cloud1x + 85 <= -100:
         cloud1x = 800
-    cloud2x -= cloudMove
+    cloud2x -= cloudMove*multiplier
     if cloud2x + 85 <= -100:
         cloud2x = 1100
-    cactusx -= speedMove
-    store1x -= speedMove
-    store2x -= speedMove
-    tumweed1x -= speedMove
-    banx1 -= speedMove
-    banx2 -= speedMove
-    banx3 -= speedMove
+    cactusx -= speedMove*multiplier
+    store1x -= speedMove*multiplier
+    store2x -= speedMove*multiplier
+    tumweed1x -= speedMove*multiplier
+    banx1 -= speedMove*multiplier
+    banx2 -= speedMove*multiplier
+    banx3 -= speedMove*multiplier
 
 
 def walkRight():
@@ -1282,10 +1282,10 @@ def rollStart_timer_handler():
     rollReady = False
     if lookingRight == True:
         playerRoll1Right = True
-        worldRight()
+        worldRight(2)
     elif lookingLeft == True:
         playerRoll1Left = True
-        worldLeft()
+        worldLeft(2)
     rollMid_timer.start()
     rollStart_timer.stop()
 
@@ -1295,11 +1295,11 @@ def rollMid_timer_handler():
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = True
-        worldRight()
+        worldRight(2)
     elif lookingLeft == True:
         playerRoll1Left = False
         playerRoll2Left = True
-        worldLeft()
+        worldLeft(2)
     rollEnd_timer.start()
     rollMid_timer.stop()
 
