@@ -56,14 +56,14 @@ if collapse:
     tumbleAuto = 15
     banMove = 8
 
-    # x-pos
+    # x,y cords
     cloud1x = 100
     cloud2x = 600
     tumweed1x = 700
     store1x = 700
     store2x = 1400
     cactusx = 450
-
+    cooldown_sweat_y = 252
     activeSlotx1 = -50
     activeSlotx2 = -50
     bulletx = 330
@@ -285,6 +285,8 @@ if collapse:
     asset_player_roll2_right = pygame.image.load("assets/player/player_roll2_right.png")
     asset_player_roll1_left = pygame.image.load("assets/player/player_roll1_left.png")
     asset_player_roll2_left = pygame.image.load("assets/player/player_roll2_left.png")
+    asset_player_cooldown_sweat_right = pygame.image.load("assets/player/cooldown_sweat_right.png")
+    asset_player_cooldown_sweat_left = pygame.image.load("assets/player/cooldown_sweat_left.png")
     asset_hearty_beer_icon = pygame.image.load("assets/UI/hearty_beer_icon.png")
     asset_hearty_beer_right = pygame.image.load("assets/props/hearty_beer_right.png")
     asset_hearty_beer_left = pygame.image.load("assets/props/hearty_beer_left.png")
@@ -501,9 +503,6 @@ def roll():
                 elif insideShop == True:
                     woodstep.stop()
                     woodstep.play()
-        if store1x <= 100 and store1x >= 0:
-            if playerHolster == False and playerShoot == False and scopeScreen == False and insideShop == False:
-                interactText = True
     elif lookingLeft:
         if moveAbility == True and pause == False:
             if rollReady == True and scopeScreen == False:
@@ -520,9 +519,6 @@ def roll():
                 elif insideShop == True:
                     woodstep.stop()
                     woodstep.play()
-        if store1x <= 100 and store1x >= 0:
-            if playerHolster == False and playerShoot == False and scopeScreen == False and insideShop == False:
-                interactText = True
     # Clear any possible previous player animations
     playerShoot = False
 
@@ -1014,7 +1010,7 @@ def resetValues():
         masterLeftButtonHover, masterLeftButtonClicked, masterRightButtonHover, masterRightButtonClicked, \
         musicLeftButtonHover, musicLeftButtonClicked, musicRightButtonHover, musicRightButtonClicked, \
         ban1H, ban1W, ban2H, ban2W, ban3H, ban3W, playerRoll1Right, playerRoll2Right, playerRoll1Left, \
-        playerRoll2Left, rolling, rollReady
+        playerRoll2Left, rolling, rollReady, cooldown_sweat_y
 
     # player vals
     playerHP = 100
@@ -1034,6 +1030,7 @@ def resetValues():
     store1x = 700
     store2x = 1400
     cactusx = 450
+    cooldown_sweat_y = 252
     activeSlotx1 = -50
     activeSlotx2 = -50
     bulletx = 330
@@ -1275,11 +1272,13 @@ def confirmationBox_timer_handler():
 
 def rollStart_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, invincibility, \
-        rollReady
+        rollReady, cooldown_sweat_y
     standing = False
     rolling = True
     invincibility = True
     rollReady = False
+    cooldown_sweat_y = 252
+    disableText()
     if lookingRight == True:
         playerRoll1Right = True
         worldRight(2)
@@ -1305,7 +1304,8 @@ def rollMid_timer_handler():
 
 
 def rollEnd_timer_handler():
-    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, invincibility
+    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, invincibility,\
+        interactText
     standing = True
     rolling = False
     invincibility = False
@@ -1315,6 +1315,10 @@ def rollEnd_timer_handler():
     elif lookingLeft == True:
         playerRoll1Left = False
         playerRoll2Left = False
+    # if land on entrance of store
+    if store1x <= 100 and store1x >= 0:
+        if playerHolster == False and playerShoot == False and scopeScreen == False and insideShop == False:
+            interactText = True
     rollCooldown_timer.start()
     rollEnd_timer.stop()
 
@@ -1340,7 +1344,7 @@ revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireD
 drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_handler)
 playerHitSound_timer = simplegui.create_timer(100, playerHitSound_timer_handler)
 rollStart_timer = simplegui.create_timer(1, rollStart_timer_handler)
-rollMid_timer = simplegui.create_timer(100, rollMid_timer_handler)
+rollMid_timer = simplegui.create_timer(90, rollMid_timer_handler)
 rollEnd_timer = simplegui.create_timer(100, rollEnd_timer_handler)
 rollCooldown_timer = simplegui.create_timer(1500, rollCooldown_timer_handler)
 
@@ -2050,14 +2054,21 @@ while True:
         if rolling == True:
             if lookingRight == True:
                 if playerRoll1Right == True:
-                    screen.blit(asset_player_roll1_right, (150, 259))
+                    screen.blit(asset_player_roll1_right, (150, 265))
                 if playerRoll2Right == True:
-                    screen.blit(asset_player_roll2_right, (150, 259))
+                    screen.blit(asset_player_roll2_right, (150, 265))
             if lookingLeft == True:
                 if playerRoll1Left == True:
-                    screen.blit(asset_player_roll1_left, (150, 259))
+                    screen.blit(asset_player_roll1_left, (150, 265))
                 if playerRoll2Left == True:
-                    screen.blit(asset_player_roll2_left, (150, 259))
+                    screen.blit(asset_player_roll2_left, (150, 265))
+        # Cooldown sweat
+        if standing == True and rollReady == False:
+            if lookingRight:
+                screen.blit(asset_player_cooldown_sweat_right, (212, cooldown_sweat_y))
+            if lookingLeft:
+                screen.blit(asset_player_cooldown_sweat_left, (222, cooldown_sweat_y))
+
 
         # catalog pages
         if insideShop == True:
@@ -2337,6 +2348,12 @@ while True:
 
         # bullet reset
         bulletx = -330
+
+        # cooldown sweat pos
+        if rollReady == False:
+            cooldown_sweat_y += 1
+        if cooldown_sweat_y > 273:
+            cooldown_sweat_y = 252
 
         if banMoveAbility == True:
             # ban 1 position

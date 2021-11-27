@@ -6,6 +6,7 @@
 - Optimize assets by simplifying coords
 
 ----------------------------ADD----------------------------
+- Control Map
 - Exit button
 - Looting
 - Leaderboard
@@ -21,7 +22,7 @@
 -------------------------CHANGELOG-------------------------
 v0.4
 New Features
-- Added Combat Rolling (Keybind: a)
+- Added Combat Rolling
 - Added a Main Menu
 - Added a Pause Menu
 - Added a Settings Menu
