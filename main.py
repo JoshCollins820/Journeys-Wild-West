@@ -1230,6 +1230,89 @@ def musicVolumeUp():
         musicVolume = musicVolume + 0.1
 
 
+def switchSlots(slot):
+    global hotbarSlot1,hotbarSlot2,hotbarSlot3,hotbarSlot4,hotbarSlot5,hotbarSlot6,playerHolster,playerIdle,reloadUI, \
+        playerShoot, playerSniper, interactText, playerGrab
+    if slot == 1:
+        hotbarSlot1 = not hotbarSlot1
+        hotbarSlot2 = False
+        hotbarSlot3 = False
+        hotbarSlot4 = False
+        hotbarSlot5 = False
+        hotbarSlot6 = False
+        griprevolver.stop()
+        griprevolver.play()
+        playerHolster = not playerHolster
+        playerIdle = not playerIdle
+        playerSniper = False
+        if revRoundsMag <= 0 and revRoundsTotal > 0:
+            reloadUI = True
+        if hotbarSlot1 == False:
+            playerShoot = False
+            playerHolster = False
+    elif slot == 2:
+        hotbarSlot2 = not hotbarSlot2
+        hotbarSlot1 = False
+        hotbarSlot3 = False
+        hotbarSlot4 = False
+        hotbarSlot5 = False
+        hotbarSlot6 = False
+        playerHolster = False
+        playerShoot = False
+        interactText = False
+        if ownSniperRifle == True:
+            if sniperRoundsMag <= 0 and sniperRoundsTotal > 0:
+                reloadUI = True
+            playerSniper = not playerSniper
+            playerGrab = True
+            griprevolver.stop()
+            griprevolver.play()
+            playerIdle = False
+        if insideShop == True:
+            interactText = False
+    elif slot == 3:
+        hotbarSlot1 = False
+        hotbarSlot2 = False
+        hotbarSlot3 = not hotbarSlot3
+        hotbarSlot4 = False
+        hotbarSlot5 = False
+        hotbarSlot6 = False
+        interactText = False
+        playerHolster = False
+        playerSniper = False
+    elif slot == 4:
+        hotbarSlot1 = False
+        hotbarSlot2 = False
+        hotbarSlot3 = False
+        hotbarSlot4 = not hotbarSlot4
+        hotbarSlot5 = False
+        hotbarSlot6 = False
+        interactText = False
+        playerSniper = False
+        playerHolster = False
+    elif slot == 5:
+        hotbarSlot5 = not hotbarSlot5
+        hotbarSlot1 = False
+        hotbarSlot2 = False
+        hotbarSlot3 = False
+        hotbarSlot4 = False
+        hotbarSlot6 = False
+        interactText = False
+        playerSniper = False
+        playerHolster = False
+    elif slot == 6:
+        hotbarSlot6 = not hotbarSlot6
+        hotbarSlot1 = False
+        hotbarSlot2 = False
+        hotbarSlot3 = False
+        hotbarSlot4 = False
+        hotbarSlot5 = False
+        interactText = False
+        playerHolster = False
+        playerSniper = False
+        playerShoot = False
+
+
 def volumeButtonReset_timer_handler():
     global masterRightButtonClicked, musicRightButtonClicked, masterLeftButtonClicked, musicLeftButtonClicked
     masterLeftButtonClicked = False
@@ -1604,88 +1687,22 @@ while True:
                             ban3InScope = False
                 # Switch to hotbar slot 1
                 if event.key == pygame.K_1 and moveAbility == True and scopeScreen == False:
-                    hotbarSlot1 = not hotbarSlot1
-                    hotbarSlot2 = False
-                    hotbarSlot3 = False
-                    hotbarSlot4 = False
-                    hotbarSlot5 = False
-                    hotbarSlot6 = False
-                    griprevolver.stop()
-                    griprevolver.play()
-                    playerHolster = not playerHolster
-                    playerIdle = not playerIdle
-                    playerSniper = False
-                    if revRoundsMag <= 0 and revRoundsTotal > 0:
-                        reloadUI = True
-                    if hotbarSlot1 == False:
-                        playerShoot = False
-                        playerHolster = False
+                    switchSlots(1)
                 # Switch to hotbar slot 2
                 if event.key == pygame.K_2 and moveAbility == True:
-                    hotbarSlot2 = not hotbarSlot2
-                    hotbarSlot1 = False
-                    hotbarSlot3 = False
-                    hotbarSlot4 = False
-                    hotbarSlot5 = False
-                    hotbarSlot6 = False
-                    playerHolster = False
-                    playerShoot = False
-                    interactText = False
-                    if ownSniperRifle == True:
-                        if sniperRoundsMag <= 0 and sniperRoundsTotal > 0:
-                            reloadUI = True
-                        playerSniper = not playerSniper
-                        playerGrab = True
-                        griprevolver.stop()
-                        griprevolver.play()
-                        playerIdle = False
-                    if insideShop == True:
-                        interactText = False
+                    switchSlots(2)
                 # Switch to hotbar slot 3
                 if event.key == pygame.K_3 and moveAbility == True and scopeScreen == False:
-                    hotbarSlot3 = not hotbarSlot3
-                    hotbarSlot1 = False
-                    hotbarSlot2 = False
-                    hotbarSlot4 = False
-                    hotbarSlot5 = False
-                    hotbarSlot6 = False
-                    interactText = False
-                    playerHolster = False
-                    playerSniper = False
+                    switchSlots(3)
                 # Switch to hotbar slot 4
                 if event.key == pygame.K_4 and moveAbility == True and scopeScreen == False:
-                    hotbarSlot4 = not hotbarSlot4
-                    hotbarSlot1 = False
-                    hotbarSlot2 = False
-                    hotbarSlot3 = False
-                    hotbarSlot5 = False
-                    hotbarSlot6 = False
-                    interactText = False
-                    playerSniper = False
-                    playerHolster = False
+                    switchSlots(4)
                 # Switch to hotbar slot 5
                 if event.key == pygame.K_5 and moveAbility == True and scopeScreen == False:
-                    hotbarSlot5 = not hotbarSlot5
-                    hotbarSlot1 = False
-                    hotbarSlot2 = False
-                    hotbarSlot3 = False
-                    hotbarSlot4 = False
-                    hotbarSlot6 = False
-                    interactText = False
-                    playerSniper = False
-                    playerHolster = False
+                    switchSlots(5)
                 # Switch to hotbar slot Q (6)
                 if event.key == pygame.K_q and moveAbility == True and scopeScreen == False:
-                    hotbarSlot6 = not hotbarSlot6
-                    hotbarSlot1 = False
-                    hotbarSlot2 = False
-                    hotbarSlot3 = False
-                    hotbarSlot4 = False
-                    hotbarSlot5 = False
-                    interactText = False
-                    playerHolster = False
-                    playerSniper = False
-                    playerShoot = False
+                    switchSlots(6)
                 # Enter Store
                 if store1x <= 100 and store1x >= 0:
                     if playerShoot == False and scopeScreen == False and insideShop == False and playerSniper == False:
