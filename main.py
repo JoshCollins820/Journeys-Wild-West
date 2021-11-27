@@ -8,6 +8,7 @@ import pygame
 import random
 import time
 import sys
+import pickle
 
 try:
     import simplegui
@@ -47,6 +48,7 @@ if collapse:
     hpPotionCount = 5
     drinkTime = 100
     score = 0
+    highscore = 0
 
     # speed
     speedMove = 50
@@ -376,6 +378,7 @@ if collapse:
     version_text = font1.render(("v " + version), True, (255, 255, 255))
     masterVolume_text = font1.render((str(masterVolume)), True, (255, 255, 255))
     musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
+    playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 
@@ -999,6 +1002,8 @@ def playerDead():
     # death screen
     screen.blit(asset_death_screen, (300 - 300, 300 - 300))
     screen.blit(deathScore_text, (278, 250))
+    screen.blit(playerHighscore_text, (264, 270))
+
     moveAbility = False
     startGame = False
     stopAllTimers(timerTuple)
@@ -1394,12 +1399,27 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
 intromusic.play(-1)
 resetValues()
 
+# load highscore from file
+try:
+    pickle_in = open("highscore.txt","rb")
+    highscore = pickle.load(pickle_in)
+    pickle_in.close()
+except:
+    pickle_out = open("highscore.txt", "wb")
+    pickle.dump(highscore, pickle_out)
+    pickle_out.close()
+
 # Game Loop (Screen Refresh Loop)
 while True:
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
         if event.type == pygame.QUIT:
+            # save highscore to file
+            pickle_out = open("highscore.txt","wb")
+            pickle.dump(highscore, pickle_out)
+            pickle_out.close()
+            # close game
             pygame.mixer.stop()
             music_timer.stop()
             stopAllTimers(timerTuple)
@@ -2295,6 +2315,10 @@ while True:
         # check for interact
         interactCheck()
 
+        # check for highscore
+        if score > highscore:
+            highscore = score
+
         # text refresh
         ban1HPTag = font1.render(("HP: " + str(banHP)), True, (255, 255, 255))
         ban2HPTag = font1.render(("HP: " + str(ban2HP)), True, (255, 255, 255))
@@ -2308,6 +2332,7 @@ while True:
         deathScore_text = font1.render(("Score: " + str(score)), True, (255, 255, 255))
         masterVolume_text = font1.render((str(masterVolume)), True, (255, 255, 255))
         musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
+        playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
 
         # volume refresh
         step.set_volume(masterVolume)
