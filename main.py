@@ -1404,11 +1404,11 @@ resetValues()
 
 # load highscore from file
 try:
-    pickle_in = open("highscore.txt","rb")
+    pickle_in = open("savedata/highscore.txt","rb")
     highscore = pickle.load(pickle_in)
     pickle_in.close()
 except:
-    pickle_out = open("highscore.txt", "wb")
+    pickle_out = open("savedata/highscore.txt", "wb")
     pickle.dump(highscore, pickle_out)
     pickle_out.close()
 
@@ -1419,7 +1419,7 @@ while True:
         # When game is closed
         if event.type == pygame.QUIT:
             # save highscore to file
-            pickle_out = open("highscore.txt","wb")
+            pickle_out = open("savedata/highscore.txt","wb")
             pickle.dump(highscore, pickle_out)
             pickle_out.close()
             # close game
