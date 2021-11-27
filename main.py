@@ -103,6 +103,8 @@ if collapse:
     buyText = False
     sitting = False
     standing = True
+    walkingRight = False
+    walkingLeft = False
     rolling = False
     moneyPick = False
     moneyPickText = False
@@ -210,7 +212,7 @@ if collapse:
     sniper_reload = pygame.mixer.Sound('assets/sounds/sniper_reload.wav')
     combatroll = pygame.mixer.Sound('assets/sounds/combatroll.wav')
 
-# assets
+# sprites
 if collapse:
     asset_cactus = pygame.image.load("assets/vegetation/cactus.png")
     asset_cloud1 = pygame.image.load("assets/sky/cloud1.png")
@@ -1031,7 +1033,8 @@ def resetValues():
         masterLeftButtonHover, masterLeftButtonClicked, masterRightButtonHover, masterRightButtonClicked, \
         musicLeftButtonHover, musicLeftButtonClicked, musicRightButtonHover, musicRightButtonClicked, \
         ban1H, ban1W, ban2H, ban2W, ban3H, ban3W, playerRoll1Right, playerRoll2Right, playerRoll3Right,\
-        playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y
+        playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y, walkingLeft, \
+        walkingRight
 
     # player vals
     playerHP = 100
@@ -1085,6 +1088,8 @@ def resetValues():
     buyText = False
     sitting = False
     standing = True
+    walkingRight = False
+    walkingLeft = False
     rolling = False
     insufFundsText = False
     purchasedText = False
@@ -1223,7 +1228,7 @@ def startGame_timer_handler():
     playButtonClicked = False
     restartButtonClicked = False
     moveAbility = True
-    banMoveAbility = True
+    banMoveAbility = False
     music_timer.start()
     startGame_timer.stop()
 
@@ -1371,6 +1376,39 @@ def rollCooldown_timer_handler():
     rollCooldown_timer.stop()
 
 
+def walkRight_timer_handler():
+    global walkingRight
+    if walkingRight and not walkingLeft:
+        print("   ->")
+        walkRight()
+        walkRight2_timer.start()
+    walkRight_timer.stop()
+    #
+    # if walkingLeft and walkingRight:
+    #     print("<- ->")
+    # if not walkingLeft and not walkingRight:
+    #     print("     ")
+
+
+def walkLeft_timer_handler():
+    global walkingLeft
+    if walkingLeft and not walkingRight:
+        print("<-   ")
+        walkLeft()
+        walkLeft2_timer.start()
+    walkLeft_timer.stop()
+
+
+def walkRight2_timer_handler():
+    walkRight_timer.start()
+    walkRight2_timer.stop()
+
+
+def walkLeft2_timer_handler():
+    walkLeft_timer.start()
+    walkLeft2_timer.stop()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -1390,6 +1428,10 @@ rollMid1_timer = simplegui.create_timer(75, rollMid1_timer_handler)
 rollMid2_timer = simplegui.create_timer(75, rollMid2_timer_handler)
 rollEnd_timer = simplegui.create_timer(75, rollEnd_timer_handler)
 rollCooldown_timer = simplegui.create_timer(1500, rollCooldown_timer_handler)
+walkRight_timer = simplegui.create_timer(75, walkRight_timer_handler)
+walkLeft_timer = simplegui.create_timer(75, walkLeft_timer_handler)
+walkRight2_timer = simplegui.create_timer(75, walkRight2_timer_handler)
+walkLeft2_timer = simplegui.create_timer(75, walkLeft2_timer_handler)
 
 
 # timers tuple
@@ -1414,6 +1456,16 @@ except:
 
 # Game Loop (Screen Refresh Loop)
 while True:
+    # if walkingRight and not walkingLeft:
+    #     print("   ->")
+    # elif walkingLeft and not walkingRight:
+    #     print("<-   ")
+    # elif walkingLeft and walkingRight:
+    #     print("<- ->")
+    # elif not walkingLeft and not walkingRight:
+    #     print("     ")
+
+
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
@@ -1428,7 +1480,7 @@ while True:
             stopAllTimers(timerTuple)
             pygame.quit()
             sys.exit()
-        # Keyboard Handler
+        # Key Down Handler
         if event.type == pygame.KEYDOWN:
             # Pause Game
             if event.key == pygame.K_ESCAPE and pause == False and startGame == True and dead == False:
@@ -1444,10 +1496,22 @@ while True:
             if pause == False:
                 # Walk left
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    # stop timers to prevent walk timer stack bug
+                    walkLeft_timer.stop()
+                    walkLeft2_timer.stop()
                     walkLeft()
+                    print("<-   ")
+                    walkingLeft = True
+                    walkLeft2_timer.start()
                 # Walk right
-                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    # stop timers to prevent walk timer stack bug
+                    walkRight_timer.stop()
+                    walkRight2_timer.stop()
                     walkRight()
+                    print("   ->")
+                    walkingRight = True
+                    walkRight2_timer.start()
                 # Roll
                 if event.key == pygame.K_s or event.key == pygame.K_DOWN:
                     roll()
@@ -1745,6 +1809,18 @@ while True:
                         elif event.key == pygame.K_a or event.key == pygame.K_RIGHT:
                             moveAbility = True
                             walkLeft()
+        # Key Up Handler
+        if event.type == pygame.KEYUP:
+            # Walk left
+            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                walkingLeft = False
+                walkLeft_timer.stop()
+                walkLeft2_timer.stop()
+            # Walk right
+            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                walkingRight = False
+                walkRight_timer.stop()
+                walkRight2_timer.stop()
         # Mouse Handler
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Mouse Button 1
