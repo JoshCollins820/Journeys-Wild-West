@@ -451,7 +451,8 @@ def worldRight(multiplier=1):
 
 def walkRight():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
-        lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster, playerSniper
+        lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster,\
+        banMoveAbility, cactusx
 
     if moveAbility == True and pause == False and rolling == False:
         if scopeScreen == False:
@@ -467,11 +468,26 @@ def walkRight():
             elif insideShop == True:
                 woodstep.stop()
                 woodstep.play()
+    # Exit Store
+    if insideShop == True:
+        if (store1x - 200) >= 0:
+            insideShop = False
+            store1x = 50
+            store2x = 750
+            cactusx = -200
+            banMoveAbility = True
+            door.stop()
+            door.play()
+    # Shop Wall Collision
+    if insideShop == True:
+        if (store1x + 700) <= 0:
+            moveAbility = False
 
 
 def walkLeft():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
-        lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster
+        lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster,\
+        banMoveAbility, cactusx
 
     if moveAbility == True and pause == False and rolling == False:
         if scopeScreen == False:
@@ -487,6 +503,21 @@ def walkLeft():
             elif insideShop == True:
                 woodstep.stop()
                 woodstep.play()
+    # Exit Store
+    if insideShop == True:
+        if (store1x - 200) >= 0:
+            insideShop = False
+            store1x = 50
+            store2x = 750
+            cactusx = -200
+            banMoveAbility = True
+            door.stop()
+            door.play()
+    # Shop Wall Collision
+    if insideShop == True:
+        if (store1x + 700) <= 0:
+            moveAbility = True
+            walkLeft()
 
 
 def roll():
@@ -1661,17 +1692,7 @@ while True:
                             banHP = -50
                             ban2HP = -50
                             ban3HP = -50
-                # Exit Store
-                if insideShop == True:
-                    if (store1x - 200) >= 0:
-                        if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                            insideShop = False
-                            store1x = 50
-                            store2x = 750
-                            cactusx = -200
-                            banMoveAbility = True
-                            door.stop()
-                            door.play()
+
                 # Open Catalog
                 if store1x + 420 <= 100 and store1x + 420 >= 0:
                     if playerHolster == False and playerShoot == False and insideShop == True and catalog == False\
@@ -1783,14 +1804,6 @@ while True:
                             disableText()
                             turnpage.stop()
                             turnpage.play()
-                # Shop Wall Collision
-                if insideShop == True:
-                    if (store1x + 700) <= 0:
-                        if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                            moveAbility = False
-                        elif event.key == pygame.K_a or event.key == pygame.K_RIGHT:
-                            moveAbility = True
-                            walkLeft()
         # Key Up Handler
         if event.type == pygame.KEYUP:
             # Let go of walk left

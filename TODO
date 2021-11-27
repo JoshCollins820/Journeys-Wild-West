@@ -1,11 +1,12 @@
 ------------------------ KNOWN BUGS------------------------
-- Continuous walking sometimes gets stuck when holding both
+- Continuous walking sometimes gets stuck when switching
 
 --------------------------IMPROVE--------------------------
 - Object oriented enemies
 - Optimize assets by simplifying coords
 
 ----------------------------ADD----------------------------
+- Function for switching hotbar
 - Looting
 - Robbing the store clerk
   (minigame for pursuading him to give free items/money)
