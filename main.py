@@ -94,12 +94,14 @@ if collapse:
 
 
     # statements
+    invincibility = False
     moveAbility = True
     banMoveAbility = True
     interactText = False
     buyText = False
     sitting = False
     standing = True
+    rolling = False
     moneyPick = False
     moneyPickText = False
     showMoney = True
@@ -168,8 +170,12 @@ if collapse:
     musicLeftButtonClicked = False
     musicRightButtonHover = False
     musicRightButtonClicked = False
+    playerRoll1Right = False
+    playerRoll2Right = False
+    playerRoll1Left = False
+    playerRoll2Left = False
+    rollReady = True
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
-
 
 # audio
 if collapse:
@@ -198,7 +204,6 @@ if collapse:
     music = pygame.mixer.Sound('sounds/bg_music.wav')
     potion = pygame.mixer.Sound('sounds/beer_drink.wav')
     sniper_reload = pygame.mixer.Sound('sounds/sniper_reload.wav')
-
 
 # assets
 if collapse:
@@ -276,6 +281,10 @@ if collapse:
     asset_player_shoot_left = pygame.image.load("assets/player/player_shoot_revolver_left.png")
     asset_player_drink_right = pygame.image.load("assets/player/player_drink_right.png")
     asset_player_drink_left = pygame.image.load("assets/player/player_drink_left.png")
+    asset_player_roll1_right = pygame.image.load("assets/player/player_roll1_right.png")
+    asset_player_roll2_right = pygame.image.load("assets/player/player_roll2_right.png")
+    asset_player_roll1_left = pygame.image.load("assets/player/player_roll1_left.png")
+    asset_player_roll2_left = pygame.image.load("assets/player/player_roll2_left.png")
     asset_hearty_beer_icon = pygame.image.load("assets/UI/hearty_beer_icon.png")
     asset_hearty_beer_right = pygame.image.load("assets/props/hearty_beer_right.png")
     asset_hearty_beer_left = pygame.image.load("assets/props/hearty_beer_left.png")
@@ -365,7 +374,7 @@ if collapse:
 
 
 
-def worldLeft():
+def worldLeft(multiplier):
     global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, banx1, banx2, banx3, \
         playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
 
@@ -471,6 +480,51 @@ def walkLeft():
     if store1x <= 100 and store1x >= 0:
         if playerHolster == False and playerShoot == False and scopeScreen == False and insideShop == False:
             interactText = True
+
+
+def roll():
+    global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
+        lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster, playerSniper
+    if lookingRight:
+        if moveAbility == True and pause == False:
+            if rollReady == True and scopeScreen == False:
+                disableText()
+                # start roll
+                rollStart_timer.start()
+                lookingRight = True
+                lookingLeft = False
+                if hotbarSlot1 == True:
+                    playerHolster = True
+                if insideShop == False:
+                    step.stop()
+                    step.play()
+                elif insideShop == True:
+                    woodstep.stop()
+                    woodstep.play()
+        if store1x <= 100 and store1x >= 0:
+            if playerHolster == False and playerShoot == False and scopeScreen == False and insideShop == False:
+                interactText = True
+    elif lookingLeft:
+        if moveAbility == True and pause == False:
+            if rollReady == True and scopeScreen == False:
+                disableText()
+                # start roll
+                rollStart_timer.start()
+                lookingRight = False
+                lookingLeft = True
+                if hotbarSlot1 == True:
+                    playerHolster = True
+                if insideShop == False:
+                    step.stop()
+                    step.play()
+                elif insideShop == True:
+                    woodstep.stop()
+                    woodstep.play()
+        if store1x <= 100 and store1x >= 0:
+            if playerHolster == False and playerShoot == False and scopeScreen == False and insideShop == False:
+                interactText = True
+    # Clear any possible previous player animations
+    playerShoot = False
 
 
 def disableText():
@@ -922,9 +976,9 @@ def showHUD():
 
 
 def playerHit(damage):
-    global playerHP
+    global playerHP, invincibility
 
-    if playerHP > 0:
+    if playerHP > 0 and invincibility == False:
         playerHP -= damage
         playerHitSound_timer.start()
 
@@ -959,7 +1013,8 @@ def resetValues():
         confirmNoButtonClicked, confirmationBox, settings, settingsDoneButtonHover, settingsDoneButtonClicked, \
         masterLeftButtonHover, masterLeftButtonClicked, masterRightButtonHover, masterRightButtonClicked, \
         musicLeftButtonHover, musicLeftButtonClicked, musicRightButtonHover, musicRightButtonClicked, \
-        ban1H, ban1W, ban2H, ban2W, ban3H, ban3W
+        ban1H, ban1W, ban2H, ban2W, ban3H, ban3W, playerRoll1Right, playerRoll2Right, playerRoll1Left, \
+        playerRoll2Left, rolling, rollReady
 
     # player vals
     playerHP = 100
@@ -1005,12 +1060,14 @@ def resetValues():
     ban3W = 200
     ban3H = 330
 
+    invincibility = False
     moveAbility = True
     banMoveAbility = True
     interactText = False
     buyText = False
     sitting = False
     standing = True
+    rolling = False
     insufFundsText = False
     purchasedText = False
     lookingLeft = False
@@ -1070,6 +1127,11 @@ def resetValues():
     musicLeftButtonClicked = False
     musicRightButtonHover = False
     musicRightButtonClicked = False
+    playerRoll1Right = False
+    playerRoll2Right = False
+    playerRoll1Left = False
+    playerRoll2Left = False
+    rollReady = True
 
 
 def stopAllTimers(tup):
@@ -1141,7 +1203,7 @@ def startGame_timer_handler():
     playButtonClicked = False
     restartButtonClicked = False
     moveAbility = True
-    banMoveAbility = True
+    banMoveAbility = False
     music_timer.start()
     startGame_timer.stop()
 
@@ -1211,6 +1273,58 @@ def confirmationBox_timer_handler():
     confirmationBox_timer.stop()
 
 
+def rollStart_timer_handler():
+    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, invincibility, \
+        rollReady
+    standing = False
+    rolling = True
+    invincibility = True
+    rollReady = False
+    if lookingRight == True:
+        playerRoll1Right = True
+        worldRight()
+    elif lookingLeft == True:
+        playerRoll1Left = True
+        worldLeft()
+    rollMid_timer.start()
+    rollStart_timer.stop()
+
+
+def rollMid_timer_handler():
+    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right
+    if lookingRight == True:
+        playerRoll1Right = False
+        playerRoll2Right = True
+        worldRight()
+    elif lookingLeft == True:
+        playerRoll1Left = False
+        playerRoll2Left = True
+        worldLeft()
+    rollEnd_timer.start()
+    rollMid_timer.stop()
+
+
+def rollEnd_timer_handler():
+    global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, invincibility
+    standing = True
+    rolling = False
+    invincibility = False
+    if lookingRight == True:
+        playerRoll1Right = False
+        playerRoll2Right = False
+    elif lookingLeft == True:
+        playerRoll1Left = False
+        playerRoll2Left = False
+    rollCooldown_timer.start()
+    rollEnd_timer.stop()
+
+
+def rollCooldown_timer_handler():
+    global rollReady
+    rollReady = True
+    rollCooldown_timer.stop()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -1225,12 +1339,17 @@ confirmationBox_timer = simplegui.create_timer(50, confirmationBox_timer_handler
 revolverFireDelay_timer = simplegui.create_timer(revolverFireRate, revolverFireDelay_timer_handler)
 drinkResetDelay_timer = simplegui.create_timer(drinkTime, drinkResetDelay_timer_handler)
 playerHitSound_timer = simplegui.create_timer(100, playerHitSound_timer_handler)
+rollStart_timer = simplegui.create_timer(1, rollStart_timer_handler)
+rollMid_timer = simplegui.create_timer(100, rollMid_timer_handler)
+rollEnd_timer = simplegui.create_timer(100, rollEnd_timer_handler)
+rollCooldown_timer = simplegui.create_timer(1500, rollCooldown_timer_handler)
 
 
 # timers tuple
 timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
               drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
-              volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer)
+              volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid_timer,
+              rollEnd_timer, rollCooldown_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -1267,7 +1386,9 @@ while True:
                 # Walk right
                 elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     walkRight()
-
+                # Roll
+                if event.key == pygame.K_s or event.key == pygame.K_DOWN:
+                    roll()
                 # Reloading
                 if event.key == pygame.K_r:
                     # Revolver
@@ -1925,16 +2046,28 @@ while True:
                     screen.blit(asset_muzzleflash_left, (bulletx-250, 313-5.5))
                 # bandana left
                 screen.blit(asset_bandana_left, (250-32.5, 329-76))
+        # Roll
+        if rolling == True:
+            if lookingRight == True:
+                if playerRoll1Right == True:
+                    screen.blit(asset_player_roll1_right, (150, 259))
+                if playerRoll2Right == True:
+                    screen.blit(asset_player_roll2_right, (150, 259))
+            if lookingLeft == True:
+                if playerRoll1Left == True:
+                    screen.blit(asset_player_roll1_left, (150, 259))
+                if playerRoll2Left == True:
+                    screen.blit(asset_player_roll2_left, (150, 259))
 
         # catalog pages
         if insideShop == True:
             if catalog == True:
                 if catalogPage1 == True:
-                    screen.blit(asset_catalog_1, (300-300, 300-300))
+                    screen.blit(asset_catalog_1, (0, 0))
                 elif catalogPage2 == True:
-                    screen.blit(asset_catalog_2, (300-300, 300-300))
+                    screen.blit(asset_catalog_2, (0, 0))
                 elif catalogPage3 == True:
-                    screen.blit(asset_catalog_3, (300-300, 300-300))
+                    screen.blit(asset_catalog_3, (0, 0))
 
         # catalog weapon prices
         if catalogPage2 == True:
@@ -2205,63 +2338,64 @@ while True:
         # bullet reset
         bulletx = -330
 
-        # ban 1 position
-        if banHP > 0:
-            # if out of scope range
-            if banx1 > 700 or banx1 < -100:
-                scopeWalk = 0
-            # if in melee range of player
-            elif banx1 <= 290 and banx1 >= 210:
-                scopeWalk += 0
-            # if in scope range
-            elif banx1 <= 700 or banx1 >= -100:
-                scopeWalk += 15
-            if banx1 >= 280:
-                banx1 -= banMove
-                ban1left = False
-            if banx1 <= 220:
-                banx1 += banMove
-                ban1left = True
-        elif banHP <= 0:
-            banHP -= 1
-            # ban 2 position
-        if ban2HP > 0:
-            # if out of scope range
-            if banx2 > 700 or banx2 < -100:
-                scope2Walk = 0
-            # if in melee range of player
-            elif banx2 <= 290 and banx2 >= 210:
-                scope2Walk += 0
-            # if in scope range
-            elif banx2 <= 700 or banx2 >= -100:
-                scope2Walk += 15
-            if banx2 >= 280:
-                banx2 -= banMove
-                ban2left = False
-            if banx2 <= 220:
-                banx2 += banMove
-                ban2left = True
-        elif ban2HP <= 0:
-            ban2HP -= 1
-        # ban 3 position
-        if ban3HP > 0:
-            # if out of scope range
-            if banx3 > 700 or banx3 < -100:
-                scope3Walk = 0
-            # if in melee range of player
-            elif banx3 <= 290 and banx3 >= 210:
-                scope3Walk += 0
-            # if in scope range
-            elif banx3 <= 700 or banx3 >= -100:
-                scope3Walk += 15
-            if banx3 >= 280:
-                banx3 -= banMove
-                ban3left = False
-            if banx3 <= 220:
-                banx3 += banMove
-                ban3left = True
-        elif ban3HP <= 0:
-            ban3HP -= 1
+        if banMoveAbility == True:
+            # ban 1 position
+            if banHP > 0:
+                # if out of scope range
+                if banx1 > 700 or banx1 < -100:
+                    scopeWalk = 0
+                # if in melee range of player
+                elif banx1 <= 290 and banx1 >= 210:
+                    scopeWalk += 0
+                # if in scope range
+                elif banx1 <= 700 or banx1 >= -100:
+                    scopeWalk += 15
+                if banx1 >= 280:
+                    banx1 -= banMove
+                    ban1left = False
+                if banx1 <= 220:
+                    banx1 += banMove
+                    ban1left = True
+            elif banHP <= 0:
+                banHP -= 1
+                # ban 2 position
+            if ban2HP > 0:
+                # if out of scope range
+                if banx2 > 700 or banx2 < -100:
+                    scope2Walk = 0
+                # if in melee range of player
+                elif banx2 <= 290 and banx2 >= 210:
+                    scope2Walk += 0
+                # if in scope range
+                elif banx2 <= 700 or banx2 >= -100:
+                    scope2Walk += 15
+                if banx2 >= 280:
+                    banx2 -= banMove
+                    ban2left = False
+                if banx2 <= 220:
+                    banx2 += banMove
+                    ban2left = True
+            elif ban2HP <= 0:
+                ban2HP -= 1
+            # ban 3 position
+            if ban3HP > 0:
+                # if out of scope range
+                if banx3 > 700 or banx3 < -100:
+                    scope3Walk = 0
+                # if in melee range of player
+                elif banx3 <= 290 and banx3 >= 210:
+                    scope3Walk += 0
+                # if in scope range
+                elif banx3 <= 700 or banx3 >= -100:
+                    scope3Walk += 15
+                if banx3 >= 280:
+                    banx3 -= banMove
+                    ban3left = False
+                if banx3 <= 220:
+                    banx3 += banMove
+                    ban3left = True
+            elif ban3HP <= 0:
+                ban3HP -= 1
 
 
 

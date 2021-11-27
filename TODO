@@ -6,7 +6,7 @@
 - Optimize assets by simplifying coords
 
 ----------------------------ADD----------------------------
-- Combat roll
+- Exit button
 - Looting
 - Leaderboard
 - Robbing the store clerk
@@ -21,6 +21,7 @@
 -------------------------CHANGELOG-------------------------
 v0.4
 New Features
+- Added Combat Rolling (Keybind: a)
 - Added a Main Menu
 - Added a Pause Menu
 - Added a Settings Menu
