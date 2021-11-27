@@ -374,7 +374,7 @@ if collapse:
 
 
 
-def worldLeft(multiplier):
+def worldLeft():
     global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, banx1, banx2, banx3, \
         playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
 
