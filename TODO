@@ -1,5 +1,5 @@
 ------------------------ KNOWN BUGS------------------------
-
+- Continuous walking sometimes gets stuck when holding both
 
 --------------------------IMPROVE--------------------------
 - Object oriented enemies
@@ -30,6 +30,7 @@ New Features
 - High score system
 
 Balance
+- Improved continuous walking
 - Fire rate cap to revolver
 - Rebalanced audio
 

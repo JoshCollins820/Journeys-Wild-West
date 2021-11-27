@@ -105,6 +105,7 @@ if collapse:
     standing = True
     walkingRight = False
     walkingLeft = False
+    walkingBoth = False
     rolling = False
     moneyPick = False
     moneyPickText = False
@@ -1034,7 +1035,7 @@ def resetValues():
         musicLeftButtonHover, musicLeftButtonClicked, musicRightButtonHover, musicRightButtonClicked, \
         ban1H, ban1W, ban2H, ban2W, ban3H, ban3W, playerRoll1Right, playerRoll2Right, playerRoll3Right,\
         playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y, walkingLeft, \
-        walkingRight
+        walkingRight, walkingBoth
 
     # player vals
     playerHP = 100
@@ -1090,6 +1091,7 @@ def resetValues():
     standing = True
     walkingRight = False
     walkingLeft = False
+    walkingBoth = False
     rolling = False
     insufFundsText = False
     purchasedText = False
@@ -1376,37 +1378,31 @@ def rollCooldown_timer_handler():
     rollCooldown_timer.stop()
 
 
-def walkRight_timer_handler():
-    global walkingRight
-    if walkingRight and not walkingLeft:
-        print("   ->")
-        walkRight()
-        walkRight2_timer.start()
-    walkRight_timer.stop()
-    #
-    # if walkingLeft and walkingRight:
-    #     print("<- ->")
-    # if not walkingLeft and not walkingRight:
-    #     print("     ")
+def walk1_timer_handler():
+    ## Continuous walking function, called when press A or D or by walk2_timer if player holds A or D
+
+    # start walk2_timer
+    walk2_timer.start()
+    walk1_timer.stop()
 
 
-def walkLeft_timer_handler():
-    global walkingLeft
-    if walkingLeft and not walkingRight:
-        print("<-   ")
-        walkLeft()
-        walkLeft2_timer.start()
-    walkLeft_timer.stop()
+def walk2_timer_handler():
+    ## Continuous walking function, if A or D is still being held, walk again and loop back to walk1_timer
+    ## Allows the player to continuously walk when holding down keys, loop breaks when player releases keys
 
-
-def walkRight2_timer_handler():
-    walkRight_timer.start()
-    walkRight2_timer.stop()
-
-
-def walkLeft2_timer_handler():
-    walkLeft_timer.start()
-    walkLeft2_timer.stop()
+    if lookingRight:
+        # if player is still holding down walk right key
+        # 'and not' prevents bug where player repeatedly walks left and right if both are held
+        if walkingRight and not walkingLeft:
+            walkRight()
+            walk1_timer.start()
+    elif lookingLeft:
+        # if player is still holding down walk left key
+        # 'and not' prevents bug where player repeatedly walks left and right if both are held
+        if walkingLeft and not walkingRight:
+            walkLeft()
+            walk1_timer.start()
+    walk2_timer.stop()
 
 
 # timers (ms, timer_handler) (1000ms = 1sec)
@@ -1428,17 +1424,15 @@ rollMid1_timer = simplegui.create_timer(75, rollMid1_timer_handler)
 rollMid2_timer = simplegui.create_timer(75, rollMid2_timer_handler)
 rollEnd_timer = simplegui.create_timer(75, rollEnd_timer_handler)
 rollCooldown_timer = simplegui.create_timer(1500, rollCooldown_timer_handler)
-walkRight_timer = simplegui.create_timer(75, walkRight_timer_handler)
-walkLeft_timer = simplegui.create_timer(75, walkLeft_timer_handler)
-walkRight2_timer = simplegui.create_timer(75, walkRight2_timer_handler)
-walkLeft2_timer = simplegui.create_timer(75, walkLeft2_timer_handler)
+walk1_timer = simplegui.create_timer(1, walk1_timer_handler)
+walk2_timer = simplegui.create_timer(150, walk2_timer_handler)
 
 
 # timers tuple
 timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
               drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
               volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
-              rollEnd_timer, rollCooldown_timer)
+              rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -1456,16 +1450,6 @@ except:
 
 # Game Loop (Screen Refresh Loop)
 while True:
-    # if walkingRight and not walkingLeft:
-    #     print("   ->")
-    # elif walkingLeft and not walkingRight:
-    #     print("<-   ")
-    # elif walkingLeft and walkingRight:
-    #     print("<- ->")
-    # elif not walkingLeft and not walkingRight:
-    #     print("     ")
-
-
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
@@ -1496,22 +1480,20 @@ while True:
             if pause == False:
                 # Walk left
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    # stop timers to prevent walk timer stack bug
-                    walkLeft_timer.stop()
-                    walkLeft2_timer.stop()
                     walkLeft()
-                    print("<-   ")
+                    # stop timers to prevent walk timer stack bug
+                    walk2_timer.stop()
+                    walk1_timer.stop()
                     walkingLeft = True
-                    walkLeft2_timer.start()
+                    walk1_timer.start()
                 # Walk right
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    # stop timers to prevent walk timer stack bug
-                    walkRight_timer.stop()
-                    walkRight2_timer.stop()
                     walkRight()
-                    print("   ->")
+                    # stop timers to prevent walk timer stack bug
+                    walk2_timer.stop()
+                    walk1_timer.stop()
                     walkingRight = True
-                    walkRight2_timer.start()
+                    walk1_timer.start()
                 # Roll
                 if event.key == pygame.K_s or event.key == pygame.K_DOWN:
                     roll()
@@ -1811,16 +1793,33 @@ while True:
                             walkLeft()
         # Key Up Handler
         if event.type == pygame.KEYUP:
-            # Walk left
+            # Let go of walk left
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 walkingLeft = False
-                walkLeft_timer.stop()
-                walkLeft2_timer.stop()
-            # Walk right
+                walk2_timer.stop()
+                walk1_timer.stop()
+            # Let go of walk right
             if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 walkingRight = False
-                walkRight_timer.stop()
-                walkRight2_timer.stop()
+                walk2_timer.stop()
+                walk1_timer.stop()
+            # Let go of walk left while holding both
+            if walkingBoth == True and (event.key == pygame.K_LEFT or event.key == pygame.K_a):
+                walk2_timer.stop()
+                walk1_timer.stop()
+                walkingLeft = False
+                walkingRight = True
+                walkingBoth = False
+                walk1_timer.start()
+            # Let go of walk right while holding both
+            if walkingBoth == True and (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+                walk2_timer.stop()
+                walk1_timer.stop()
+                walkingRight = False
+                walkingLeft = True
+                walkingBoth = False
+                walk1_timer.start()
+
         # Mouse Handler
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Mouse Button 1
@@ -2386,6 +2385,10 @@ while True:
             playerIdle = True
         if (playerHolster == True or playerSniper == True) and insideShop == True:
             screen.blit(shopWarning_text, (store1x + 527, 207))
+
+        # If trying to walk both left and right
+        if walkingLeft and walkingRight:
+            walkingBoth = True
 
         # Check if dead
         if playerHP <= 0:
