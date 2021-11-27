@@ -446,7 +446,7 @@ def walkRight():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster, playerSniper
 
-    if moveAbility == True and pause == False:
+    if moveAbility == True and pause == False and rolling == False:
         if scopeScreen == False:
             worldRight()
             disableText()
@@ -460,16 +460,13 @@ def walkRight():
             elif insideShop == True:
                 woodstep.stop()
                 woodstep.play()
-    if store1x <= 100 and store1x >= 0:
-        if playerHolster == False and playerShoot == False and scopeScreen == False and insideShop == False:
-            interactText = True
 
 
 def walkLeft():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster
 
-    if moveAbility == True and pause == False:
+    if moveAbility == True and pause == False and rolling == False:
         if scopeScreen == False:
             worldLeft()
             disableText()
@@ -483,9 +480,6 @@ def walkLeft():
             elif insideShop == True:
                 woodstep.stop()
                 woodstep.play()
-    if store1x <= 100 and store1x >= 0:
-        if playerHolster == False and playerShoot == False and scopeScreen == False and insideShop == False:
-            interactText = True
 
 
 def roll():
@@ -530,138 +524,137 @@ def disableText():
     moneyPickText = False
     insufFundsText = False
     purchasedText = False
-    if playerSniper == False:
-        interactText = False
 
 
 def fire():
     global score, moneyCount, startGame, moveAbility, hotbarSlot2, hotbarSlot6, dead, bulletx, hotbarSlot1, \
         lookingLeft, lookingRight, revRoundsMag, reloadUI, outAmmoUI, interactText, banHP, banx2, ban2HP, scopeScreen,\
         ban3HP, banx3, ban3FPx1, scope3Walk, playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag,\
-        sniperRoundsTotal, playerSniper
+        sniperRoundsTotal, playerSniper, pause
 
-    # Revolver
-    if hotbarSlot1 == True:
-        playerShoot = True
-        playerHolster = False
-        interactText = False
-        if revRoundsMag > 0:
-            if lookingRight == True:
-                bulletx = 330
-            if lookingLeft == True:
-                bulletx = 330
-            shot.stop()
-            shot.play()
-            revRoundsMag -= 1
-            revolver_reload_timer.stop()
-            reload.stop()
+    if pause == False and dead == False:
+        # Revolver
+        if hotbarSlot1 == True:
+            playerShoot = True
+            playerHolster = False
+            interactText = False
+            if revRoundsMag > 0:
+                if lookingRight == True:
+                    bulletx = 330
+                if lookingLeft == True:
+                    bulletx = 330
+                shot.stop()
+                shot.play()
+                revRoundsMag -= 1
+                revolver_reload_timer.stop()
+                reload.stop()
 
-        elif revRoundsMag == 0:
-            empty.stop()
-            empty.play()
-            reloadUI = True
+            elif revRoundsMag == 0:
+                empty.stop()
+                empty.play()
+                reloadUI = True
 
-        if revRoundsMag > 0:
+            if revRoundsMag > 0:
+                if lookingRight:
+                    if banx1 <= 600 and banx1 >= 250:
+                        if banHP > -10:
+                            banHP -= 20
+                            if banHP == 0:
+                                banpain.play()
+                                score += 1
+                                giveMoney()
+                    if banx2 <= 600 and banx2 >= 250:
+                        if ban2HP > -10:
+                            ban2HP -= 20
+                            if ban2HP == 0:
+                                banpain.play()
+                                score += 1
+                                giveMoney()
+                    if banx3 <= 600 and banx3 >= 250:
+                        if ban3HP > -10:
+                            ban3HP -= 20
+                            if ban3HP == 0:
+                                banpain.play()
+                                score += 1
+                                giveMoney()
+                if lookingLeft:
+                    if banx1 >= 0 and banx1 <= 250:
+                        if banHP > -10:
+                            banHP -= 20
+                            if banHP == 0:
+                                banpain.play()
+                                score += 1
+                                giveMoney()
+                    if banx2 >= 0 and banx2 <= 250:
+                        if ban2HP > -10:
+                            ban2HP -= 20
+                            if ban2HP == 0:
+                                banpain.play()
+                                score += 1
+                                giveMoney()
+                    if banx3 >= 0 and banx3 <= 250:
+                        if ban3HP > -10:
+                            ban3HP -= 20
+                            if ban3HP == 0:
+                                banpain.play()
+                                score += 1
+                                giveMoney()
+
+        # sniper rifle
+        if hotbarSlot2 == True and scopeScreen == True:
+            interactText = False
+            if sniperRoundsMag > 0:
+                snipershot.stop()
+                snipershot.play()
+                scopeScreen = False
+                sniperRoundsMag -= 1
+                sniper_reload.stop()
+            else:
+                empty.stop()
+                empty.play()
             if lookingRight:
-                if banx1 <= 600 and banx1 >= 250:
+                if banx1 <= 700 and banx1 >= 250:
                     if banHP > -10:
-                        banHP -= 20
+                        banHP -= 100
                         if banHP == 0:
                             banpain.play()
                             score += 1
                             giveMoney()
-                if banx2 <= 600 and banx2 >= 250:
+                if banx2 <= 700 and banx2 >= 250:
                     if ban2HP > -10:
-                        ban2HP -= 20
+                        ban2HP -= 100
                         if ban2HP == 0:
                             banpain.play()
                             score += 1
-                            giveMoney()
-                if banx3 <= 600 and banx3 >= 250:
+                if banx3 <= 700 and banx3 >= 250:
                     if ban3HP > -10:
-                        ban3HP -= 20
+                        ban3HP -= 100
                         if ban3HP == 0:
                             banpain.play()
                             score += 1
                             giveMoney()
             if lookingLeft:
-                if banx1 >= 0 and banx1 <= 250:
+                if banx1 >= -100 and banx1 <= 250:
                     if banHP > -10:
-                        banHP -= 20
+                        banHP -= 100
                         if banHP == 0:
                             banpain.play()
                             score += 1
                             giveMoney()
-                if banx2 >= 0 and banx2 <= 250:
+                if banx2 >= -100 and banx2 <= 250:
                     if ban2HP > -10:
-                        ban2HP -= 20
+                        ban2HP -= 100
                         if ban2HP == 0:
                             banpain.play()
                             score += 1
                             giveMoney()
-                if banx3 >= 0 and banx3 <= 250:
+                if banx3 >= -100 and banx3 <= 250:
                     if ban3HP > -10:
-                        ban3HP -= 20
+                        ban3HP -= 100
                         if ban3HP == 0:
                             banpain.play()
                             score += 1
                             giveMoney()
-
-    # sniper rifle
-    if hotbarSlot2 == True and scopeScreen == True:
-        interactText = False
-        if sniperRoundsMag > 0:
-            snipershot.stop()
-            snipershot.play()
-            scopeScreen = False
-            sniperRoundsMag -= 1
-            sniper_reload.stop()
-        else:
-            empty.stop()
-            empty.play()
-        if lookingRight:
-            if banx1 <= 700 and banx1 >= 250:
-                if banHP > -10:
-                    banHP -= 100
-                    if banHP == 0:
-                        banpain.play()
-                        score += 1
-                        giveMoney()
-            if banx2 <= 700 and banx2 >= 250:
-                if ban2HP > -10:
-                    ban2HP -= 100
-                    if ban2HP == 0:
-                        banpain.play()
-                        score += 1
-            if banx3 <= 700 and banx3 >= 250:
-                if ban3HP > -10:
-                    ban3HP -= 100
-                    if ban3HP == 0:
-                        banpain.play()
-                        score += 1
-                        giveMoney()
-        if lookingLeft:
-            if banx1 >= -100 and banx1 <= 250:
-                if banHP > -10:
-                    banHP -= 100
-                    if banHP == 0:
-                        banpain.play()
-                        score += 1
-                        giveMoney()
-            if banx2 >= -100 and banx2 <= 250:
-                if ban2HP > -10:
-                    ban2HP -= 100
-                    if ban2HP == 0:
-                        banpain.play()
-                        score += 1
-                        giveMoney()
-            if banx3 >= -100 and banx3 <= 250:
-                if ban3HP > -10:
-                    ban3HP -= 100
-                    if ban3HP == 0:
-                        banpain.play()
-                        score += 1
-                        giveMoney()
 
 
 def hpPotion():
@@ -973,6 +966,25 @@ def showHUD():
             screen.blit(outAmmoFront_text, (215, 233))
 
 
+def interactCheck():
+    global interactText
+
+    # Check if in front of store
+    if store1x <= 100 and store1x >= 0:
+        if playerShoot == False and scopeScreen == False and insideShop == False:
+            interactText = True
+    # Open Catalog
+    elif store1x + 420 <= 100 and store1x + 420 >= 0:
+        if playerHolster == False and playerShoot == False and insideShop == True and catalog == False \
+                and playerSniper == False:
+            interactText = True
+    # Holding sniper rifle
+    elif playerSniper == True and sniperRoundsMag > 0 and insideShop == False:
+        interactText = True
+    else:
+        interactText = False
+
+
 def playerHit(damage):
     global playerHP, invincibility
 
@@ -1204,7 +1216,7 @@ def startGame_timer_handler():
     playButtonClicked = False
     restartButtonClicked = False
     moveAbility = True
-    banMoveAbility = False
+    banMoveAbility = True
     music_timer.start()
     startGame_timer.stop()
 
@@ -1338,10 +1350,6 @@ def rollEnd_timer_handler():
         playerRoll2Left = False
         playerRoll3Left = False
         worldLeft(1)
-    # if land on entrance of store
-    if store1x <= 100 and store1x >= 0:
-        if playerHolster == False and playerShoot == False and scopeScreen == False and insideShop == False:
-            interactText = True
     standing = True
     rolling = False
     invincibility = False
@@ -1493,7 +1501,6 @@ while True:
                     hotbarSlot6 = False
                     griprevolver.stop()
                     griprevolver.play()
-                    interactText = False
                     playerHolster = not playerHolster
                     playerIdle = not playerIdle
                     playerSniper = False
@@ -1571,7 +1578,6 @@ while True:
                 # Enter Store
                 if store1x <= 100 and store1x >= 0:
                     if playerShoot == False and scopeScreen == False and insideShop == False and playerSniper == False:
-                        interactText = True
                         if event.key == pygame.K_UP or event.key == pygame.K_w:
                             insideShop = True
                             lookingRight = True
@@ -1594,7 +1600,6 @@ while True:
                             store1x = 50
                             store2x = 750
                             cactusx = -200
-                            interactText = True
                             banMoveAbility = True
                             door.stop()
                             door.play()
@@ -1602,7 +1607,6 @@ while True:
                 if store1x + 420 <= 100 and store1x + 420 >= 0:
                     if playerHolster == False and playerShoot == False and insideShop == True and catalog == False\
                             and playerSniper == False:
-                        interactText = True
                         if event.key == pygame.K_UP or event.key == pygame.K_w:
                             catalog = not catalog
                             catalogPage1 = True
@@ -1619,7 +1623,6 @@ while True:
                             catalogPage2 = False
                             catalogPage3 = False
                             disableText()
-                            interactText = True
                             moveAbility = True
                             openbook.stop()
                             openbook.play()
@@ -2282,14 +2285,15 @@ while True:
         playerGrab = False
         if playerHolster == False and playerShoot == False and playerDrink == False:
             playerIdle = True
-        if playerSniper == True and sniperRoundsMag > 0 and insideShop == False:
-            interactText = True
         if (playerHolster == True or playerSniper == True) and insideShop == True:
             screen.blit(shopWarning_text, (store1x + 527, 207))
 
         # Check if dead
         if playerHP <= 0:
             playerDead()
+
+        # check for interact
+        interactCheck()
 
         # text refresh
         ban1HPTag = font1.render(("HP: " + str(banHP)), True, (255, 255, 255))
