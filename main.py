@@ -1353,7 +1353,7 @@ def startGame_timer_handler():
     playButtonClicked = False
     restartButtonClicked = False
     moveAbility = True
-    banMoveAbility = False
+    banMoveAbility = True
     music_timer.start()
     startGame_timer.stop()
 
@@ -2307,7 +2307,6 @@ while True:
             if banx1 <= 290 and banx1 >= 210 and insideShop == False:
                 playerHit(4)
         elif banHP == -50:
-            banMove += 5
             banHP = 100
             banx1 = getBanditRespawn()
 
@@ -2316,7 +2315,6 @@ while True:
             if banx2 <= 290 and banx2 >= 210 and insideShop == False:
                 playerHit(4)
         elif ban2HP == -50:
-            banMove += 5
             ban2HP = 100
             banx2 = getBanditRespawn()
 
@@ -2325,7 +2323,6 @@ while True:
             if banx3 <= 290 and banx3 >= 210 and insideShop == False:
                 playerHit(4)
         elif ban3HP == -50:
-            banMove += 5
             ban3HP = 100
             banx3 = getBanditRespawn()
 
@@ -2404,11 +2401,6 @@ while True:
             else:
                 breath.stop()
                 heartbeat.stop()
-
-        if banMoveAbility == True:
-            banMove = 8
-        elif banMoveAbility == False:
-            banMove = 0
 
 
 
@@ -2539,6 +2531,11 @@ while True:
             cooldown_sweat_y += 1
         if cooldown_sweat_y > 273:
             cooldown_sweat_y = 252
+
+        if banMoveAbility == True:
+            banMove = 8
+        elif banMoveAbility == False:
+            banMove = 0
 
         if banMoveAbility == True:
             # ban 1 position

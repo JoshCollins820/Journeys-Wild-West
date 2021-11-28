@@ -1,15 +1,16 @@
 ------------------------ KNOWN BUGS------------------------
+- Out of Ammo text does not always show up when equip rifle
+  Happens after revolver is reloaded and swapped to rifle
 
+-
 --------------------------IMPROVE--------------------------
-- Object oriented enemies
 - Optimize assets by simplifying coords
 
 ----------------------------ADD----------------------------
-- Timers for bandit respawning
 - Looting
+- Object oriented enemies
 - Robbing the store clerk
   (minigame for pursuading him to give free items/money)
-- Continuous Walking
 - Open saloon
 - Horses
 - Bounty posters
