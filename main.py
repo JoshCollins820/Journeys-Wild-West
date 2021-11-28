@@ -2034,21 +2034,21 @@ while True:
     # Game Started ----------------------------------------------------------------------------------------------
     if startGame == True and pause == False:
         # sky
-        screen.blit(asset_sky_day, (300-300, 300-300))
+        screen.blit(asset_sky_day, (0, 0))
         # ground
-        screen.blit(asset_ground_sand, (0,403))
+        screen.blit(asset_ground_sand, (0, 403))
         # clouds
-        screen.blit(asset_cloud1, (cloud1x-71, 75-37.5))
-        screen.blit(asset_cloud2, (cloud2x-71, 175-54))
+        screen.blit(asset_cloud1, (cloud1x-71, 37))
+        screen.blit(asset_cloud2, (cloud2x-71, 121))
         # cactus
-        screen.blit(asset_cactus, (cactusx+29-29,307-98))
-        screen.blit(asset_cactus, (cactusx+789-29, 307-98))
+        screen.blit(asset_cactus, (cactusx, 209))
+        screen.blit(asset_cactus, (cactusx+760, 209))
         # store
-        screen.blit(asset_store, (store1x+200-297, 212-198))
+        screen.blit(asset_store, (store1x-97, 14))
         # saloon
-        screen.blit(asset_saloon, (store2x+200-294, 211-197.5))
+        screen.blit(asset_saloon, (store2x-94, 13.5))
         # tumbleweed
-        screen.blit(asset_tumbleweed, (tumweed1x-38, 370-38.5))
+        screen.blit(asset_tumbleweed, (tumweed1x-38, 331))
 
         # bandit #1 alive
         if banHP > 0:
@@ -2056,168 +2056,168 @@ while True:
             screen.blit(ban1Tag, (banx1-30,232))
             screen.blit(ban1HPTag, (banx1-7,246))
             if ban1left == False:
-                screen.blit(asset_bandit1, (banx1-39.5, 334-72))
+                screen.blit(asset_bandit1, (banx1-39.5, 262))
             elif ban1left == True:
-                screen.blit(asset_bandit1right, (banx1+32-39.5, 334-72))
+                screen.blit(asset_bandit1right, (banx1-7, 262))
         # bandit #2 alive
         if ban2HP > 0:
             screen.blit(ban2Tag, (banx2-30,225))
             screen.blit(ban2HPTag, (banx2-7,237))
             if ban2left == False:
-                screen.blit(asset_bandit2, (banx2-40, 329-76.5))
+                screen.blit(asset_bandit2, (banx2-40, 252))
             elif ban2left == True:
-                screen.blit(asset_bandit2right, (banx2+24-40, 329-76.5))
+                screen.blit(asset_bandit2right, (banx2+24-40, 252))
         # bandit #3 alive
         if ban3HP > 0:
             screen.blit(ban3Tag, (banx3-32,231))
             screen.blit(ban3HPTag, (banx3-9,246))
             if ban3left == False:
-                screen.blit(asset_bandit3, (banx3-40, 334-72))
+                screen.blit(asset_bandit3, (banx3-40, 262))
             elif ban3left == True:
-                screen.blit(asset_bandit3right, (banx3+30-40, 334-72))
+                screen.blit(asset_bandit3right, (banx3-10, 262))
 
         # shop interior
         if insideShop == True:
-            screen.blit(asset_shop_interior, (store1x+550-800, 300-300))
+            screen.blit(asset_shop_interior, (store1x-250, 0))
 
         # character model
         if standing == True:
             if lookingRight == True:
                 # drink potion right
                 if playerDrink == True:
-                    screen.blit(asset_player_drink_right, (254-50, 323-77))
+                    screen.blit(asset_player_drink_right, (204, 246))
                 else:
                     # base player right
-                    screen.blit(asset_player_right, (250-32.5, 329-75.5))
+                    screen.blit(asset_player_right, (217, 253))
                 # idle legs
                 if playerLegsIdle == True:
-                    screen.blit(asset_player_legs_idle_right, (250-32.5, 329-77))
+                    screen.blit(asset_player_legs_idle_right, (217, 252))
                 # sniper rifle on back
                 if ownSniperRifle == True and playerSniper == False:
-                    screen.blit(asset_sniper_rifle_right, (242-5, 341-39))
+                    screen.blit(asset_sniper_rifle_right, (237, 302))
                 # revolver on hip
                 if playerShoot == False:
-                    screen.blit(asset_revolver_vert_right, (246-9.5, 364-19.5))
+                    screen.blit(asset_revolver_vert_right, (236, 344))
                 # holster
-                screen.blit(asset_holster_right, (250-32.5, 335-75.5))
+                screen.blit(asset_holster_right, (217, 259))
                 # hp beer in hand right
                 if hotbarSlot6 == True and hpPotionCount > 0 and playerIdle == True:
-                    screen.blit(asset_hearty_beer_right, (245-14, 358-5))
+                    screen.blit(asset_hearty_beer_right, (231, 353))
                 # holding sniper right
                 if playerSniper == True and playerWalk == False:
-                    screen.blit(asset_sniper_right, (260-53, 360-10.5))
+                    screen.blit(asset_sniper_right, (207, 349))
                 # idle arms
                 if playerIdle == True:
-                    screen.blit(asset_player_arms_idle, (249-32.5, 329-76))
+                    screen.blit(asset_player_arms_idle, (216, 253))
                 # hand on holster
                 if playerHolster == True and playerWalk == False:
-                    screen.blit(asset_player_holster_right, (250-32.5, 329-76))
+                    screen.blit(asset_player_holster_right, (217, 253))
                 # grab sniper
                 if playerGrab == True:
-                    screen.blit(asset_player_holster_right, (250-32.5, 329-76))
+                    screen.blit(asset_player_holster_right, (217, 253))
                 # walk right
                 if playerWalk == True:
                     # drink walk
                     if playerDrink == True:
-                        screen.blit(asset_player_legs_walk_right, (250-32.5, 329-77))
+                        screen.blit(asset_player_legs_walk_right, (217, 252))
                     # hold sniper walk
                     elif playerSniper == True:
-                        screen.blit(asset_sniper_right, (260-35, 360-10.5))
-                        screen.blit(asset_player_legs_walk_right, (250-32.5, 329-77))
-                        screen.blit(asset_player_arms_walk_right, (250-32.5, 329-76))
+                        screen.blit(asset_sniper_right, (225, 349))
+                        screen.blit(asset_player_legs_walk_right, (217, 252))
+                        screen.blit(asset_player_arms_walk_right, (217, 253))
                     # holster walk
                     elif playerHolster == True:
-                        screen.blit(asset_player_legs_walk_right, (250 - 32.5, 329 - 77))
+                        screen.blit(asset_player_legs_walk_right, (217, 252))
                         if playerShoot == False:
-                            screen.blit(asset_revolver_vert_right, (246 - 9.5, 364 - 19.5))
-                        screen.blit(asset_holster_right, (250 - 32.5, 335 - 75.5))
-                        screen.blit(asset_player_holsterwalk_right, (250-32.5, 329-76))
+                            screen.blit(asset_revolver_vert_right, (236, 344))
+                        screen.blit(asset_holster_right, (217, 259))
+                        screen.blit(asset_player_holsterwalk_right, (217, 253))
 
                     else:
                         # hp beer in hand right
                         if hotbarSlot6 == True and hpPotionCount > 0:
-                            screen.blit(asset_hearty_beer_right, (263-14, 357-5))
+                            screen.blit(asset_hearty_beer_right, (249, 352))
                         # default walk
-                        screen.blit(asset_player_arms_walk_right, (250-32.5, 329-76))
+                        screen.blit(asset_player_arms_walk_right, (217, 253))
                         if ownSniperRifle == True and playerSniper == False:
-                            screen.blit(asset_sniper_rifle_right, (242 - 5, 341 - 39))
-                        screen.blit(asset_player_legs_walk_right, (250-32.5, 329-77))
+                            screen.blit(asset_sniper_rifle_right, (237, 302))
+                        screen.blit(asset_player_legs_walk_right, (217, 252))
                         if playerShoot == False:
-                            screen.blit(asset_revolver_vert_right, (246 - 9.5, 364 - 19.5))
-                        screen.blit(asset_holster_right, (250 - 32.5, 335 - 75.5))
+                            screen.blit(asset_revolver_vert_right, (236, 344))
+                        screen.blit(asset_holster_right, (217, 259))
                 # bandana right
-                screen.blit(asset_bandana_right, (250-32.5, 329-76))
+                screen.blit(asset_bandana_right, (217, 253))
                 # extended arm right
                 if playerShoot == True:
-                    screen.blit(asset_revolver_right, (299-19.5, 321-9.5))
-                    screen.blit(asset_player_shoot_right, (260-32.5, 329-77))
-                    screen.blit(asset_muzzleflash_right, (bulletx-12, 313-5.5))
+                    screen.blit(asset_revolver_right, (279, 311))
+                    screen.blit(asset_player_shoot_right, (227, 252))
+                    screen.blit(asset_muzzleflash_right, (bulletx-12, 307))
 
             if lookingLeft == True:
                 # revolver on hip
                 if playerShoot == False:
-                    screen.blit(asset_revolver_vert_grip_left, (262 - 14, 346 - 4))
+                    screen.blit(asset_revolver_vert_grip_left, (248, 342))
                 # holding sniper left
                 if playerSniper == True and playerWalk == False:
-                    screen.blit(asset_sniper_left, (243-53, 360-10.5))
+                    screen.blit(asset_sniper_left, (190, 349))
                 # hp beer in hand right
                 if hotbarSlot6 == True and hpPotionCount > 0 and playerIdle == True:
-                    screen.blit(asset_hearty_beer_left, (254-14, 358-5))
+                    screen.blit(asset_hearty_beer_left, (240, 353))
                 # drink potion left
                 if playerDrink == True:
-                    screen.blit(asset_player_drink_left, (249-50, 324-77))
+                    screen.blit(asset_player_drink_left, (199, 247))
                 else:
                     # base player left
-                    screen.blit(asset_player_left, (250-32.5, 329-75.5))
+                    screen.blit(asset_player_left, (217, 253))
                 # idle legs
                 if playerLegsIdle == True:
-                    screen.blit(asset_player_legs_idle_left, (250-32.5, 329-77))
+                    screen.blit(asset_player_legs_idle_left, (217, 252))
                 # idle arms
                 if playerIdle == True:
-                    screen.blit(asset_player_arms_idle, (250-32.5, 329-76))
+                    screen.blit(asset_player_arms_idle, (217, 253))
                 # hand on holster
                 if playerHolster == True and playerWalk == False:
-                    screen.blit(asset_player_holster_left, (250-32.5, 329-76))
+                    screen.blit(asset_player_holster_left, (217, 253))
                 # grab sniper
                 if playerGrab == True:
-                    screen.blit(asset_player_holster_left, (250-32.5, 329-76))
+                    screen.blit(asset_player_holster_left, (217, 253))
                 # sniper rifle on back
                 if ownSniperRifle == True and playerSniper == False:
-                    screen.blit(asset_sniper_rifle_left, (259-6, 341-39))
+                    screen.blit(asset_sniper_rifle_left, (253, 302))
                     # walk left
                 if playerWalk == True:
                     # drink walk
                     if playerDrink == True:
-                        screen.blit(asset_player_legs_walk_left, (250-32.5, 329-77))
+                        screen.blit(asset_player_legs_walk_left, (217, 252))
                     # hold sniper walk
                     elif playerSniper == True:
-                        screen.blit(asset_sniper_left, (260-53, 359-10.5))
-                        screen.blit(asset_player_left, (250 - 32.5, 329 - 75.5))
-                        screen.blit(asset_player_arms_walk_left, (250-32.5, 329-76))
-                        screen.blit(asset_player_legs_walk_left, (250-32.5, 329-77))
+                        screen.blit(asset_sniper_left, (207, 348))
+                        screen.blit(asset_player_left, (217, 253))
+                        screen.blit(asset_player_arms_walk_left, (217, 253))
+                        screen.blit(asset_player_legs_walk_left, (217, 252))
                     # holster walk
                     elif playerHolster == True:
-                        screen.blit(asset_player_holsterwalk_left, (250-32.5, 329-76))
+                        screen.blit(asset_player_holsterwalk_left, (217, 253))
                         if ownSniperRifle == True and playerSniper == False:
-                            screen.blit(asset_sniper_rifle_left, (259 - 6, 341 - 39))
-                        screen.blit(asset_player_legs_walk_left, (250-32.5, 329-77))
+                            screen.blit(asset_sniper_rifle_left, (253, 302))
+                        screen.blit(asset_player_legs_walk_left, (217, 252))
                     else:
                         # hp beer in hand left
                         if hotbarSlot6 == True and hpPotionCount > 0:
-                            screen.blit(asset_hearty_beer_left, (276-14, 357-5))
+                            screen.blit(asset_hearty_beer_left, (262, 352))
                         # default walk
-                        screen.blit(asset_player_arms_walk_left, (250-32.5, 329-76))
+                        screen.blit(asset_player_arms_walk_left, (217, 253))
                         if ownSniperRifle == True and playerSniper == False:
-                            screen.blit(asset_sniper_rifle_left, (259 - 6, 341 - 39))
-                        screen.blit(asset_player_legs_walk_left, (250 - 32.5, 329 - 77))
+                            screen.blit(asset_sniper_rifle_left, (253, 302))
+                        screen.blit(asset_player_legs_walk_left, (217, 252))
                 # extended arm left
                 if playerShoot == True:
-                    screen.blit(asset_player_shoot_left, (240-32.5, 329-77))
-                    screen.blit(asset_player_arms_idle, (250-32.5, 329-77))
-                    screen.blit(asset_revolver_left, (202-19.5, 321-9.5))
-                    screen.blit(asset_muzzleflash_left, (bulletx-250, 313-5.5))
+                    screen.blit(asset_player_shoot_left, (207, 252))
+                    screen.blit(asset_player_arms_idle, (217, 252))
+                    screen.blit(asset_revolver_left, (182, 311))
+                    screen.blit(asset_muzzleflash_left, (bulletx-250, 307))
                 # bandana left
-                screen.blit(asset_bandana_left, (250-32.5, 329-76))
+                screen.blit(asset_bandana_left, (217, 253))
         # Roll
         if rolling == True:
             if lookingRight == True:
@@ -2254,53 +2254,53 @@ while True:
 
         # catalog weapon prices
         if catalogPage2 == True:
-            screen.blit(asset_text_owned, (245-24.5, 210-7))
+            screen.blit(asset_text_owned, (220, 203))
             if ownSniperRifle == True:
-                screen.blit(asset_text_owned, (245-24.5, 301-7))
+                screen.blit(asset_text_owned, (220, 294))
             if ownSniperRifle == False:
                 if moneyCount < 1000:
-                    screen.blit(asset_text_1000_red, (248-21.5, 301-7.5))
+                    screen.blit(asset_text_1000_red, (226, 293))
                 elif moneyCount >= 1000:
-                    screen.blit(asset_text_1000_green, (248-21.5, 301-7.5))
+                    screen.blit(asset_text_1000_green, (226, 293))
         if catalogPage3 == True:
             if moneyCount < 100:
                 # hearty beer
-                screen.blit(asset_text_100_red, (527-21.5, 210-7.5))
+                screen.blit(asset_text_100_red, (505, 202))
                 # 30-50 rounds
-                screen.blit(asset_text_100_red, (257-21.5, 301-7.5))
+                screen.blit(asset_text_100_red, (235, 293))
             elif moneyCount >= 100:
                 # hearty beer
-                screen.blit(asset_text_100_green, (527-21.5, 210-7.5))
+                screen.blit(asset_text_100_green, (505, 202))
                 # 30-50 rounds
-                screen.blit(asset_text_100_green, (257-21.5, 301-7.5))
+                screen.blit(asset_text_100_green, (235, 293))
             if moneyCount < 50:
                 # .45 rounds
-                screen.blit(asset_text_50_red, (262-21.5, 208-7.5))
+                screen.blit(asset_text_50_red, (240, 200))
             elif moneyCount >= 50:
                 # .45 rounds
-                screen.blit(asset_text_50_green, (262-21.5, 208-7.5))
+                screen.blit(asset_text_50_green, (240, 200))
 
         if insideShop == False:
             # ban #1 dead
             if banHP <= 0:
                 if ban1left == False:
-                    screen.blit(asset_bandit1_dead, (banx1+50-73, 399-22))
+                    screen.blit(asset_bandit1_dead, (banx1-23, 377))
                 elif ban1left == True:
-                    screen.blit(asset_bandit1right_dead, (banx1-50-73, 399-22))
+                    screen.blit(asset_bandit1right_dead, (banx1-123, 377))
 
             # ban #2 dead
             if ban2HP <= 0:
                 if ban2left == False:
-                    screen.blit(asset_bandit2_dead, (banx2+50-78.5, 399-22))
+                    screen.blit(asset_bandit2_dead, (banx2-28, 377))
                 elif ban2left == True:
-                    screen.blit(asset_bandit2right_dead, (banx2-50-78.5, 399-22))
+                    screen.blit(asset_bandit2right_dead, (banx2-128, 377))
 
             # ban #3 dead
             if ban3HP <= 0:
                 if ban3left == False:
-                    screen.blit(asset_bandit3_dead, (banx3+50-73, 399-22.5))
+                    screen.blit(asset_bandit3_dead, (banx3-23, 376))
                 elif ban3left == True:
-                    screen.blit(asset_bandit3right_dead, (banx3-50-73, 399-22.5))
+                    screen.blit(asset_bandit3right_dead, (banx3-123, 376))
 
         # ban 1 damage range
         if banHP > 0:
