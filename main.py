@@ -1061,12 +1061,13 @@ def showHUD():
         screen.blit(sniperAmmo_text, (41, 571))
     else:
         screen.blit(blankAmmo_text, (41, 570))
-    if reloadUI == True:
-        screen.blit(reloadBack_text, (215.8, 233.8))
-        screen.blit(reloadFront_text, (215, 233))
-    if outAmmoUI == True:
-        screen.blit(outAmmoBack_text, (215.8, 233.8))
-        screen.blit(outAmmoFront_text, (215, 233))
+    if standing == True:
+        if reloadUI == True:
+            screen.blit(reloadBack_text, (215.8, 233.8))
+            screen.blit(reloadFront_text, (215, 233))
+        if outAmmoUI == True:
+            screen.blit(outAmmoBack_text, (215.8, 233.8))
+            screen.blit(outAmmoFront_text, (215, 233))
 
 
 
@@ -1335,23 +1336,24 @@ def switchSlots(slot):
             playerHolster = False
 
     elif slot == 2:
-        hotbarSlot2 = not hotbarSlot2
-        hotbarSlot1 = False
-        hotbarSlot3 = False
-        hotbarSlot4 = False
-        hotbarSlot5 = False
-        hotbarSlot6 = False
-        playerHolster = False
-        playerShoot = False
-        interactText = False
-        if ownSniperRifle == True:
-            playerSniper = not playerSniper
-            playerGrab = True
-            griprevolver.stop()
-            griprevolver.play()
-            playerIdle = False
-        if insideShop == True:
+        if scopeScreen == False:
+            hotbarSlot2 = not hotbarSlot2
+            hotbarSlot1 = False
+            hotbarSlot3 = False
+            hotbarSlot4 = False
+            hotbarSlot5 = False
+            hotbarSlot6 = False
+            playerHolster = False
+            playerShoot = False
             interactText = False
+            if ownSniperRifle == True:
+                playerSniper = not playerSniper
+                playerGrab = True
+                griprevolver.stop()
+                griprevolver.play()
+                playerIdle = False
+            if insideShop == True:
+                interactText = False
     elif slot == 3:
         hotbarSlot1 = False
         hotbarSlot2 = False
@@ -2541,11 +2543,13 @@ while True:
         # check for whether or not to show reload/outammo UI
         if (revolverOutMag and hotbarSlot1) or (sniperOutMag and hotbarSlot2):
             reloadUI = True
+            interactText = False
         else:
             reloadUI = False
         if (revolverOutAmmo and hotbarSlot1) or (sniperOutAmmo and hotbarSlot2):
             reloadUI = False
             outAmmoUI = True
+            interactText = False
         else:
             outAmmoUI = False
 
