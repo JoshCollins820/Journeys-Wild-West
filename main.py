@@ -125,6 +125,10 @@ if collapse:
     startGame = False
     reloadUI = False
     outAmmoUI = False
+    revolverOutMag = False
+    sniperOutMag = False
+    revolverOutAmmo = False
+    sniperOutAmmo = False
     dead = False
     scopeScreen = False
     ban1left = False
@@ -614,7 +618,6 @@ def fire():
             elif revRoundsMag == 0:
                 empty.stop()
                 empty.play()
-                reloadUI = True
 
             if revRoundsMag > 0:
                 if lookingRight:
@@ -1059,16 +1062,12 @@ def showHUD():
     else:
         screen.blit(blankAmmo_text, (41, 570))
     if reloadUI == True:
-        if revRoundsMag <= 0 and hotbarSlot1 == True or sniperRoundsMag <= 0 and hotbarSlot2 == True:
-            screen.blit(reloadBack_text, (215.8, 233.8))
-            screen.blit(reloadFront_text, (215, 233))
+        screen.blit(reloadBack_text, (215.8, 233.8))
+        screen.blit(reloadFront_text, (215, 233))
     if outAmmoUI == True:
-        if revRoundsTotal <= 0 and revRoundsMag <= 0 and hotbarSlot1 == True:
-            screen.blit(outAmmoBack_text, (215.8, 233.8))
-            screen.blit(outAmmoFront_text, (215, 233))
-        if sniperRoundsTotal <= 0 and sniperRoundsMag <= 0 and hotbarSlot2 == True:
-            screen.blit(outAmmoBack_text, (215.8, 233.8))
-            screen.blit(outAmmoFront_text, (215, 233))
+        screen.blit(outAmmoBack_text, (215.8, 233.8))
+        screen.blit(outAmmoFront_text, (215, 233))
+
 
 
 def interactCheck():
@@ -1133,7 +1132,7 @@ def resetValues():
         ban1H, ban1W, ban2H, ban2W, ban3H, ban3W, playerRoll1Right, playerRoll2Right, playerRoll3Right,\
         playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y, walkingLeft, \
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
-        masterIconButtonHover
+        masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag
 
     # player vals
     playerHP = 100
@@ -1203,6 +1202,10 @@ def resetValues():
     hotbarSlot6 = False
     reloadUI = False
     outAmmoUI = False
+    revolverOutMag = False
+    sniperOutMag = False
+    revolverOutAmmo = False
+    sniperOutAmmo = False
     scopeScreen = False
     ban1InScope = False
     ban2InScope = False
@@ -1327,8 +1330,6 @@ def switchSlots(slot):
         playerHolster = not playerHolster
         playerIdle = not playerIdle
         playerSniper = False
-        if revRoundsMag <= 0 and revRoundsTotal > 0:
-            reloadUI = True
         if hotbarSlot1 == False:
             playerShoot = False
             playerHolster = False
@@ -1344,8 +1345,6 @@ def switchSlots(slot):
         playerShoot = False
         interactText = False
         if ownSniperRifle == True:
-            if sniperRoundsMag <= 0 and sniperRoundsTotal > 0:
-                reloadUI = True
             playerSniper = not playerSniper
             playerGrab = True
             griprevolver.stop()
@@ -1718,7 +1717,6 @@ while True:
                             if revRoundsTotal > 0:
                                 reload.stop()
                                 reload.play()
-                                reloadUI = False
                                 revolver_reload_timer.start()
                     # Sniper Rifle
                     if hotbarSlot2 == True or scopeScreen == True:
@@ -1728,7 +1726,6 @@ while True:
                             if sniperRoundsTotal > 0:
                                 sniper_reload.stop()
                                 sniper_reload.play()
-                                reloadUI = False
                                 sniper_reload_timer.start()
                 # Use Item (Space)
                 if event.key == pygame.K_SPACE:
@@ -1738,21 +1735,9 @@ while True:
                             fire()
                             readyToFireRevolver = False
                             revolverFireDelay_timer.start()
-                            if revRoundsMag <= 0:
-                                reloadUI = True
-                                outAmmoUI = False
-                            if revRoundsTotal <= 0:
-                                outAmmoUI = True
-                                reloadUI = False
                     # Sniper Rifle fires
                     if hotbarSlot2 == True and ownSniperRifle == True and sniperRoundsMag >= 1:
                         fire()
-                        if sniperRoundsMag <= 0:
-                            reloadUI = True
-                            outAmmoUI = False
-                        if sniperRoundsTotal <= 0:
-                            outAmmoUI = True
-                            reloadUI = False
                     # HP Potion is used
                     if hotbarSlot6 == True and hpPotionCount > 0:
                         hpPotion()
@@ -2082,14 +2067,6 @@ while True:
                 # Fire Sniper Rifle
                 if hotbarSlot2 == True and ownSniperRifle == True and sniperRoundsMag >= 1:
                     fire()
-                    if sniperRoundsMag <= 0:
-                        reloadUI = True
-                        outAmmoUI = False
-                        interactText = False
-                    if sniperRoundsTotal <= 0:
-                        outAmmoUI = True
-                        reloadUI = False
-                        interactText = False
 
     # Mouse Position
     mouse_posx,mouse_posy = pygame.mouse.get_pos()
@@ -2536,6 +2513,42 @@ while True:
         # check for highscore
         if score > highscore:
             highscore = score
+
+        # check for out of ammo or needed reload
+        # revolver --------------------
+        if revRoundsMag <= 0 and revRoundsTotal > 0:
+            revolverOutMag = True
+        else:
+            revolverOutMag = False
+
+        if revRoundsTotal <= 0 and revRoundsMag <= 0:
+            revolverOutAmmo = True
+            revolverOutMag = False
+        else:
+            revolverOutAmmo = False
+        # sniper rifle ----------------
+        if sniperRoundsMag <= 0 and sniperRoundsTotal > 0:
+            sniperOutMag = True
+        else:
+            sniperOutMag = False
+
+        if sniperRoundsTotal <= 0 and sniperRoundsMag <= 0:
+            sniperOutAmmo = True
+            sniperOutMag = False
+        else:
+            sniperOutAmmo = False
+
+        # check for whether or not to show reload/outammo UI
+        if (revolverOutMag and hotbarSlot1) or (sniperOutMag and hotbarSlot2):
+            reloadUI = True
+        else:
+            reloadUI = False
+        if (revolverOutAmmo and hotbarSlot1) or (sniperOutAmmo and hotbarSlot2):
+            reloadUI = False
+            outAmmoUI = True
+        else:
+            outAmmoUI = False
+
 
         # text refresh
         ban1HPTag = font1.render(("HP: " + str(banHP)), True, (255, 255, 255))
