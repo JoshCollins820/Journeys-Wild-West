@@ -1070,7 +1070,6 @@ def showHUD():
             screen.blit(outAmmoFront_text, (215, 233))
 
 
-
 def interactCheck():
     global interactText
 
