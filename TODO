@@ -16,6 +16,7 @@
 - Missions
 - Leaderboard
 
+-----------------------------------------------------------
 -------------------------CHANGELOG-------------------------
 v0.4
 New Features
@@ -23,10 +24,10 @@ New Features
 - Main Menu
 - Pause Menu
 - Settings Menu
-- Restart button
-- Return to Main Menu button
+- Restart and Main Menu buttons
 - Volume Adjustment
 - High score system
+- Dynamic reloading SFX
 
 Balance
 - Improved continuous walking
@@ -38,11 +39,6 @@ Bug Fixes
 - Fixed HP Beer animation being too short
 - Fixed sniper rifle firing without ammo
 - Fixed enemies in sniper scope not moving
-
-Known Bugs
-- Reloading sound does not always play
-
-
 
 ---------------------------NOTES---------------------------
 

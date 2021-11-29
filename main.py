@@ -42,7 +42,7 @@ if collapse:
     revRoundsMag = 6
     revRoundsTotal = 24
     revolverFireRate = 12
-    revolverReloadSpeed = 450
+    revolverReloadSpeed = 500
     sniperRoundsMag = 1
     sniperRoundsTotal = 3
     hpPotionCount = 5
@@ -208,6 +208,7 @@ if collapse:
     shot = pygame.mixer.Sound('assets/sounds/shot.wav')
     empty = pygame.mixer.Sound('assets/sounds/empty.wav')
     reload = pygame.mixer.Sound('assets/sounds/reload.wav')
+    revolverspin = pygame.mixer.Sound('assets/sounds/revolverspin.wav')
     death = pygame.mixer.Sound('assets/sounds/death.wav')
     playerhit = pygame.mixer.Sound('assets/sounds/playerhit.wav')
     banpain = pygame.mixer.Sound('assets/sounds/banpain.wav')
@@ -610,8 +611,7 @@ def fire():
                 shot.stop()
                 shot.play()
                 revRoundsMag -= 1
-                revolver_reload_timer.stop()
-                reload.stop()
+                stopRevolverReload()
 
             elif revRoundsMag == 0:
                 empty.stop()
@@ -1023,6 +1023,7 @@ def showSettings():
     shot.set_volume(masterVolume)
     empty.set_volume(masterVolume)
     reload.set_volume(masterVolume)
+    revolverspin.set_volume(masterVolume)
     death.set_volume(masterVolume)
     playerhit.set_volume(masterVolume)
     banpain.set_volume(masterVolume)
@@ -1066,7 +1067,7 @@ def showHUD():
     if insufFundsText == True:
         screen.blit(asset_text_insufficient, (201, 60))
     # interact text
-    if interactText == True and rolling == False:
+    if interactText == True and rolling == False and scopeScreen == False:
         if sitting == True:
             screen.blit(interact_text, (221, 265))
         else:
@@ -1082,7 +1083,7 @@ def showHUD():
         if outAmmoUI == True:
             screen.blit(outAmmo_text, (215, 233))
     # hotbar
-    if startGame == True:
+    if startGame == True and scopeScreen == False:
         screen.blit(asset_hotbar, (300 - 153.5, 560 - 28.5))
         screen.blit(asset_revolver, (300 - 153.5, 560 - 28.5))
         if ownSniperRifle == True:
@@ -1348,6 +1349,7 @@ def switchSlots(slot):
         hotbarSlot4 = False
         hotbarSlot5 = False
         hotbarSlot6 = False
+        stopRevolverReload()
         griprevolver.stop()
         griprevolver.play()
         playerHolster = not playerHolster
@@ -1367,6 +1369,7 @@ def switchSlots(slot):
             hotbarSlot6 = False
             playerHolster = False
             playerShoot = False
+            stopRevolverReload()
             if ownSniperRifle == True:
                 playerSniper = not playerSniper
                 playerGrab = True
@@ -1385,6 +1388,7 @@ def switchSlots(slot):
         interactText = False
         playerHolster = False
         playerSniper = False
+        stopRevolverReload()
     elif slot == 4:
         hotbarSlot1 = False
         hotbarSlot2 = False
@@ -1395,6 +1399,7 @@ def switchSlots(slot):
         interactText = False
         playerSniper = False
         playerHolster = False
+        stopRevolverReload()
     elif slot == 5:
         hotbarSlot5 = not hotbarSlot5
         hotbarSlot1 = False
@@ -1405,6 +1410,7 @@ def switchSlots(slot):
         interactText = False
         playerSniper = False
         playerHolster = False
+        stopRevolverReload()
     elif slot == 6:
         hotbarSlot6 = not hotbarSlot6
         hotbarSlot1 = False
@@ -1412,10 +1418,17 @@ def switchSlots(slot):
         hotbarSlot3 = False
         hotbarSlot4 = False
         hotbarSlot5 = False
+        stopRevolverReload()
         interactText = False
         playerHolster = False
         playerSniper = False
         playerShoot = False
+
+
+def stopRevolverReload():
+    revolver_reload_timer.stop()
+    reload.stop()
+    revolverspin.stop()
 
 
 def volumeButtonReset_timer_handler():
@@ -1434,8 +1447,8 @@ def revolver_reload_timer_handler():
     if revRoundsTotal > 0:
         revRoundsTotal -= 1
         revRoundsMag += 1
-    if revRoundsMag == 6:
-        #reload.stop()
+    if revRoundsMag == 6 or revRoundsTotal == 0:
+        reloadEnded_timer.start()
         revolver_reload_timer.stop()
 
 
@@ -1637,6 +1650,12 @@ def walk2_timer_handler():
     walk2_timer.stop()
 
 
+def reloadEnded_timer_handler():
+    reload.stop()
+    revolverspin.play()
+    reloadEnded_timer.stop()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -1658,13 +1677,14 @@ rollEnd_timer = simplegui.create_timer(75, rollEnd_timer_handler)
 rollCooldown_timer = simplegui.create_timer(1500, rollCooldown_timer_handler)
 walk1_timer = simplegui.create_timer(1, walk1_timer_handler)
 walk2_timer = simplegui.create_timer(150, walk2_timer_handler)
+reloadEnded_timer = simplegui.create_timer(125, reloadEnded_timer_handler)
 
 
 # timers tuple
 timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
               drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
               volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
-              rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer)
+              rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -2473,7 +2493,7 @@ while True:
         # Constant Refresh -------------------------------------------------------------------------------------
 
         # HUD
-        if startGame == True:
+        if startGame == True and scopeScreen == False:
             showHUD()
 
         # Player Model Refresh
@@ -2564,6 +2584,7 @@ while True:
         shot.set_volume(masterVolume)
         empty.set_volume(masterVolume)
         reload.set_volume(masterVolume)
+        revolverspin.set_volume(masterVolume)
         death.set_volume(masterVolume)
         playerhit.set_volume(masterVolume)
         banpain.set_volume(masterVolume)
