@@ -371,8 +371,8 @@ if collapse:
 
 # text
 if collapse:
-    font1 = pygame.font.SysFont("Times New Roman", 13, False)
-    font2 = pygame.font.SysFont("Times New Roman", 18, False)
+    font1 = pygame.font.SysFont("bahnschrift", 13, False)
+    font2 = pygame.font.SysFont("bahnschrift", 18, False)
     font3 = pygame.font.SysFont("ebrima", 20, True)
     # syntax - (Name, Size, Bold, Italic)
 
@@ -387,11 +387,9 @@ if collapse:
     playerMoney_text = font2.render((str(moneyCount)), True, (255,255,255))
     revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255,255,255))
     sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255,255,255))
-    blankAmmo_text = font2.render("-/-", True, (255,255,255))
-    reloadFront_text = font1.render("RELOAD (R)", True, (255,0,0))
-    reloadBack_text = font1.render("RELOAD (R)", True, (0,0,0))
-    outAmmoFront_text = font1.render("Out of Ammo", True, (255,0,0))
-    outAmmoBack_text = font1.render("Out of Ammo", True, (0,0,0))
+    blankAmmo_text = font2.render("-", True, (255,255,255))
+    reload_text = font1.render("RELOAD", True, (255,0,0))
+    outAmmo_text = font1.render("Out of Ammo", True, (255,0,0))
     interact_text = font1.render("INTERACT", True, (255,255,255))
     buy_text = font1.render("BUY", True, (255,255,255))
     potionCount_text = font1.render((str(hpPotionCount)), True, (255,255,255))
@@ -1038,6 +1036,7 @@ def showSettings():
     error.set_volume(masterVolume)
     potion.set_volume(masterVolume)
     sniper_reload.set_volume(masterVolume)
+    combatroll.set_volume(masterVolume)
     intromusic.set_volume(musicVolume * masterVolume)
     intro.set_volume(musicVolume * masterVolume)
     music.set_volume(musicVolume * masterVolume)
@@ -1045,29 +1044,53 @@ def showSettings():
 
 def showHUD():
     # hp
-    screen.blit(asset_hp_icon, (25 - 12.5, 517 - 10))
-    screen.blit(playerHP_text, (38, 505))
+    screen.blit(asset_hp_icon, (11, 507))
+    screen.blit(playerHP_text, (41, 505))
     # kills
-    screen.blit(asset_kills_icon, (24 - 12.5, 540 - 10))
-    screen.blit(playerScore_text, (40, 529))
+    screen.blit(asset_kills_icon, (11, 530))
+    screen.blit(playerScore_text, (41, 528))
     # money
-    screen.blit(asset_money_icon, (24 - 12.5, 562 - 10))
-    screen.blit(playerMoney_text, (40, 551))
+    screen.blit(asset_money_icon, (11, 552))
+    screen.blit(playerMoney_text, (41, 550))
     # ammo
-    screen.blit(asset_ammo_icon, (25 - 12.5, 583 - 10))
+    screen.blit(asset_ammo_icon, (11, 573))
     if hotbarSlot1 == True:
         screen.blit(revolverAmmo_text, (41, 571))
     elif hotbarSlot2 == True:
         screen.blit(sniperAmmo_text, (41, 571))
     else:
-        screen.blit(blankAmmo_text, (41, 570))
+        screen.blit(blankAmmo_text, (42, 569))
+    # popup text
+    if purchasedText == True:
+        screen.blit(asset_text_purchased, (201, 60))
+    if insufFundsText == True:
+        screen.blit(asset_text_insufficient, (201, 60))
+    # interact text
+    if interactText == True and rolling == False:
+        if sitting == True:
+            screen.blit(interact_text, (221, 265))
+        else:
+            screen.blit(interact_text, (221, 235))
+    # buy text
+    if buyText == True:
+        screen.blit(buy_text, (137, 255))
+
+    # ammo text
     if standing == True:
         if reloadUI == True:
-            screen.blit(reloadBack_text, (215.8, 233.8))
-            screen.blit(reloadFront_text, (215, 233))
+            screen.blit(reload_text, (226, 233))
         if outAmmoUI == True:
-            screen.blit(outAmmoBack_text, (215.8, 233.8))
-            screen.blit(outAmmoFront_text, (215, 233))
+            screen.blit(outAmmo_text, (215, 233))
+    # hotbar
+    if startGame == True:
+        screen.blit(asset_hotbar, (300 - 153.5, 560 - 28.5))
+        screen.blit(asset_revolver, (300 - 153.5, 560 - 28.5))
+        if ownSniperRifle == True:
+            screen.blit(asset_sniper, (300 - 153.5, 560 - 28.5))
+        if hpPotionCount > 0:
+            screen.blit(asset_hearty_beer_icon, (500 - 153.5, 562 - 28.5))
+            screen.blit(potionCount_text, (403, 537))
+        screen.blit(asset_hotbar_select, (activeSlotx1 - 3, 565 - 33))
 
 
 def interactCheck():
@@ -1344,7 +1367,6 @@ def switchSlots(slot):
             hotbarSlot6 = False
             playerHolster = False
             playerShoot = False
-            interactText = False
             if ownSniperRifle == True:
                 playerSniper = not playerSniper
                 playerGrab = True
@@ -1413,6 +1435,7 @@ def revolver_reload_timer_handler():
         revRoundsTotal -= 1
         revRoundsMag += 1
     if revRoundsMag == 6:
+        #reload.stop()
         revolver_reload_timer.stop()
 
 
@@ -2136,23 +2159,23 @@ while True:
         if banHP > 0:
             # bandit 1 text
             screen.blit(ban1Tag, (banx1-30,232))
-            screen.blit(ban1HPTag, (banx1-7,246))
+            screen.blit(ban1HPTag, (banx1-6,246))
             if ban1left == False:
                 screen.blit(asset_bandit1, (banx1-39.5, 262))
             elif ban1left == True:
                 screen.blit(asset_bandit1right, (banx1-7, 262))
         # bandit #2 alive
         if ban2HP > 0:
-            screen.blit(ban2Tag, (banx2-30,225))
-            screen.blit(ban2HPTag, (banx2-7,237))
+            screen.blit(ban2Tag, (banx2-25,222))
+            screen.blit(ban2HPTag, (banx2-5,236))
             if ban2left == False:
                 screen.blit(asset_bandit2, (banx2-40, 252))
             elif ban2left == True:
                 screen.blit(asset_bandit2right, (banx2+24-40, 252))
         # bandit #3 alive
         if ban3HP > 0:
-            screen.blit(ban3Tag, (banx3-32,231))
-            screen.blit(ban3HPTag, (banx3-9,246))
+            screen.blit(ban3Tag, (banx3-29,232))
+            screen.blit(ban3HPTag, (banx3-5,246))
             if ban3left == False:
                 screen.blit(asset_bandit3, (banx3-40, 262))
             elif ban3left == True:
@@ -2234,7 +2257,6 @@ while True:
                     screen.blit(asset_revolver_right, (279, 311))
                     screen.blit(asset_player_shoot_right, (227, 252))
                     screen.blit(asset_muzzleflash_right, (bulletx-12, 307))
-
             if lookingLeft == True:
                 # revolver on hip
                 if playerShoot == False:
@@ -2369,21 +2391,18 @@ while True:
                     screen.blit(asset_bandit1_dead, (banx1-23, 377))
                 elif ban1left == True:
                     screen.blit(asset_bandit1right_dead, (banx1-123, 377))
-
             # ban #2 dead
             if ban2HP <= 0:
                 if ban2left == False:
                     screen.blit(asset_bandit2_dead, (banx2-28, 377))
                 elif ban2left == True:
                     screen.blit(asset_bandit2right_dead, (banx2-128, 377))
-
             # ban #3 dead
             if ban3HP <= 0:
                 if ban3left == False:
                     screen.blit(asset_bandit3_dead, (banx3-23, 376))
                 elif ban3left == True:
                     screen.blit(asset_bandit3right_dead, (banx3-123, 376))
-
         # ban 1 damage range
         if banHP > 0:
             if banx1 <= 290 and banx1 >= 210 and insideShop == False:
@@ -2391,7 +2410,6 @@ while True:
         elif banHP == -50:
             banHP = 100
             banx1 = getBanditRespawn()
-
         # ban 2 damage range
         if ban2HP > 0:
             if banx2 <= 290 and banx2 >= 210 and insideShop == False:
@@ -2399,7 +2417,6 @@ while True:
         elif ban2HP == -50:
             ban2HP = 100
             banx2 = getBanditRespawn()
-
         # ban 3 damage range
         if ban3HP > 0:
             if banx3 <= 290 and banx3 >= 210 and insideShop == False:
@@ -2407,39 +2424,6 @@ while True:
         elif ban3HP == -50:
             ban3HP = 100
             banx3 = getBanditRespawn()
-
-        # HUD
-        if startGame == True:
-            showHUD()
-        # popup text
-        if purchasedText == True:
-            screen.blit(asset_text_purchased, (300-98.5, 70-9.5))
-        if insufFundsText == True:
-            screen.blit(asset_text_insufficient, (300-98.5, 70-9.5))
-        #
-        if moneyPick == True:
-            showMoney = False
-
-        if interactText == True and rolling == False:
-            if sitting == True:
-                screen.blit(interact_text, (218, 265))
-            else:
-                screen.blit(interact_text, (218, 235))
-
-        if buyText == True:
-            screen.blit(buy_text, (137, 255))
-
-        # hotbar
-        if startGame == True:
-            screen.blit(asset_hotbar, (300-153.5, 560-28.5))
-            screen.blit(asset_revolver, (300-153.5, 560-28.5))
-            if ownSniperRifle == True:
-                screen.blit(asset_sniper, (300-153.5, 560-28.5))
-            if hpPotionCount > 0:
-                screen.blit(asset_hearty_beer_icon, (500-153.5, 562-28.5))
-                screen.blit(potionCount_text, (403, 537))
-
-            screen.blit(asset_hotbar_select, (activeSlotx1-3, 565-33))
 
         # sniper scope
         if ownSniperRifle == True:
@@ -2487,6 +2471,10 @@ while True:
 
 
         # Constant Refresh -------------------------------------------------------------------------------------
+
+        # HUD
+        if startGame == True:
+            showHUD()
 
         # Player Model Refresh
         playerLegsIdle = True
@@ -2589,6 +2577,7 @@ while True:
         error.set_volume(masterVolume)
         potion.set_volume(masterVolume)
         sniper_reload.set_volume(masterVolume)
+        combatroll.set_volume(masterVolume)
         intromusic.set_volume(musicVolume * masterVolume)
         intro.set_volume(musicVolume * masterVolume)
         music.set_volume(musicVolume * masterVolume)
