@@ -1,5 +1,7 @@
 ------------------------ KNOWN BUGS------------------------
--
+- Roll breaks exit store and store wall
+- Text size is inconsistent across
+  different displays
 
 --------------------------IMPROVE--------------------------
 -
