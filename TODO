@@ -1,5 +1,6 @@
 ------------------------ KNOWN BUGS------------------------
-- Roll breaks exit store and store wall
+- Fixed roll collide wall but I can
+still walk into the wall after a roll
 - Text size is inconsistent across
   different displays
 

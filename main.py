@@ -1559,7 +1559,13 @@ def rollStart_timer_handler():
     combatroll.play()
     if lookingRight == True:
         playerRoll1Right = True
-        worldRight(1)
+        if insideShop == True:
+            if (store1x + 700) <= 0:
+                worldRight(0)
+            else:
+                worldRight(1)
+        else:
+            worldRight(1)
     elif lookingLeft == True:
         playerRoll1Left = True
         worldLeft(1)
@@ -1573,7 +1579,13 @@ def rollMid1_timer_handler():
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = True
-        worldRight(1)
+        if insideShop == True:
+            if (store1x + 700) <= 0:
+                worldRight(0)
+            else:
+                worldRight(1)
+        else:
+            worldRight(1)
     elif lookingLeft == True:
         playerRoll1Left = False
         playerRoll2Left = True
@@ -1588,7 +1600,13 @@ def rollMid2_timer_handler():
     if lookingRight == True:
         playerRoll2Right = False
         playerRoll3Right = True
-        worldRight(1)
+        if insideShop == True:
+            if (store1x + 700) <= 0:
+                worldRight(0)
+            else:
+                worldRight(1)
+        else:
+            worldRight(1)
     elif lookingLeft == True:
         playerRoll2Left = False
         playerRoll3Left = True
@@ -1604,7 +1622,13 @@ def rollEnd_timer_handler():
         playerRoll1Right = False
         playerRoll2Right = False
         playerRoll3Right = False
-        worldRight(1)
+        if insideShop == True:
+            if (store1x + 700) <= 0:
+                worldRight(0)
+            else:
+                worldRight(1)
+        else:
+            worldRight(1)
     elif lookingLeft == True:
         playerRoll1Left = False
         playerRoll2Left = False
@@ -1702,6 +1726,7 @@ except:
 
 # Game Loop (Screen Refresh Loop)
 while True:
+    print((store1x + 700))
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
