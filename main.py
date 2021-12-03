@@ -1547,7 +1547,8 @@ def confirmationBox_timer_handler():
 
 def rollStart_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll3Left, playerRoll1Right, interactText,\
-        playerRoll2Right, playerRoll3Right,invincibility, rollReady, cooldown_sweat_y,playerShoot, scopeScreen
+        playerRoll2Right, playerRoll3Right,invincibility, rollReady, cooldown_sweat_y,playerShoot, scopeScreen, \
+        insideShop, store1x,store2x, cactusx, banMoveAbility
     standing = False
     rolling = True
     invincibility = True
@@ -1567,6 +1568,15 @@ def rollStart_timer_handler():
         else:
             worldRight(1)
     elif lookingLeft == True:
+        if insideShop == True:
+            if (store1x - 200) >= 0:
+                insideShop = False
+                store1x = 50
+                store2x = 750
+                cactusx = -200
+                banMoveAbility = True
+                door.stop()
+                door.play()
         playerRoll1Left = True
         worldLeft(1)
     rollMid1_timer.start()
@@ -1575,7 +1585,7 @@ def rollStart_timer_handler():
 
 def rollMid1_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, \
-        playerRoll3Right,playerRoll3Left
+        playerRoll3Right,playerRoll3Left, insideShop, store1x,store2x, cactusx, banMoveAbility
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = True
@@ -1587,6 +1597,15 @@ def rollMid1_timer_handler():
         else:
             worldRight(1)
     elif lookingLeft == True:
+        if insideShop == True:
+            if (store1x - 200) >= 0:
+                insideShop = False
+                store1x = 50
+                store2x = 750
+                cactusx = -200
+                banMoveAbility = True
+                door.stop()
+                door.play()
         playerRoll1Left = False
         playerRoll2Left = True
         worldLeft(1)
@@ -1617,7 +1636,8 @@ def rollMid2_timer_handler():
 
 def rollEnd_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, \
-        playerRoll3Right, invincibility,interactText,playerRoll3Left, moveAbility
+        playerRoll3Right, invincibility,interactText,playerRoll3Left, moveAbility, insideShop, store1x,store2x,\
+        cactusx, banMoveAbility
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = False
@@ -1631,6 +1651,15 @@ def rollEnd_timer_handler():
         else:
             worldRight(1)
     elif lookingLeft == True:
+        if insideShop == True:
+            if (store1x - 200) >= 0:
+                insideShop = False
+                store1x = 50
+                store2x = 750
+                cactusx = -200
+                banMoveAbility = True
+                door.stop()
+                door.play()
         playerRoll1Left = False
         playerRoll2Left = False
         playerRoll3Left = False
