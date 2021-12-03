@@ -1617,7 +1617,7 @@ def rollMid2_timer_handler():
 
 def rollEnd_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, \
-        playerRoll3Right, invincibility,interactText,playerRoll3Left
+        playerRoll3Right, invincibility,interactText,playerRoll3Left, moveAbility
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = False
@@ -1625,6 +1625,7 @@ def rollEnd_timer_handler():
         if insideShop == True:
             if (store1x + 700) <= 0:
                 worldRight(0)
+                moveAbility = False
             else:
                 worldRight(1)
         else:
@@ -1726,7 +1727,6 @@ except:
 
 # Game Loop (Screen Refresh Loop)
 while True:
-    print((store1x + 700))
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
