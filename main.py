@@ -372,8 +372,10 @@ if collapse:
 
 # text
 if collapse:
-    font1 = pygame.font.SysFont("bahnschrift", 13, False)
-    font2 = pygame.font.SysFont("bahnschrift", 18, False)
+    font1 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TFF", 13) # not working
+    font2 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TFF", 18) # not working
+    # font1 = pygame.font.SysFont("bahnschrift", 13, False)
+    # font2 = pygame.font.SysFont("bahnschrift", 18, False)
     font3 = pygame.font.SysFont("ebrima", 20, True)
     # syntax - (Name, Size, Bold, Italic)
 
@@ -1183,7 +1185,7 @@ def resetValues():
 
     # ban 1
     banHP = 100
-    banx1 = 1990
+    banx1 = 1100 #1990
     banFPx1 = 300
     scopeWalk = 0
     ban1W = 200
