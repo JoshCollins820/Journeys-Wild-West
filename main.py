@@ -10,11 +10,14 @@ import time
 import sys
 import pickle
 
+# SimpleGUI Module
 try:
     import simplegui
-
 except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
+
+# Custom Modules
+import enemies
 
 # window resolution
 height = 600
