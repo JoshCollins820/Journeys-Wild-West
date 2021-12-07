@@ -372,8 +372,8 @@ if collapse:
 
 # text
 if collapse:
-    font1 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TFF", 13) # not working
-    font2 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TFF", 18) # not working
+    font1 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 13)
+    font2 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 18)
     # font1 = pygame.font.SysFont("bahnschrift", 13, False)
     # font2 = pygame.font.SysFont("bahnschrift", 18, False)
     font3 = pygame.font.SysFont("ebrima", 20, True)
