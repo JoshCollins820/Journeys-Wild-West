@@ -1747,6 +1747,9 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
 intromusic.play(-1)
 resetValues()
 
+e1 = enemies.Bandit()
+e2 = enemies.Bandit()
+
 # load highscore from file
 try:
     pickle_in = open("savedata/highscore.txt","rb")

@@ -1,12 +1,18 @@
 # modules
 import random
+random.seed()
+
+# Name list
+list_names = ['Bob', 'Richard', 'Aaron', 'Arthur', 'Henry', 'Frank', 'Edward', 'Albert','James', 'John', 'Walter',
+              'Roy', 'Louis', 'Carl', 'Paul', 'Pedro', 'Samuel', 'Raymond', 'Howard', 'Oscar', 'Leo', 'Jack', 'Lee']
 
 
 # Bandit class
 class Bandit:
     # constructor
     def __init__(self):
-        self.name = "Test"
+        self.name = random.choice(list_names)
+        print(self.name)
         self.type = 1
         self.level = 1
         self.hp = 100
