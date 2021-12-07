@@ -738,13 +738,6 @@ def hpPotion():
     potion.play()
 
 
-def getBanditRespawn():
-    x = random.randint(-1200, 1200)
-    if x <= 700 and x >= -100:
-        x += 900
-    return x
-
-
 def giveMoney():
     global moneyCount
     x = random.randint(30, 100)
@@ -1748,7 +1741,8 @@ intromusic.play(-1)
 resetValues()
 
 e1 = enemies.Bandit()
-e2 = enemies.Bandit()
+print(e1.get_name())
+print(e1.get_x_location())
 
 # load highscore from file
 try:
@@ -2489,21 +2483,21 @@ while True:
                 playerHit(4)
         elif banHP == -50:
             banHP = 100
-            banx1 = getBanditRespawn()
+            banx1 = enemies.getBanditRespawn()
         # ban 2 damage range
         if ban2HP > 0:
             if banx2 <= 290 and banx2 >= 210 and insideShop == False:
                 playerHit(4)
         elif ban2HP == -50:
             ban2HP = 100
-            banx2 = getBanditRespawn()
+            banx2 = enemies.getBanditRespawn()
         # ban 3 damage range
         if ban3HP > 0:
             if banx3 <= 290 and banx3 >= 210 and insideShop == False:
                 playerHit(4)
         elif ban3HP == -50:
             ban3HP = 100
-            banx3 = getBanditRespawn()
+            banx3 = enemies.getBanditRespawn()
 
         # sniper scope
         if ownSniperRifle == True:
