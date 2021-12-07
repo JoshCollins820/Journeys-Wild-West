@@ -5,7 +5,6 @@
 -
 
 ----------------------------ADD----------------------------
-- Text size increase/decrease keybinds
 - Looting
 - Object oriented enemies
 - Robbing the store clerk
@@ -43,6 +42,14 @@ Bug Fixes
 
 ---------------------------NOTES---------------------------
 
+OOP:
+
+Bandits
+- Name
+- Type
+- Level
+- HP
+- Location
 
 
 

@@ -1183,7 +1183,7 @@ def resetValues():
 
     # ban 1
     banHP = 100
-    banx1 = 1100 #1990
+    banx1 = 1990
     banFPx1 = 300
     scopeWalk = 0
     ban1W = 200
