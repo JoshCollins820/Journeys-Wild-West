@@ -16,8 +16,6 @@ try:
 except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 
-# Custom Modules
-import enemies
 
 # window resolution
 height = 600
@@ -27,6 +25,7 @@ width = 600
 pygame.init()
 pygame.mixer.pre_init(44100, -16, 2, 512)
 clock = pygame.time.Clock()
+random.seed()
 
 # window properties
 screen = pygame.display.set_mode((height, width))
@@ -239,15 +238,15 @@ if collapse:
     asset_hotbar = pygame.image.load("assets/UI/hotbar.png")
     asset_revolver = pygame.image.load("assets/UI/revolver_icon.png")
     asset_sniper = pygame.image.load("assets/UI/sniper_rifle_icon.png")
-    asset_bandit1 = pygame.image.load("assets/npc/bandit1.png")
-    asset_bandit2 = pygame.image.load("assets/npc/bandit2.png")
-    asset_bandit3 = pygame.image.load("assets/npc/bandit3.png")
+    asset_bandit1left = pygame.image.load("assets/npc/bandit1.png")
+    asset_bandit2left = pygame.image.load("assets/npc/bandit2.png")
+    asset_bandit3left = pygame.image.load("assets/npc/bandit3.png")
     asset_bandit1right = pygame.image.load("assets/npc/bandit1right.png")
     asset_bandit2right = pygame.image.load("assets/npc/bandit2right.png")
     asset_bandit3right = pygame.image.load("assets/npc/bandit3right.png")
-    asset_bandit1_dead = pygame.image.load("assets/npc/bandit1dead.png")
-    asset_bandit2_dead = pygame.image.load("assets/npc/bandit2dead.png")
-    asset_bandit3_dead = pygame.image.load("assets/npc/bandit3dead.png")
+    asset_bandit1left_dead = pygame.image.load("assets/npc/bandit1dead.png")
+    asset_bandit2left_dead = pygame.image.load("assets/npc/bandit2dead.png")
+    asset_bandit3left_dead = pygame.image.load("assets/npc/bandit3dead.png")
     asset_bandit1right_dead = pygame.image.load("assets/npc/bandit1rightdead.png")
     asset_bandit2right_dead = pygame.image.load("assets/npc/bandit2rightdead.png")
     asset_bandit3right_dead = pygame.image.load("assets/npc/bandit3rightdead.png")
@@ -405,6 +404,86 @@ if collapse:
     musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
     playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
+
+# Name list
+list_names = ['Bob', 'Richard', 'Aaron', 'Arthur', 'Henry', 'Frank', 'Edward', 'Albert','James', 'John', 'Walter',
+              'Roy', 'Louis', 'Carl', 'Paul', 'Pedro', 'Samuel', 'Raymond', 'Howard', 'Oscar', 'Leo', 'Jack', 'Lee']
+
+
+# bandit methods
+def getBanditRespawn():
+    x = random.randint(-1200, 1200)
+    if x <= 700 and x >= -100:
+        x += 900
+    return x
+
+
+# Bandit class
+class Bandit:
+    # dictionary for types of bandits
+    TYPE_MAP = {
+                1: (asset_bandit1left, asset_bandit1right, asset_bandit1left_dead, asset_bandit1right_dead),
+                2: (asset_bandit2left, asset_bandit2right, asset_bandit2left_dead, asset_bandit2right_dead),
+                3: (asset_bandit3left, asset_bandit3right, asset_bandit3left_dead, asset_bandit3right_dead)
+                }
+
+    # constructor
+    def __init__(self):
+        self.name = random.choice(list_names)  # assign random name
+        self.bandit_left_img, self.bandit_right_img, self.bandit_leftdead_img, self.bandit_rightdead_img = \
+            self.TYPE_MAP[random.randint(1,3)]  # assign random type
+        self.level = 1  # assign level
+        self.hp = 100  # assign starting hp
+        self.x_location = getBanditRespawn()  # assign x-location
+        self.bandit_left = None  # is the bandit on the left side of player
+        self.nameTag = font1.render("Bandit: " + self.name, True, (150, 240, 41))
+        self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255,255,255))
+
+    # class methods
+
+    # move method
+    def move(self, vel=8):
+        # bandit is right of player
+        if self.x_location >= 280:
+            self.x_location -= vel
+            self.bandit_left = False
+        # bandit is left of player
+        elif self.x_location <= 220:
+            self.x_location += vel
+            self.bandit_left = True
+
+    def draw(self):
+        print(self.x_location)
+        if self.hp > 0:
+            screen.blit(self.nameTag, (self.x_location-30,232))
+            screen.blit(self.hpTag, (self.x_location-6,246))
+            if self.bandit_left == False:
+                screen.blit(self.bandit_left_img, (self.x_location-39.5, 262))
+            elif self.bandit_left == True:
+                screen.blit(self.bandit_right_img, (self.x_location-7, 262))
+        if insideShop == False:
+            if self.hp <= 0:
+                if self.bandit_left == False:
+                    screen.blit(self.bandit_leftdead_img, (self.x_location-23, 377))
+                elif self.bandit_left == True:
+                    screen.blit(self.bandit_rightdead_img, (self.x_location-123, 377))
+
+    def respawn(self):
+        self.x_location = getBanditRespawn()
+
+    # getters
+    def get_name(self):
+        return self.name
+
+    def get_level(self):
+        return self.level
+
+    def get_hp(self):
+        return self.hp
+
+    def get_x_location(self):
+        return self.x_location
+
 
 
 
@@ -1740,10 +1819,6 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
 intromusic.play(-1)
 resetValues()
 
-e1 = enemies.Bandit()
-print(e1.get_name())
-print(e1.get_x_location())
-
 # load highscore from file
 try:
     pickle_in = open("savedata/highscore.txt","rb")
@@ -1754,8 +1829,12 @@ except:
     pickle.dump(highscore, pickle_out)
     pickle_out.close()
 
+b1 = Bandit()
+
 # Game Loop (Screen Refresh Loop)
 while True:
+    b1.move()
+    b1.draw()
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
@@ -2235,7 +2314,7 @@ while True:
             screen.blit(ban1Tag, (banx1-30,232))
             screen.blit(ban1HPTag, (banx1-6,246))
             if ban1left == False:
-                screen.blit(asset_bandit1, (banx1-39.5, 262))
+                screen.blit(asset_bandit1left, (banx1-39.5, 262))
             elif ban1left == True:
                 screen.blit(asset_bandit1right, (banx1-7, 262))
         # bandit #2 alive
@@ -2243,7 +2322,7 @@ while True:
             screen.blit(ban2Tag, (banx2-25,222))
             screen.blit(ban2HPTag, (banx2-5,236))
             if ban2left == False:
-                screen.blit(asset_bandit2, (banx2-40, 252))
+                screen.blit(asset_bandit2left, (banx2-40, 252))
             elif ban2left == True:
                 screen.blit(asset_bandit2right, (banx2+24-40, 252))
         # bandit #3 alive
@@ -2251,7 +2330,7 @@ while True:
             screen.blit(ban3Tag, (banx3-29,232))
             screen.blit(ban3HPTag, (banx3-5,246))
             if ban3left == False:
-                screen.blit(asset_bandit3, (banx3-40, 262))
+                screen.blit(asset_bandit3left, (banx3-40, 262))
             elif ban3left == True:
                 screen.blit(asset_bandit3right, (banx3-10, 262))
 
@@ -2462,19 +2541,19 @@ while True:
             # ban #1 dead
             if banHP <= 0:
                 if ban1left == False:
-                    screen.blit(asset_bandit1_dead, (banx1-23, 377))
+                    screen.blit(asset_bandit1left_dead, (banx1-23, 377))
                 elif ban1left == True:
                     screen.blit(asset_bandit1right_dead, (banx1-123, 377))
             # ban #2 dead
             if ban2HP <= 0:
                 if ban2left == False:
-                    screen.blit(asset_bandit2_dead, (banx2-28, 377))
+                    screen.blit(asset_bandit2left_dead, (banx2-28, 377))
                 elif ban2left == True:
                     screen.blit(asset_bandit2right_dead, (banx2-128, 377))
             # ban #3 dead
             if ban3HP <= 0:
                 if ban3left == False:
-                    screen.blit(asset_bandit3_dead, (banx3-23, 376))
+                    screen.blit(asset_bandit3left_dead, (banx3-23, 376))
                 elif ban3left == True:
                     screen.blit(asset_bandit3right_dead, (banx3-123, 376))
         # ban 1 damage range
@@ -2483,21 +2562,21 @@ while True:
                 playerHit(4)
         elif banHP == -50:
             banHP = 100
-            banx1 = enemies.getBanditRespawn()
+            banx1 = getBanditRespawn()
         # ban 2 damage range
         if ban2HP > 0:
             if banx2 <= 290 and banx2 >= 210 and insideShop == False:
                 playerHit(4)
         elif ban2HP == -50:
             ban2HP = 100
-            banx2 = enemies.getBanditRespawn()
+            banx2 = getBanditRespawn()
         # ban 3 damage range
         if ban3HP > 0:
             if banx3 <= 290 and banx3 >= 210 and insideShop == False:
                 playerHit(4)
         elif ban3HP == -50:
             ban3HP = 100
-            banx3 = enemies.getBanditRespawn()
+            banx3 = getBanditRespawn()
 
         # sniper scope
         if ownSniperRifle == True:
