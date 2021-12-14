@@ -420,6 +420,7 @@ def getBanditRespawn():
 
 # Bandit class
 class Bandit:
+    instances = []
     # dictionary for types of bandits
     TYPE_MAP = {
                 1: (asset_bandit1left, asset_bandit1right, asset_bandit1left_dead, asset_bandit1right_dead),
@@ -429,6 +430,7 @@ class Bandit:
 
     # constructor
     def __init__(self):
+        self.__class__.instances.append(self)
         self.name = random.choice(list_names)  # assign random name
         self.bandit_left_img, self.bandit_right_img, self.bandit_leftdead_img, self.bandit_rightdead_img = \
             self.TYPE_MAP[random.randint(1,3)]  # assign random type
@@ -453,7 +455,6 @@ class Bandit:
             self.bandit_left = True
 
     def draw(self):
-        print(self.x_location)
         if self.hp > 0:
             screen.blit(self.nameTag, (self.x_location-30,232))
             screen.blit(self.hpTag, (self.x_location-6,246))
@@ -516,6 +517,10 @@ def worldLeft(multiplier=1):
     banx2 += speedMove*multiplier
     banx3 += speedMove*multiplier
 
+    # move bandits
+    for instance in Bandit.instances:
+        instance.x_location += speedMove*multiplier
+
 
 def worldRight(multiplier=1):
     global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, banx1, banx2, banx3, \
@@ -547,6 +552,10 @@ def worldRight(multiplier=1):
     banx1 -= speedMove*multiplier
     banx2 -= speedMove*multiplier
     banx3 -= speedMove*multiplier
+
+    # move bandits
+    for instance in Bandit.instances:
+        instance.x_location -= speedMove*multiplier
 
 
 def walkRight():
@@ -1830,11 +1839,17 @@ except:
     pickle_out.close()
 
 b1 = Bandit()
+b2 = Bandit()
+b3 = Bandit()
+b4 = Bandit()
 
 # Game Loop (Screen Refresh Loop)
 while True:
     b1.move()
-    b1.draw()
+    b2.move()
+    b3.move()
+    b4.move()
+
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
@@ -2308,6 +2323,10 @@ while True:
         # tumbleweed
         screen.blit(asset_tumbleweed, (tumweed1x-38, 331))
 
+        b1.draw()
+        b2.draw()
+        b3.draw()
+        b4.draw()
         # bandit #1 alive
         if banHP > 0:
             # bandit 1 text
