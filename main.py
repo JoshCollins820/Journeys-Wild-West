@@ -2668,7 +2668,8 @@ while True:
                 bandit_distance = abs(bandit.x_location - 260)
                 if bandit_distance == 0:
                     bandit_distance = 1
-                scopeWalk = 500 - bandit_distance
+                if bandit_distance < 500:
+                    scopeWalk = 500 - bandit_distance
 
 
         # cloud pos
