@@ -412,7 +412,7 @@ list_names = ['Bob', 'Richard', 'Aaron', 'Arthur', 'Henry', 'Frank', 'Edward', '
 
 # bandit methods
 def getBanditRespawn():
-    x = random.randint(-1200, 1200)
+    x = random.randint(-5000, 5000)
     if x <= 700 and x >= -100:
         x += 900
     return x
@@ -423,16 +423,16 @@ class Bandit:
     instances = []
     # dictionary for types of bandits
     TYPE_MAP = {
-                1: (asset_bandit1left, asset_bandit1right, asset_bandit1left_dead, asset_bandit1right_dead),
-                2: (asset_bandit2left, asset_bandit2right, asset_bandit2left_dead, asset_bandit2right_dead),
-                3: (asset_bandit3left, asset_bandit3right, asset_bandit3left_dead, asset_bandit3right_dead)
+                1: (asset_bandit1left, asset_bandit1right, asset_bandit1left_dead, asset_bandit1right_dead, asset_bandit1_fp),
+                2: (asset_bandit2left, asset_bandit2right, asset_bandit2left_dead, asset_bandit2right_dead, asset_bandit2_fp),
+                3: (asset_bandit3left, asset_bandit3right, asset_bandit3left_dead, asset_bandit3right_dead, asset_bandit3_fp)
                 }
 
     # constructor
     def __init__(self):
         self.__class__.instances.append(self)
         self.name = random.choice(list_names)  # assign random name
-        self.bandit_left_img, self.bandit_right_img, self.bandit_leftdead_img, self.bandit_rightdead_img = \
+        self.bandit_left_img, self.bandit_right_img, self.bandit_leftdead_img, self.bandit_rightdead_img, self.bandit_fp_img = \
             self.TYPE_MAP[random.randint(1,3)]  # assign random type
         self.level = 1  # assign level
         self.hp = 100  # assign starting hp
@@ -440,6 +440,8 @@ class Bandit:
         self.bandit_left = None  # is the bandit on the left side of player
         self.nameTag = font1.render("Bandit: " + self.name, True, (150, 240, 41))
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255,255,255))
+        self.banW = 200  # bandit fp img width
+        self.banH = 330  # bandit fp img height
 
     # class methods
     def work(self):
@@ -451,7 +453,7 @@ class Bandit:
     # move method
     def move(self, vel=8):
         # bandit is right of player
-        if self.hp > 0:
+        if self.hp > 0 and banMoveAbility == True:
             if self.x_location >= 280:
                 self.x_location -= vel
                 self.bandit_left = False
@@ -695,6 +697,30 @@ def disableText():
     moneyPickText = False
     insufFundsText = False
     purchasedText = False
+
+
+def scoped():
+    global scopeWalk
+    # backdrop
+    if lookingRight == True:
+        screen.blit(asset_scope_back_right, (0, 0))
+    if lookingLeft == True:
+        screen.blit(asset_scope_back_left, (0, 0))
+
+    for bandit in Bandit.instances:
+        # update bandit scale
+        asset_ban_fp = pygame.transform.scale(bandit.bandit_fp_img, (bandit.banW + (scopeWalk * 0.7), bandit.banH + scopeWalk))
+        asset_ban_fp_rect = asset_ban_fp.get_rect(center=[300, 330])
+        # draw bandit
+        if bandit.hp > 0:
+            if bandit.x_location <= 700 and bandit.x_location >= 250 and lookingRight == True \
+                    or bandit.x_location >= -100 and bandit.x_location <= 250 and lookingLeft == True:
+                screen.blit(asset_ban_fp, asset_ban_fp_rect)
+
+    # scope
+    screen.blit(asset_sniperscope, (0, 0))
+    screen.blit(asset_ammo_icon, (25 - 12.5, 583 - 10))
+    screen.blit(sniperAmmo_text, (41, 571))
 
 
 def fire():
@@ -1321,8 +1347,11 @@ def resetValues():
     playerRoll3Left = False
     rollReady = True
 
+    # reset seed
+    random.seed()
+
     # despawn bandits
-    for bandit in Bandit.instances:
+    for bandit in Bandit.instances[:]:
         Bandit.instances.remove(bandit)
 
 
@@ -1511,8 +1540,9 @@ def startGame_timer_handler():
     playButtonClicked = False
     restartButtonClicked = False
     moveAbility = True
-    ban = Bandit()
-    banMoveAbility = False
+    for i in range(3):
+        ban = Bandit()
+    banMoveAbility = True
     music_timer.start()
     startGame_timer.stop()
 
@@ -2086,13 +2116,13 @@ while True:
                 # In Death Screen
                 # Restart Game
                 if startGame == False and dead == True and restartButtonHover == True:
+                    resetValues()
                     button.play()
                     stopSounds()
                     intro.play()
                     startGame_timer.start()
                     restartButtonHover = False
                     restartButtonClicked = True
-                    resetValues()
                 # Main Menu Button
                 if startGame == False and dead == True and mainMenuButtonHover == True:
                     button.play()
@@ -2267,33 +2297,9 @@ while True:
         # tumbleweed
         screen.blit(asset_tumbleweed, (tumweed1x-38, 331))
 
+        # draw bandits
         for bandit in Bandit.instances:
             bandit.work()
-        # bandit #1 alive
-        if banHP > 0:
-            # bandit 1 text
-            screen.blit(ban1Tag, (banx1-30,232))
-            screen.blit(ban1HPTag, (banx1-6,246))
-            if ban1left == False:
-                screen.blit(asset_bandit1left, (banx1-39.5, 262))
-            elif ban1left == True:
-                screen.blit(asset_bandit1right, (banx1-7, 262))
-        # bandit #2 alive
-        if ban2HP > 0:
-            screen.blit(ban2Tag, (banx2-25,222))
-            screen.blit(ban2HPTag, (banx2-5,236))
-            if ban2left == False:
-                screen.blit(asset_bandit2left, (banx2-39.5, 262))
-            elif ban2left == True:
-                screen.blit(asset_bandit2right, (banx2-7, 262))
-        # bandit #3 alive
-        if ban3HP > 0:
-            screen.blit(ban3Tag, (banx3-29,232))
-            screen.blit(ban3HPTag, (banx3-5,246))
-            if ban3left == False:
-                screen.blit(asset_bandit3left, (banx3-40, 262))
-            elif ban3left == True:
-                screen.blit(asset_bandit3right, (banx3-10, 262))
 
         # shop interior
         if insideShop == True:
@@ -2498,86 +2504,10 @@ while True:
                 # .45 rounds
                 screen.blit(asset_text_50_green, (240, 200))
 
-        if insideShop == False:
-            # ban #1 dead
-            if banHP <= 0:
-                if ban1left == False:
-                    screen.blit(asset_bandit1left_dead, (banx1-23, 377))
-                elif ban1left == True:
-                    screen.blit(asset_bandit1right_dead, (banx1-123, 377))
-            # ban #2 dead
-            if ban2HP <= 0:
-                if ban2left == False:
-                    screen.blit(asset_bandit2left_dead, (banx2-28, 377))
-                elif ban2left == True:
-                    screen.blit(asset_bandit2right_dead, (banx2-128, 377))
-            # ban #3 dead
-            if ban3HP <= 0:
-                if ban3left == False:
-                    screen.blit(asset_bandit3left_dead, (banx3-23, 376))
-                elif ban3left == True:
-                    screen.blit(asset_bandit3right_dead, (banx3-123, 376))
-        # ban 1 damage range
-        if banHP > 0:
-            if banx1 <= 290 and banx1 >= 210 and insideShop == False:
-                playerHit(4)
-        elif banHP == -50:
-            banHP = 100
-            banx1 = getBanditRespawn()
-        # ban 2 damage range
-        if ban2HP > 0:
-            if banx2 <= 290 and banx2 >= 210 and insideShop == False:
-                playerHit(4)
-        elif ban2HP == -50:
-            ban2HP = 100
-            banx2 = getBanditRespawn()
-        # ban 3 damage range
-        if ban3HP > 0:
-            if banx3 <= 290 and banx3 >= 210 and insideShop == False:
-                playerHit(4)
-        elif ban3HP == -50:
-            ban3HP = 100
-            banx3 = getBanditRespawn()
-
         # sniper scope
         if ownSniperRifle == True:
             if scopeScreen == True:
-                # update bandit scale
-                asset_ban1_fp = pygame.transform.scale(asset_bandit1_fp, (ban1W+(scopeWalk*0.7), ban1H+scopeWalk))
-                asset_ban1_fp_rect = asset_ban1_fp.get_rect(center=[300,330])
-                asset_ban2_fp = pygame.transform.scale(asset_bandit2_fp, (ban2W+(scope2Walk*0.7), ban2H+scope2Walk))
-                asset_ban2_fp_rect = asset_ban2_fp.get_rect(center=[300,330])
-                asset_ban3_fp = pygame.transform.scale(asset_bandit3_fp, (ban3W+(scope3Walk*0.7), ban3H+scope3Walk))
-                asset_ban3_fp_rect = asset_ban3_fp.get_rect(center=[300,330])
-                # backdrop
-                if lookingRight == True:
-                    screen.blit(asset_scope_back_right, (0, 0))
-                if lookingLeft == True:
-                    screen.blit(asset_scope_back_left, (0, 0))
-
-                # fp bandits
-                if banHP > 0 and ban2InScope == False and ban3InScope == False:
-                    if banx1 <= 700 and banx1 >= 250 and lookingRight == True\
-                            or banx1 >= -100 and banx1 <= 250 and lookingLeft == True:
-                        ban1InScope = True
-                        screen.blit(asset_ban1_fp, asset_ban1_fp_rect)
-
-                if ban2HP > 0 and ban1InScope == False and ban3InScope == False:
-                    if banx2 <= 700 and banx2 >= 250 and lookingRight == True\
-                            or banx2 >= -100 and banx2 <= 250 and lookingLeft == True:
-                        ban2InScope = True
-                        screen.blit(asset_ban2_fp, asset_ban2_fp_rect)
-
-                if ban3HP > 0 and ban1InScope == False and ban2InScope == False:
-                    if banx3 <= 700 and banx3 >= 250 and lookingRight == True\
-                            or banx3 >= -100 and banx3 <= 250 and lookingLeft == True:
-                        ban3InScope = True
-                        screen.blit(asset_ban3_fp, asset_ban3_fp_rect)
-
-                # scope
-                screen.blit(asset_sniperscope, (0, 0))
-                screen.blit(asset_ammo_icon, (25-12.5, 583-10))
-                screen.blit(sniperAmmo_text, (41, 571))
+                scoped()
             else:
                 breath.stop()
                 heartbeat.stop()
@@ -2656,9 +2586,6 @@ while True:
 
 
         # text refresh
-        ban1HPTag = font1.render(("HP: " + str(banHP)), True, (255, 255, 255))
-        ban2HPTag = font1.render(("HP: " + str(ban2HP)), True, (255, 255, 255))
-        ban3HPTag = font1.render(("HP: " + str(ban3HP)), True, (255, 255, 255))
         playerHP_text = font2.render((str(playerHP)), True, (255, 255, 255))
         playerScore_text = font2.render((str(score)), True, (255, 255, 255))
         playerMoney_text = font2.render((str(moneyCount)), True, (255, 255, 255))
@@ -2733,6 +2660,17 @@ while True:
             activeSlotx1 = -500
             activeSlotx2 = -500
 
+        # bandit fp
+        for bandit in Bandit.instances:
+            # refresh values
+            if bandit.hp > 0:
+                # calculate distance between bandit and player
+                bandit_distance = abs(bandit.x_location - 260)
+                if bandit_distance == 0:
+                    bandit_distance = 1
+                scopeWalk = 500 - bandit_distance
+
+
         # cloud pos
         cloud1x -= cloudAuto
         if cloud1x + 85 <= -100:
@@ -2759,68 +2697,6 @@ while True:
             banMove = 8
         elif banMoveAbility == False:
             banMove = 0
-
-        if banMoveAbility == True:
-            # ban 1 position
-            if banHP > 0:
-                # if out of scope range
-                if banx1 > 700 or banx1 < -100:
-                    scopeWalk = 0
-                # if in melee range of player
-                elif banx1 <= 290 and banx1 >= 210:
-                    scopeWalk += 0
-                # if in scope range
-                elif banx1 <= 700 or banx1 >= -100:
-                    scopeWalk += 15
-                if banx1 >= 280:
-                    banx1 -= banMove
-                    ban1left = False
-                if banx1 <= 220:
-                    banx1 += banMove
-                    ban1left = True
-            elif banHP <= 0:
-                banHP -= 1
-                # ban 2 position
-            if ban2HP > 0:
-                # if out of scope range
-                if banx2 > 700 or banx2 < -100:
-                    scope2Walk = 0
-                # if in melee range of player
-                elif banx2 <= 290 and banx2 >= 210:
-                    scope2Walk += 0
-                # if in scope range
-                elif banx2 <= 700 or banx2 >= -100:
-                    scope2Walk += 15
-                if banx2 >= 280:
-                    banx2 -= banMove
-                    ban2left = False
-                if banx2 <= 220:
-                    banx2 += banMove
-                    ban2left = True
-            elif ban2HP <= 0:
-                ban2HP -= 1
-            # ban 3 position
-            if ban3HP > 0:
-                # if out of scope range
-                if banx3 > 700 or banx3 < -100:
-                    scope3Walk = 0
-                # if in melee range of player
-                elif banx3 <= 290 and banx3 >= 210:
-                    scope3Walk += 0
-                # if in scope range
-                elif banx3 <= 700 or banx3 >= -100:
-                    scope3Walk += 15
-                if banx3 >= 280:
-                    banx3 -= banMove
-                    ban3left = False
-                if banx3 <= 220:
-                    banx3 += banMove
-                    ban3left = True
-            elif ban3HP <= 0:
-                ban3HP -= 1
-
-
-
     pygame.display.update()
     clock.tick(25)
 
