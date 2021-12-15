@@ -53,7 +53,7 @@ if collapse:
     highscore = 0
     masterVolumeStored = 0
     musicVolumeStored = 0
-    initialBandits = 1
+    initialBandits = 3
 
     # speed
     speedMove = 50
@@ -410,6 +410,7 @@ class Bandit:
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255,255,255))
         self.banW = 200  # bandit fp img width
         self.banH = 330  # bandit fp img height
+        self.stoodOn = False  # is the bandit being stood on by player
         self.looted = False  # has the player looted bandit
 
     # general method that calls all of the other methods, will be called constantly by main
@@ -466,11 +467,17 @@ class Bandit:
         if self.hp == 0:
             banpain.play()
             self.hp -= 1
+        # if player is on top of body
+        if self.x_location <= 260 and self.x_location >= 120 and self.bandit_left == False \
+                or self.x_location <= 360 and self.x_location >= 220 and self.bandit_left == True and self.hp <= 0:
+            self.stoodOn = True
+        else:
+            self.stoodOn = False
         # decrease hp if dead and looted
         if self.hp <= 0 and self.looted == True:
             self.hp -= 1
         # remove from instance list
-        if self.hp == -50:
+        if self.hp <= -50:
             self.instances.remove(self)
 
     # manual respawn if needed
@@ -720,12 +727,12 @@ def fire():
                 if lookingRight:
                     for bandit in Bandit.instances:
                         if bandit.x_location <= 600 and bandit.x_location >= 250:
-                            if bandit.hp > -10:
+                            if bandit.hp > 0:
                                 bandit.hp -= 20
                 if lookingLeft:
                     for bandit in Bandit.instances:
                         if bandit.x_location >= 0 and bandit.x_location <= 250:
-                            if bandit.hp > -10:
+                            if bandit.hp > 0:
                                 bandit.hp -= 20
 
         # sniper rifle
@@ -743,12 +750,12 @@ def fire():
             if lookingRight:
                 for bandit in Bandit.instances:
                     if bandit.x_location <= 700 and bandit.x_location >= 250:
-                        if bandit.hp > -10:
+                        if bandit.hp > 0:
                             bandit.hp -= 100
             if lookingLeft:
                 for bandit in Bandit.instances:
                     if bandit.x_location >= -100 and bandit.x_location <= 250:
-                        if bandit.hp > -10:
+                        if bandit.hp > 0:
                             bandit.hp -= 100
 
 
@@ -771,6 +778,7 @@ def giveMoney(amount = random.randint(30, 100)):
     global moneyCount, score
     moneyCount += amount
     score += 1
+    print("Money Given")
 
 
 def stopSounds():
@@ -1134,14 +1142,11 @@ def showHUD():
     # loot text
     if startGame == True and insideShop == False and outAmmoUI == False and reloadUI == False:
         for bandit in Bandit.instances:
-            if bandit.looted == False and bandit.hp <= 0:
-                # if player is on top of body
-                if bandit.x_location <= 260 and bandit.x_location >= 120 and bandit.bandit_left == False \
-                        or bandit.x_location <= 360 and bandit.x_location >= 220 and bandit.bandit_left == True:
-                    if interactText == False:
-                        screen.blit(loot_text, (235, 235))
-                    elif interactText == True:
-                        screen.blit(loot_text, (235, 220))
+            if bandit.looted == False and bandit.stoodOn == True:
+                if interactText == False:
+                    screen.blit(loot_text, (235, 235))
+                elif interactText == True:
+                    screen.blit(loot_text, (235, 220))
 
 
 def interactCheck():
@@ -1789,8 +1794,6 @@ except:
 
 # Game Loop (Screen Refresh Loop)
 while True:
-    for bandit in Bandit.instances:
-        print(bandit.x_location)
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
@@ -1889,6 +1892,12 @@ while True:
                             ban1InScope = False
                             ban2InScope = False
                             ban3InScope = False
+                # Loot body
+                if event.key == pygame.K_f:
+                    for bandit in Bandit.instances[:]:
+                        if bandit.looted == False and bandit.stoodOn:
+                            bandit.looted = True
+                            giveMoney()
                 # Switch to hotbar slot 1
                 if event.key == pygame.K_1 and moveAbility == True and scopeScreen == False:
                     switchSlots(1)
