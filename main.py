@@ -73,31 +73,7 @@ if collapse:
     activeSlotx1 = -50
     activeSlotx2 = -50
     bulletx = 330
-
-    # ban 1
-    banHP = 100
-    banx1 = 1990
-    banFPx1 = 300
     scopeWalk = 0
-    ban1W = 200
-    ban1H = 330
-
-    # ban 2
-    ban2HP = 100
-    banx2 = 2490
-    ban2FPx1 = 300
-    scope2Walk = 0
-    ban2W = 200
-    ban2H = 330
-
-    # ban 3
-    ban3HP = 100
-    banx3 = -1000
-    ban3FPx1 = 300
-    scope3Walk = 0
-    ban3W = 200
-    ban3H = 330
-
 
     # statements
     invincibility = False
@@ -133,12 +109,6 @@ if collapse:
     sniperOutAmmo = False
     dead = False
     scopeScreen = False
-    ban1left = False
-    ban2left = False
-    ban3left = True
-    ban1InScope = False
-    ban2InScope = False
-    ban3InScope = False
     insideShop = False
     ownSniperRifle = True
     catalog = False
@@ -379,12 +349,6 @@ if collapse:
     font3 = pygame.font.SysFont("ebrima", 20, True)
     # syntax - (Name, Size, Bold, Italic)
 
-    ban1Tag = font1.render("Bandit: Nicholas", True, (150,240,41))
-    ban1HPTag = font1.render(("HP: " + str(banHP)), True, (255,255,255))
-    ban2Tag = font1.render("Bandit: Darius", True, (150,240,41))
-    ban2HPTag = font1.render(("HP: " + str(ban2HP)), True, (255,255,255))
-    ban3Tag = font1.render("Bandit: Olyander", True, (150,240,41))
-    ban3HPTag = font1.render(("HP: " + str(ban3HP)), True, (255,255,255))
     playerHP_text = font2.render((str(playerHP)), True, (255,255,255))
     playerScore_text = font2.render((str(score)), True, (255,255,255))
     playerMoney_text = font2.render((str(moneyCount)), True, (255,255,255))
@@ -506,7 +470,7 @@ class Bandit:
 
 
 def worldLeft(multiplier=1):
-    global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, banx1, banx2, banx3, \
+    global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x,\
         playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
 
     if standing == True:
@@ -530,9 +494,6 @@ def worldLeft(multiplier=1):
     store1x += speedMove*multiplier
     store2x += speedMove*multiplier
     tumweed1x += speedMove*multiplier
-    banx1 += speedMove*multiplier
-    banx2 += speedMove*multiplier
-    banx3 += speedMove*multiplier
 
     # move bandits
     for instance in Bandit.instances:
@@ -540,7 +501,7 @@ def worldLeft(multiplier=1):
 
 
 def worldRight(multiplier=1):
-    global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, banx1, banx2, banx3, \
+    global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, \
         playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
 
     if standing == True:
@@ -566,9 +527,6 @@ def worldRight(multiplier=1):
     store1x -= speedMove*multiplier
     store2x -= speedMove*multiplier
     tumweed1x -= speedMove*multiplier
-    banx1 -= speedMove*multiplier
-    banx2 -= speedMove*multiplier
-    banx3 -= speedMove*multiplier
 
     # move bandits
     for instance in Bandit.instances:
@@ -725,9 +683,8 @@ def scoped():
 
 def fire():
     global score, moneyCount, startGame, moveAbility, hotbarSlot2, hotbarSlot6, dead, bulletx, hotbarSlot1, \
-        lookingLeft, lookingRight, revRoundsMag, reloadUI, outAmmoUI, interactText, banHP, banx2, ban2HP, scopeScreen,\
-        ban3HP, banx3, ban3FPx1, scope3Walk, playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag,\
-        sniperRoundsTotal, playerSniper, pause
+        lookingLeft, lookingRight, revRoundsMag, reloadUI, outAmmoUI, interactText, scopeScreen,\
+        playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag, sniperRoundsTotal, playerSniper, pause
 
     if pause == False and dead == False:
         # Revolver
@@ -1199,19 +1156,17 @@ def playerDead():
 def resetValues():
     global playerHP, moneyCount, revRoundsMag, revRoundsTotal, revolverFireRate, sniperRoundsMag, sniperRoundsTotal, \
         hpPotionCount, score, cloud1x, cloud2x, tumweed1x, store1x, store2x, cactusx, activeSlotx1, activeSlotx2, \
-        bulletx, banHP, banx1, banFPx1, scopeWalk, ban2HP, banx2, ban2FPx1, scope2Walk, ban3HP, banx3, ban3FPx1, \
-        scope3Walk, startGame, dead, moveAbility, banMoveAbility, interactText, buyText, sitting, standing, \
+        bulletx, scopeWalk, startGame, dead, moveAbility, banMoveAbility, interactText, buyText, sitting, standing, \
         insufFundsText, purchasedText, lookingLeft, lookingRight, hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, \
-        hotbarSlot5, hotbarSlot6, reloadUI, outAmmoUI, scopeScreen,ban1InScope,ban2InScope,ban3InScope,insideShop, \
-        ownSniperRifle, catalog, catalogPage1, catalogPage2, catalogPage3, playerIdle, playerWalk, playerHolster, \
-        playerLegsIdle, playerShoot, playerDrink, playerSniper, playerGrab, playButtonHover, playButtonClicked, \
-        readyToFireRevolver, restartButtonHover, restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked, \
-        resumeButtonHover, resumeButtonClicked, settingsButtonHover, settingsButtonClicked, mainMenu2ButtonHover, \
-        mainMenu2ButtonClicked, confirmYesButtonHover, confirmYesButtonClicked, confirmNoButtonHover, \
-        confirmNoButtonClicked, confirmationBox, settings, settingsDoneButtonHover, settingsDoneButtonClicked, \
-        masterLeftButtonHover, masterLeftButtonClicked, masterRightButtonHover, masterRightButtonClicked, \
-        musicLeftButtonHover, musicLeftButtonClicked, musicRightButtonHover, musicRightButtonClicked, \
-        ban1H, ban1W, ban2H, ban2W, ban3H, ban3W, playerRoll1Right, playerRoll2Right, playerRoll3Right,\
+        hotbarSlot5, hotbarSlot6, reloadUI, outAmmoUI, scopeScreen,insideShop, ownSniperRifle, catalog, catalogPage1, \
+        catalogPage2, catalogPage3, playerIdle, playerWalk, playerHolster, playerLegsIdle, playerShoot, playerDrink, \
+        playerSniper, playerGrab, playButtonHover, playButtonClicked, readyToFireRevolver, restartButtonHover, \
+        restartButtonClicked, mainMenuButtonHover, mainMenuButtonClicked, resumeButtonHover, resumeButtonClicked, \
+        settingsButtonHover, settingsButtonClicked, mainMenu2ButtonHover, mainMenu2ButtonClicked, \
+        confirmYesButtonHover, confirmYesButtonClicked, confirmNoButtonHover, confirmNoButtonClicked, confirmationBox, \
+        settings, settingsDoneButtonHover, settingsDoneButtonClicked, masterLeftButtonHover, masterLeftButtonClicked, \
+        masterRightButtonHover, masterRightButtonClicked, musicLeftButtonHover, musicLeftButtonClicked, \
+        musicRightButtonHover, musicRightButtonClicked, playerRoll1Right, playerRoll2Right, playerRoll3Right, \
         playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y, walkingLeft, \
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag
@@ -1238,28 +1193,6 @@ def resetValues():
     activeSlotx1 = -50
     activeSlotx2 = -50
     bulletx = 330
-
-    # ban 1
-    banHP = 100
-    banx1 = 1990
-    banFPx1 = 300
-    scopeWalk = 0
-    ban1W = 200
-    ban1H = 330
-    # ban 2
-    ban2HP = 100
-    banx2 = 2490
-    ban2FPx1 = 300
-    scope2Walk = 0
-    ban2W = 200
-    ban2H = 330
-    # ban 3
-    ban3HP = 100
-    banx3 = -1000
-    ban3FPx1 = 300
-    scope3Walk = 0
-    ban3W = 200
-    ban3H = 330
 
     invincibility = False
     moveAbility = True
@@ -1289,9 +1222,6 @@ def resetValues():
     revolverOutAmmo = False
     sniperOutAmmo = False
     scopeScreen = False
-    ban1InScope = False
-    ban2InScope = False
-    ban3InScope = False
     insideShop = False
     ownSniperRifle = True
     catalog = False
@@ -2668,7 +2598,9 @@ while True:
                 bandit_distance = abs(bandit.x_location - 260)
                 if bandit_distance == 0:
                     bandit_distance = 1
+                # if statement fixes negative bug
                 if bandit_distance < 500:
+                    # scopeWalk gets larger as bandit_distance gets smaller
                     scopeWalk = 500 - bandit_distance
 
 
