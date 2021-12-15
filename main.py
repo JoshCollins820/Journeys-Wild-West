@@ -737,7 +737,7 @@ def fire():
                 scopeScreen = False
                 sniperRoundsMag -= 1
                 sniper_reload.stop()
-            else:
+            elif sniperRoundsMag == 0:
                 empty.stop()
                 empty.play()
             if lookingRight:
@@ -1869,7 +1869,7 @@ while True:
                             readyToFireRevolver = False
                             revolverFireDelay_timer.start()
                     # Sniper Rifle fires
-                    if hotbarSlot2 == True and ownSniperRifle == True and sniperRoundsMag >= 1:
+                    if hotbarSlot2 == True and ownSniperRifle == True and scopeScreen == True:
                         fire()
                     # HP Potion is used
                     if hotbarSlot6 == True and hpPotionCount > 0:
@@ -2205,7 +2205,7 @@ while True:
                         readyToFireRevolver = False
                         revolverFireDelay_timer.start()
                 # Fire Sniper Rifle
-                if hotbarSlot2 == True and ownSniperRifle == True and sniperRoundsMag >= 1:
+                if hotbarSlot2 == True and ownSniperRifle == True and scopeScreen == True:
                     fire()
 
     # Mouse Position
