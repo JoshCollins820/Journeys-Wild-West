@@ -37,7 +37,7 @@ version = "0.4"
 # values and statements
 if collapse:
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
-    # player vals
+    # vals
     playerHP = 100
     bodyWeight = 12
     moneyCount = 0
@@ -53,6 +53,7 @@ if collapse:
     highscore = 0
     masterVolumeStored = 0
     musicVolumeStored = 0
+    initialBandits = 1
 
     # speed
     speedMove = 50
@@ -170,8 +171,8 @@ if collapse:
 
 # audio
 if collapse:
-    masterVolume = 1  # (0-1)
-    musicVolume = 1  # (0-1)
+    masterVolume = 0.3  # 1 # (0-1)
+    musicVolume = 0  # 1  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
     intro = pygame.mixer.Sound('assets/sounds/start_music.wav')
@@ -367,16 +368,17 @@ if collapse:
     masterVolume_text = font1.render((str(masterVolume)), True, (255, 255, 255))
     musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
     playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
+    loot_text = font1.render("LOOT", True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
-# Name list
+# list of names
 list_names = ['Bob', 'Richard', 'Aaron', 'Arthur', 'Henry', 'Frank', 'Edward', 'Albert','James', 'John', 'Walter',
               'Roy', 'Louis', 'Carl', 'Paul', 'Pedro', 'Samuel', 'Raymond', 'Howard', 'Oscar', 'Leo', 'Jack', 'Lee']
 
 
 # bandit methods
 def getBanditRespawn():
-    x = random.randint(-5000, 5000)
+    x = random.randint(-2000, 2000)
     if x <= 700 and x >= -100:
         x += 900
     return x
@@ -384,7 +386,9 @@ def getBanditRespawn():
 
 # Bandit class
 class Bandit:
+    # instance list for created bandits
     instances = []
+
     # dictionary for types of bandits
     TYPE_MAP = {
                 1: (asset_bandit1left, asset_bandit1right, asset_bandit1left_dead, asset_bandit1right_dead, asset_bandit1_fp),
@@ -406,15 +410,16 @@ class Bandit:
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255,255,255))
         self.banW = 200  # bandit fp img width
         self.banH = 330  # bandit fp img height
+        self.looted = False  # has the player looted bandit
 
-    # class methods
+    # general method that calls all of the other methods, will be called constantly by main
     def work(self):
         self.move()
         self.draw()
         self.checkMelee()
         self.checkDead()
 
-    # move method
+    # bandit movement
     def move(self, vel=8):
         # bandit is right of player
         if self.hp > 0 and banMoveAbility == True:
@@ -426,6 +431,7 @@ class Bandit:
                 self.x_location += vel
                 self.bandit_left = True
 
+    # draws alive bandit
     def draw(self):
         # refresh hp tag
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255, 255, 255))
@@ -437,6 +443,9 @@ class Bandit:
                 screen.blit(self.bandit_left_img, (self.x_location-39.5, 262))
             elif self.bandit_left == True:
                 screen.blit(self.bandit_right_img, (self.x_location-7, 262))
+
+    # seperate from draw method so that it can be called after drawing the player
+    def draw_dead(self):
         # draw dead bandit
         if insideShop == False:
             if self.hp <= 0:
@@ -445,27 +454,29 @@ class Bandit:
                 elif self.bandit_left == True:
                     screen.blit(self.bandit_rightdead_img, (self.x_location-123, 377))
 
+    # cheks if bandit is in melee range
     def checkMelee(self):
         if self.hp > 0:
             if self.x_location <= 290 and self.x_location >= 210 and insideShop == False:
                 playerHit(4)
 
+    # checks if bandit is dead, looted, and when it should despawn
     def checkDead(self):
+        # bandit dead
         if self.hp == 0:
             banpain.play()
-            giveMoney()
-        if self.hp <= 0:
             self.hp -= 1
+        # decrease hp if dead and looted
+        if self.hp <= 0 and self.looted == True:
+            self.hp -= 1
+        # remove from instance list
         if self.hp == -50:
             self.instances.remove(self)
 
+    # manual respawn if needed
     def respawn(self):
         self.hp = 100
         self.x_location = getBanditRespawn()
-
-    def destruct(self):
-        del self
-
 
 
 
@@ -1062,12 +1073,15 @@ def showHUD():
     # hp
     screen.blit(asset_hp_icon, (11, 507))
     screen.blit(playerHP_text, (41, 505))
+
     # kills
     screen.blit(asset_kills_icon, (11, 530))
     screen.blit(playerScore_text, (41, 528))
+
     # money
     screen.blit(asset_money_icon, (11, 552))
     screen.blit(playerMoney_text, (41, 550))
+
     # ammo
     screen.blit(asset_ammo_icon, (11, 573))
     if hotbarSlot1 == True:
@@ -1076,17 +1090,20 @@ def showHUD():
         screen.blit(sniperAmmo_text, (41, 571))
     else:
         screen.blit(blankAmmo_text, (42, 569))
+
     # popup text
     if purchasedText == True:
         screen.blit(asset_text_purchased, (201, 60))
     if insufFundsText == True:
         screen.blit(asset_text_insufficient, (201, 60))
+
     # interact text
     if interactText == True and rolling == False and scopeScreen == False:
         if sitting == True:
             screen.blit(interact_text, (221, 265))
         else:
             screen.blit(interact_text, (221, 235))
+
     # buy text
     if buyText == True:
         screen.blit(buy_text, (137, 255))
@@ -1097,6 +1114,7 @@ def showHUD():
             screen.blit(reload_text, (226, 233))
         if outAmmoUI == True:
             screen.blit(outAmmo_text, (215, 233))
+
     # hotbar
     if startGame == True and scopeScreen == False:
         screen.blit(asset_hotbar, (300 - 153.5, 560 - 28.5))
@@ -1107,6 +1125,15 @@ def showHUD():
             screen.blit(asset_hearty_beer_icon, (500 - 153.5, 562 - 28.5))
             screen.blit(potionCount_text, (403, 537))
         screen.blit(asset_hotbar_select, (activeSlotx1 - 3, 565 - 33))
+
+    # loot text
+    if startGame == True and insideShop == False and outAmmoUI == False and reloadUI == False:
+        for bandit in Bandit.instances:
+            if bandit.looted == False and bandit.hp <= 0:
+                # if player is on top of body
+                if bandit.x_location <= 260 and bandit.x_location >= 120 and bandit.bandit_left == False \
+                        or bandit.x_location <= 360 and bandit.x_location >= 220 and bandit.bandit_left == True:
+                    screen.blit(loot_text, (234, 235))
 
 
 def interactCheck():
@@ -1470,7 +1497,7 @@ def startGame_timer_handler():
     playButtonClicked = False
     restartButtonClicked = False
     moveAbility = True
-    for i in range(15):
+    for i in range(initialBandits):
         ban = Bandit()
     banMoveAbility = True
     music_timer.start()
@@ -1754,6 +1781,8 @@ except:
 
 # Game Loop (Screen Refresh Loop)
 while True:
+    for bandit in Bandit.instances:
+        print(bandit.x_location)
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
@@ -1879,10 +1908,11 @@ while True:
                             lookingLeft = False
                             interactText = False
                             banMoveAbility = False
+                            walkRight()
                             # offset on screen bandits
                             for bandit in Bandit.instances:
                                 # if on screen
-                                if bandit.x_location >= 0 and bandit.x_location <= 600:
+                                if bandit.x_location >= 0 and bandit.x_location <= 600 and bandit.hp > 0:
                                     # if to the left
                                     if bandit.x_location < 250:
                                         bandit.x_location -= 200
@@ -2233,7 +2263,7 @@ while True:
         # tumbleweed
         screen.blit(asset_tumbleweed, (tumweed1x-38, 331))
 
-        # draw bandits
+        # draw alive bandits
         for bandit in Bandit.instances:
             bandit.work()
 
@@ -2400,6 +2430,10 @@ while True:
                 screen.blit(asset_player_cooldown_sweat_right, (212, cooldown_sweat_y))
             if lookingLeft:
                 screen.blit(asset_player_cooldown_sweat_left, (222, cooldown_sweat_y))
+
+        # draw dead bandits
+        for bandit in Bandit.instances:
+            bandit.draw_dead()
 
 
         # catalog pages
