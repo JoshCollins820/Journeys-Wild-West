@@ -702,7 +702,6 @@ def fire():
         if hotbarSlot1 == True:
             playerShoot = True
             playerHolster = False
-            interactText = False
             if revRoundsMag > 0:
                 if lookingRight == True:
                     bulletx = 330
@@ -1111,9 +1110,15 @@ def showHUD():
     # ammo text
     if standing == True:
         if reloadUI == True:
-            screen.blit(reload_text, (226, 233))
+            if interactText == False:
+                screen.blit(reload_text, (226, 235))
+            elif interactText == True:
+                screen.blit(reload_text, (226, 220))
         if outAmmoUI == True:
-            screen.blit(outAmmo_text, (215, 233))
+            if interactText == False:
+                screen.blit(outAmmo_text, (215, 235))
+            elif interactText == True:
+                screen.blit(outAmmo_text, (215, 220))
 
     # hotbar
     if startGame == True and scopeScreen == False:
@@ -1133,15 +1138,18 @@ def showHUD():
                 # if player is on top of body
                 if bandit.x_location <= 260 and bandit.x_location >= 120 and bandit.bandit_left == False \
                         or bandit.x_location <= 360 and bandit.x_location >= 220 and bandit.bandit_left == True:
-                    screen.blit(loot_text, (234, 235))
+                    if interactText == False:
+                        screen.blit(loot_text, (235, 235))
+                    elif interactText == True:
+                        screen.blit(loot_text, (235, 220))
 
 
 def interactCheck():
     global interactText
 
     # Check if in front of store
-    if store1x <= 100 and store1x >= 0:
-        if playerShoot == False and scopeScreen == False and insideShop == False:
+    if store1x <= 50 and store1x >= 25:
+        if scopeScreen == False and insideShop == False:
             interactText = True
     # Open Catalog
     elif store1x + 420 <= 100 and store1x + 420 >= 0:
@@ -1900,8 +1908,8 @@ while True:
                 if event.key == pygame.K_q and moveAbility == True and scopeScreen == False:
                     switchSlots(6)
                 # Enter Store
-                if store1x <= 100 and store1x >= 0:
-                    if playerShoot == False and scopeScreen == False and insideShop == False and playerSniper == False:
+                if store1x <= 50 and store1x >= 25:
+                    if scopeScreen == False and insideShop == False and playerSniper == False:
                         if event.key == pygame.K_UP or event.key == pygame.K_w:
                             insideShop = True
                             lookingRight = True
@@ -2541,13 +2549,23 @@ while True:
         else:
             sniperOutAmmo = False
 
-        # check for whether or not to show reload/outammo UI
-        if (revolverOutMag and hotbarSlot1) or (sniperOutMag and hotbarSlot2):
+        # check for whether or not to show reload
+        # revolver
+        if revolverOutMag and hotbarSlot1:
+            reloadUI = True
+        # sniper
+        elif sniperOutMag and hotbarSlot2:
             reloadUI = True
             interactText = False
         else:
             reloadUI = False
-        if (revolverOutAmmo and hotbarSlot1) or (sniperOutAmmo and hotbarSlot2):
+        # check for whether or not to show out of ammo
+        # revolver
+        if revolverOutAmmo and hotbarSlot1:
+            reloadUI = False
+            outAmmoUI = True
+        # sniper
+        elif sniperOutAmmo and hotbarSlot2:
             reloadUI = False
             outAmmoUI = True
             interactText = False
