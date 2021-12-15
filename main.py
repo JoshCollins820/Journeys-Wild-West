@@ -1470,7 +1470,7 @@ def startGame_timer_handler():
     playButtonClicked = False
     restartButtonClicked = False
     moveAbility = True
-    for i in range(3):
+    for i in range(15):
         ban = Bandit()
     banMoveAbility = True
     music_timer.start()
@@ -1879,14 +1879,21 @@ while True:
                             lookingLeft = False
                             interactText = False
                             banMoveAbility = False
+                            # offset on screen bandits
+                            for bandit in Bandit.instances:
+                                # if on screen
+                                if bandit.x_location >= 0 and bandit.x_location <= 600:
+                                    # if to the left
+                                    if bandit.x_location < 250:
+                                        bandit.x_location -= 200
+                                    # if to the right
+                                    elif bandit.x_location > 250:
+                                        bandit.x_location += 200
                             store1x = 150
                             store2x = 850
                             cactusx = -100
                             door.stop()
                             door.play()
-                            banHP = -50
-                            ban2HP = -50
-                            ban3HP = -50
                 # Open Catalog
                 if store1x + 420 <= 100 and store1x + 420 >= 0:
                     if playerHolster == False and playerShoot == False and insideShop == True and catalog == False\
@@ -2024,7 +2031,6 @@ while True:
                 walkingRight = False
                 walkingLeft = True
                 walk1_timer.start()
-
         # Mouse Handler
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Mouse Button 1
