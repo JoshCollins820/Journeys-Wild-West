@@ -445,24 +445,24 @@ class Bandit:
     def work(self):
         self.move()
         self.draw()
-        self.melee()
-        if self.hp <= 0:
-            self.hp -= 1
-        if self.hp == -50:
-            self.respawn()
+        self.checkMelee()
+        self.checkDead()
 
     # move method
     def move(self, vel=8):
         # bandit is right of player
-        if self.x_location >= 280:
-            self.x_location -= vel
-            self.bandit_left = False
-        # bandit is left of player
-        elif self.x_location <= 220:
-            self.x_location += vel
-            self.bandit_left = True
+        if self.hp > 0:
+            if self.x_location >= 280:
+                self.x_location -= vel
+                self.bandit_left = False
+            # bandit is left of player
+            elif self.x_location <= 220:
+                self.x_location += vel
+                self.bandit_left = True
 
     def draw(self):
+        # refresh hp tag
+        self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255, 255, 255))
         # draw alive bandit
         if self.hp > 0:
             screen.blit(self.nameTag, (self.x_location-30,232))
@@ -479,10 +479,19 @@ class Bandit:
                 elif self.bandit_left == True:
                     screen.blit(self.bandit_rightdead_img, (self.x_location-123, 377))
 
-    def melee(self):
+    def checkMelee(self):
         if self.hp > 0:
             if self.x_location <= 290 and self.x_location >= 210 and insideShop == False:
                 playerHit(4)
+
+    def checkDead(self):
+        if self.hp == 0:
+            banpain.play()
+            giveMoney()
+        if self.hp <= 0:
+            self.hp -= 1
+        if self.hp == -50:
+            self.instances.remove(self)
 
     def respawn(self):
         self.hp = 100
@@ -716,49 +725,15 @@ def fire():
 
             if revRoundsMag > 0:
                 if lookingRight:
-                    if banx1 <= 600 and banx1 >= 250:
-                        if banHP > -10:
-                            banHP -= 20
-                            if banHP == 0:
-                                banpain.play()
-                                score += 1
-                                giveMoney()
-                    if banx2 <= 600 and banx2 >= 250:
-                        if ban2HP > -10:
-                            ban2HP -= 20
-                            if ban2HP == 0:
-                                banpain.play()
-                                score += 1
-                                giveMoney()
-                    if banx3 <= 600 and banx3 >= 250:
-                        if ban3HP > -10:
-                            ban3HP -= 20
-                            if ban3HP == 0:
-                                banpain.play()
-                                score += 1
-                                giveMoney()
+                    for bandit in Bandit.instances:
+                        if bandit.x_location <= 600 and bandit.x_location >= 250:
+                            if bandit.hp > -10:
+                                bandit.hp -= 20
                 if lookingLeft:
-                    if banx1 >= 0 and banx1 <= 250:
-                        if banHP > -10:
-                            banHP -= 20
-                            if banHP == 0:
-                                banpain.play()
-                                score += 1
-                                giveMoney()
-                    if banx2 >= 0 and banx2 <= 250:
-                        if ban2HP > -10:
-                            ban2HP -= 20
-                            if ban2HP == 0:
-                                banpain.play()
-                                score += 1
-                                giveMoney()
-                    if banx3 >= 0 and banx3 <= 250:
-                        if ban3HP > -10:
-                            ban3HP -= 20
-                            if ban3HP == 0:
-                                banpain.play()
-                                score += 1
-                                giveMoney()
+                    for bandit in Bandit.instances:
+                        if bandit.x_location >= 0 and bandit.x_location <= 250:
+                            if bandit.hp > -10:
+                                bandit.hp -= 20
 
         # sniper rifle
         if hotbarSlot2 == True and scopeScreen == True:
@@ -773,48 +748,15 @@ def fire():
                 empty.stop()
                 empty.play()
             if lookingRight:
-                if banx1 <= 700 and banx1 >= 250:
-                    if banHP > -10:
-                        banHP -= 100
-                        if banHP == 0:
-                            banpain.play()
-                            score += 1
-                            giveMoney()
-                if banx2 <= 700 and banx2 >= 250:
-                    if ban2HP > -10:
-                        ban2HP -= 100
-                        if ban2HP == 0:
-                            banpain.play()
-                            score += 1
-                if banx3 <= 700 and banx3 >= 250:
-                    if ban3HP > -10:
-                        ban3HP -= 100
-                        if ban3HP == 0:
-                            banpain.play()
-                            score += 1
-                            giveMoney()
+                for bandit in Bandit.instances:
+                    if bandit.x_location <= 700 and bandit.x_location >= 250:
+                        if bandit.hp > -10:
+                            bandit.hp -= 100
             if lookingLeft:
-                if banx1 >= -100 and banx1 <= 250:
-                    if banHP > -10:
-                        banHP -= 100
-                        if banHP == 0:
-                            banpain.play()
-                            score += 1
-                            giveMoney()
-                if banx2 >= -100 and banx2 <= 250:
-                    if ban2HP > -10:
-                        ban2HP -= 100
-                        if ban2HP == 0:
-                            banpain.play()
-                            score += 1
-                            giveMoney()
-                if banx3 >= -100 and banx3 <= 250:
-                    if ban3HP > -10:
-                        ban3HP -= 100
-                        if ban3HP == 0:
-                            banpain.play()
-                            score += 1
-                            giveMoney()
+                for bandit in Bandit.instances:
+                    if bandit.x_location >= -100 and bandit.x_location <= 250:
+                        if bandit.hp > -10:
+                            bandit.hp -= 100
 
 
 def hpPotion():
@@ -832,10 +774,10 @@ def hpPotion():
     potion.play()
 
 
-def giveMoney():
-    global moneyCount
-    x = random.randint(30, 100)
-    moneyCount += x
+def giveMoney(amount = random.randint(30, 100)):
+    global moneyCount, score
+    moneyCount += amount
+    score += 1
 
 
 def stopSounds():
@@ -1569,6 +1511,7 @@ def startGame_timer_handler():
     playButtonClicked = False
     restartButtonClicked = False
     moveAbility = True
+    ban = Bandit()
     banMoveAbility = False
     music_timer.start()
     startGame_timer.stop()
