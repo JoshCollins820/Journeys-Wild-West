@@ -442,6 +442,14 @@ class Bandit:
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255,255,255))
 
     # class methods
+    def work(self):
+        self.move()
+        self.draw()
+        self.melee()
+        if self.hp <= 0:
+            self.hp -= 1
+        if self.hp == -50:
+            self.respawn()
 
     # move method
     def move(self, vel=8):
@@ -455,6 +463,7 @@ class Bandit:
             self.bandit_left = True
 
     def draw(self):
+        # draw alive bandit
         if self.hp > 0:
             screen.blit(self.nameTag, (self.x_location-30,232))
             screen.blit(self.hpTag, (self.x_location-6,246))
@@ -462,6 +471,7 @@ class Bandit:
                 screen.blit(self.bandit_left_img, (self.x_location-39.5, 262))
             elif self.bandit_left == True:
                 screen.blit(self.bandit_right_img, (self.x_location-7, 262))
+        # draw dead bandit
         if insideShop == False:
             if self.hp <= 0:
                 if self.bandit_left == False:
@@ -469,21 +479,17 @@ class Bandit:
                 elif self.bandit_left == True:
                     screen.blit(self.bandit_rightdead_img, (self.x_location-123, 377))
 
+    def melee(self):
+        if self.hp > 0:
+            if self.x_location <= 290 and self.x_location >= 210 and insideShop == False:
+                playerHit(4)
+
     def respawn(self):
+        self.hp = 100
         self.x_location = getBanditRespawn()
 
-    # getters
-    def get_name(self):
-        return self.name
-
-    def get_level(self):
-        return self.level
-
-    def get_hp(self):
-        return self.hp
-
-    def get_x_location(self):
-        return self.x_location
+    def destruct(self):
+        del self
 
 
 
@@ -1373,6 +1379,10 @@ def resetValues():
     playerRoll3Left = False
     rollReady = True
 
+    # despawn bandits
+    for bandit in Bandit.instances:
+        Bandit.instances.remove(bandit)
+
 
 def stopAllTimers(tup):
     for timer in tuple(tup):
@@ -1838,18 +1848,9 @@ except:
     pickle.dump(highscore, pickle_out)
     pickle_out.close()
 
-b1 = Bandit()
-b2 = Bandit()
-b3 = Bandit()
-b4 = Bandit()
 
 # Game Loop (Screen Refresh Loop)
 while True:
-    b1.move()
-    b2.move()
-    b3.move()
-    b4.move()
-
     # Event Handler ------------------------------------------------------------------------------------------
     for event in pygame.event.get():
         # When game is closed
@@ -2323,10 +2324,8 @@ while True:
         # tumbleweed
         screen.blit(asset_tumbleweed, (tumweed1x-38, 331))
 
-        b1.draw()
-        b2.draw()
-        b3.draw()
-        b4.draw()
+        for bandit in Bandit.instances:
+            bandit.work()
         # bandit #1 alive
         if banHP > 0:
             # bandit 1 text
@@ -2341,9 +2340,9 @@ while True:
             screen.blit(ban2Tag, (banx2-25,222))
             screen.blit(ban2HPTag, (banx2-5,236))
             if ban2left == False:
-                screen.blit(asset_bandit2left, (banx2-40, 252))
+                screen.blit(asset_bandit2left, (banx2-39.5, 262))
             elif ban2left == True:
-                screen.blit(asset_bandit2right, (banx2+24-40, 252))
+                screen.blit(asset_bandit2right, (banx2-7, 262))
         # bandit #3 alive
         if ban3HP > 0:
             screen.blit(ban3Tag, (banx3-29,232))
