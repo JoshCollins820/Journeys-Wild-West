@@ -53,7 +53,7 @@ if collapse:
     highscore = 0
     masterVolumeStored = 0
     musicVolumeStored = 0
-    initialBandits = 3
+    initialBandits = 1
 
     # speed
     speedMove = 50
@@ -167,6 +167,8 @@ if collapse:
     playerRoll2Left = False
     playerRoll3Left = False
     rollReady = True
+    looting = False
+
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
 # audio
@@ -198,6 +200,7 @@ if collapse:
     potion = pygame.mixer.Sound('assets/sounds/beer_drink.wav')
     sniper_reload = pygame.mixer.Sound('assets/sounds/sniper_reload.wav')
     combatroll = pygame.mixer.Sound('assets/sounds/combatroll.wav')
+    lootBody = pygame.mixer.Sound('assets/sounds/loot.wav')
 
 # sprites
 if collapse:
@@ -281,6 +284,8 @@ if collapse:
     asset_player_roll1_left = pygame.image.load("assets/player/player_roll1_left.png")
     asset_player_roll2_left = pygame.image.load("assets/player/player_roll2_left.png")
     asset_player_roll3_left = pygame.image.load("assets/player/player_roll3_left.png")
+    asset_player_loot_left = pygame.image.load("assets/player/player_loot_left.png")
+    asset_player_loot_right = pygame.image.load("assets/player/player_loot_right.png")
     asset_player_cooldown_sweat_right = pygame.image.load("assets/player/cooldown_sweat_right.png")
     asset_player_cooldown_sweat_left = pygame.image.load("assets/player/cooldown_sweat_left.png")
     asset_hearty_beer_icon = pygame.image.load("assets/UI/hearty_beer_icon.png")
@@ -466,6 +471,7 @@ class Bandit:
         # bandit dead
         if self.hp == 0:
             banpain.play()
+            giveScore()
             self.hp -= 1
         # if player is on top of body
         if self.x_location <= 260 and self.x_location >= 120 and self.bandit_left == False \
@@ -668,6 +674,22 @@ def roll():
                     woodstep.play()
 
 
+def loot():
+    global playerHolster, looting, standing, moveAbility
+
+    if moveAbility == True and pause == False:
+        disableText()
+        if hotbarSlot1 == True:
+            playerHolster = True
+        looting = True
+        standing = False
+        moveAbility = False
+        giveMoney()
+        lootBody.play()
+
+        loot_timer.start()
+
+
 def disableText():
     global moneyPickText, interactText, insufFundsText, purchasedText
     moneyPickText = False
@@ -775,10 +797,13 @@ def hpPotion():
 
 
 def giveMoney(amount = random.randint(30, 100)):
-    global moneyCount, score
+    global moneyCount
     moneyCount += amount
-    score += 1
-    print("Money Given")
+
+
+def giveScore(amount = 1):
+    global score
+    score += amount
 
 
 def stopSounds():
@@ -1071,6 +1096,7 @@ def showSettings():
     potion.set_volume(masterVolume)
     sniper_reload.set_volume(masterVolume)
     combatroll.set_volume(masterVolume)
+    lootBody.set_volume(masterVolume)
     intromusic.set_volume(musicVolume * masterVolume)
     intro.set_volume(musicVolume * masterVolume)
     music.set_volume(musicVolume * masterVolume)
@@ -1209,7 +1235,7 @@ def resetValues():
         musicRightButtonHover, musicRightButtonClicked, playerRoll1Right, playerRoll2Right, playerRoll3Right, \
         playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y, walkingLeft, \
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
-        masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag
+        masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting
 
     # player vals
     playerHP = 100
@@ -1316,6 +1342,7 @@ def resetValues():
     playerRoll2Left = False
     playerRoll3Left = False
     rollReady = True
+    looting = False
 
     # reset seed
     random.seed()
@@ -1747,6 +1774,14 @@ def reloadEnded_timer_handler():
     reloadEnded_timer.stop()
 
 
+def loot_timer_handler():
+    global looting, standing, moveAbility
+    looting = False
+    standing = True
+    moveAbility = True
+    loot_timer.stop()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -1769,13 +1804,14 @@ rollCooldown_timer = simplegui.create_timer(1500, rollCooldown_timer_handler)
 walk1_timer = simplegui.create_timer(1, walk1_timer_handler)
 walk2_timer = simplegui.create_timer(150, walk2_timer_handler)
 reloadEnded_timer = simplegui.create_timer(125, reloadEnded_timer_handler)
+loot_timer = simplegui.create_timer(300, loot_timer_handler)
 
 
 # timers tuple
 timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
               drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
               volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
-              rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer)
+              rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -1817,12 +1853,15 @@ while True:
                 pygame.mixer.pause()
                 screen.blit(asset_paused_darken, (0, 0))
                 pause = True
+
             # Unpause Game
             elif event.key == pygame.K_ESCAPE and pause == True and settings == False:
                 resumeGame_timer.start()
+
             # Exit settings
             elif event.key == pygame.K_ESCAPE and settings == True:
                 settings = False
+
             if pause == False:
                 # Walk left
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
@@ -1832,6 +1871,7 @@ while True:
                     walk1_timer.stop()
                     walkingLeft = True
                     walk1_timer.start()
+
                 # Walk right
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                     walkRight()
@@ -1840,9 +1880,11 @@ while True:
                     walk1_timer.stop()
                     walkingRight = True
                     walk1_timer.start()
+
                 # Roll
                 if event.key == pygame.K_s or event.key == pygame.K_DOWN:
                     roll()
+
                 # Reloading
                 if event.key == pygame.K_r:
                     # Revolver
@@ -1854,6 +1896,7 @@ while True:
                                 reload.stop()
                                 reload.play()
                                 revolver_reload_timer.start()
+
                     # Sniper Rifle
                     if hotbarSlot2 == True or scopeScreen == True:
                         if sniperRoundsMag < 1:
@@ -1863,6 +1906,7 @@ while True:
                                 sniper_reload.stop()
                                 sniper_reload.play()
                                 sniper_reload_timer.start()
+
                 # Use Item (Space)
                 if event.key == pygame.K_SPACE:
                     # Revolver fire
@@ -1871,18 +1915,21 @@ while True:
                             fire()
                             readyToFireRevolver = False
                             revolverFireDelay_timer.start()
+
                     # Sniper Rifle fires
                     if hotbarSlot2 == True and ownSniperRifle == True and scopeScreen == True:
                         fire()
+
                     # HP Potion is used
                     if hotbarSlot6 == True and hpPotionCount > 0:
                         hpPotion()
                         drinkResetDelay_timer.start()
                         playerIdle = False
+
                 # Aim Sniper Rifle
                 if event.key == pygame.K_w or event.key == pygame.K_UP:
                     if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True \
-                            and insideShop == False and rolling == False:
+                            and insideShop == False and rolling == False and looting == False:
                         scopeScreen = not scopeScreen
                         if scopeScreen == True:
                             breath.stop()
@@ -1892,30 +1939,35 @@ while True:
                             ban1InScope = False
                             ban2InScope = False
                             ban3InScope = False
+
                 # Loot body
                 if event.key == pygame.K_f:
-                    for bandit in Bandit.instances[:]:
+                    for bandit in Bandit.instances:
                         if bandit.looted == False and bandit.stoodOn:
                             bandit.looted = True
-                            giveMoney()
-                # Switch to hotbar slot 1
-                if event.key == pygame.K_1 and moveAbility == True and scopeScreen == False:
-                    switchSlots(1)
-                # Switch to hotbar slot 2
-                if event.key == pygame.K_2 and moveAbility == True:
-                    switchSlots(2)
-                # Switch to hotbar slot 3
-                if event.key == pygame.K_3 and moveAbility == True and scopeScreen == False:
-                    switchSlots(3)
-                # Switch to hotbar slot 4
-                if event.key == pygame.K_4 and moveAbility == True and scopeScreen == False:
-                    switchSlots(4)
-                # Switch to hotbar slot 5
-                if event.key == pygame.K_5 and moveAbility == True and scopeScreen == False:
-                    switchSlots(5)
-                # Switch to hotbar slot Q (6)
-                if event.key == pygame.K_q and moveAbility == True and scopeScreen == False:
-                    switchSlots(6)
+                            loot()
+
+                # Hotbar slots
+                if moveAbility == True and looting == False:
+                    # Switch to hotbar slot 1
+                    if event.key == pygame.K_1 and scopeScreen == False:
+                        switchSlots(1)
+                    # Switch to hotbar slot 2
+                    if event.key == pygame.K_2:
+                        switchSlots(2)
+                    # Switch to hotbar slot 3
+                    if event.key == pygame.K_3 and scopeScreen == False:
+                        switchSlots(3)
+                    # Switch to hotbar slot 4
+                    if event.key == pygame.K_4 and scopeScreen == False:
+                        switchSlots(4)
+                    # Switch to hotbar slot 5
+                    if event.key == pygame.K_5 and scopeScreen == False:
+                        switchSlots(5)
+                    # Switch to hotbar slot Q (6)
+                    if event.key == pygame.K_q and scopeScreen == False:
+                        switchSlots(6)
+
                 # Enter Store
                 if store1x <= 50 and store1x >= 25:
                     if scopeScreen == False and insideShop == False and playerSniper == False:
@@ -2448,6 +2500,13 @@ while True:
             if lookingLeft:
                 screen.blit(asset_player_cooldown_sweat_left, (222, cooldown_sweat_y))
 
+        # Loot
+        if looting == True:
+            if lookingRight == True:
+                screen.blit(asset_player_loot_right, (180, 255))
+            if lookingLeft == True:
+                screen.blit(asset_player_loot_left, (160, 255))
+
         # draw dead bandits
         for bandit in Bandit.instances:
             bandit.draw_dead()
@@ -2617,6 +2676,7 @@ while True:
         potion.set_volume(masterVolume)
         sniper_reload.set_volume(masterVolume)
         combatroll.set_volume(masterVolume)
+        lootBody.set_volume(masterVolume)
         intromusic.set_volume(musicVolume * masterVolume)
         intro.set_volume(musicVolume * masterVolume)
         music.set_volume(musicVolume * masterVolume)
