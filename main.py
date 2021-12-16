@@ -53,7 +53,7 @@ if collapse:
     highscore = 0
     masterVolumeStored = 0
     musicVolumeStored = 0
-    initialBandits = 3
+    initialBandits = 1
 
     # speed
     speedMove = 50
@@ -354,6 +354,7 @@ if collapse:
     font1 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 13)
     font2 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 18)
     font3 = pygame.font.SysFont("ebrima", 20, True)
+    font4 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 16)
     # syntax - (Name, Size, Bold, Italic)
 
     playerHP_text = font2.render((str(playerHP)), True, (255,255,255))
@@ -375,7 +376,7 @@ if collapse:
     musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
     playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
     loot_text = font1.render("LOOT", True, (255, 255, 255))
-    moneyGained_text = font1.render("+ $", True, (50, 100, 50))
+    moneyGained_text = font4.render("+ $", True, (50, 100, 50))
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 # list of names
@@ -807,7 +808,7 @@ def giveMoney(amount = 0):
         amount = random.randint(20,45)
     showMoneyGained_timer.stop()
     moneyCount += amount
-    moneyGained_text = font2.render("+ $" + (str(amount)), True, (42, 235, 48))
+    moneyGained_text = font4.render("+ $" + (str(amount)), True, (42, 235, 48))
     showMoneyGainedText = True
     showMoneyGained_timer.start()
 
@@ -1144,9 +1145,9 @@ def showHUD():
     # interact text
     if interactText == True and rolling == False and scopeScreen == False:
         if reloadUI == True or outAmmoUI == True:
-            screen.blit(interact_text, (221, 220))
+            screen.blit(interact_text, (222, 220))
         else:
-            screen.blit(interact_text, (221, 235))
+            screen.blit(interact_text, (222, 235))
 
     # buy text
     if buyText == True:
@@ -1155,7 +1156,7 @@ def showHUD():
     # ammo text
     if standing == True:
         if reloadUI == True:
-            screen.blit(reload_text, (226, 235))
+            screen.blit(reload_text, (227, 235))
         if outAmmoUI == True:
             screen.blit(outAmmo_text, (215, 235))
 
@@ -1184,7 +1185,7 @@ def showHUD():
 
     # money gained text
     if showMoneyGainedText == True:
-        screen.blit(moneyGained_text, (26, 480))
+        screen.blit(moneyGained_text, (30, 480))
 
 
 def interactCheck():
@@ -1957,10 +1958,7 @@ while True:
                             breath.stop()
                             breath.play()
                             heartbeat.stop()
-                            heartbeat.play()
-                            ban1InScope = False
-                            ban2InScope = False
-                            ban3InScope = False
+                            heartbeat.play(-1)
 
                 # Loot body
                 if event.key == pygame.K_f:
@@ -2154,6 +2152,8 @@ while True:
                 walk1_timer.start()
         # Mouse Handler
         if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 2:
+                ban = Bandit()
             # Mouse Button 1
             if event.button == 1:
                 # In Main Menu Screen
@@ -2527,7 +2527,7 @@ while True:
             if lookingRight == True:
                 screen.blit(asset_player_loot_right, (180, 255))
             if lookingLeft == True:
-                screen.blit(asset_player_loot_left, (160, 255))
+                screen.blit(asset_player_loot_left, (173, 255))
 
         # draw dead bandits
         for bandit in Bandit.instances:
