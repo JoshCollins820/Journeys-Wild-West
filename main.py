@@ -53,7 +53,7 @@ if collapse:
     highscore = 0
     masterVolumeStored = 0
     musicVolumeStored = 0
-    initialBandits = 1
+    initialBandits = 3
 
     # speed
     speedMove = 50
@@ -168,6 +168,7 @@ if collapse:
     playerRoll3Left = False
     rollReady = True
     looting = False
+    showMoneyGainedText = False
 
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
@@ -374,6 +375,7 @@ if collapse:
     musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
     playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
     loot_text = font1.render("LOOT", True, (255, 255, 255))
+    moneyGained_text = font1.render("+ $", True, (50, 100, 50))
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 # list of names
@@ -483,13 +485,15 @@ class Bandit:
         if self.hp <= 0 and self.looted == True:
             self.hp -= 1
         # remove from instance list
-        if self.hp <= -50:
+        if self.hp <= -20:
+            # self.respawn()
             self.instances.remove(self)
 
     # manual respawn if needed
     def respawn(self):
         self.hp = 100
         self.x_location = getBanditRespawn()
+        self.looted = False
 
 
 
@@ -684,9 +688,9 @@ def loot():
         looting = True
         standing = False
         moveAbility = False
+        stopRevolverReload()
         giveMoney()
         lootBody.play()
-
         loot_timer.start()
 
 
@@ -796,9 +800,16 @@ def hpPotion():
     potion.play()
 
 
-def giveMoney(amount = random.randint(30, 100)):
-    global moneyCount
+def giveMoney(amount = 0):
+    global moneyCount, showMoneyGainedText, moneyGained_text
+    # if amount wasn't provided
+    if amount == 0:
+        amount = random.randint(20,45)
+    showMoneyGained_timer.stop()
     moneyCount += amount
+    moneyGained_text = font2.render("+ $" + (str(amount)), True, (42, 235, 48))
+    showMoneyGainedText = True
+    showMoneyGained_timer.start()
 
 
 def giveScore(amount = 1):
@@ -1132,8 +1143,8 @@ def showHUD():
 
     # interact text
     if interactText == True and rolling == False and scopeScreen == False:
-        if sitting == True:
-            screen.blit(interact_text, (221, 265))
+        if reloadUI == True or outAmmoUI == True:
+            screen.blit(interact_text, (221, 220))
         else:
             screen.blit(interact_text, (221, 235))
 
@@ -1144,15 +1155,10 @@ def showHUD():
     # ammo text
     if standing == True:
         if reloadUI == True:
-            if interactText == False:
-                screen.blit(reload_text, (226, 235))
-            elif interactText == True:
-                screen.blit(reload_text, (226, 220))
+            screen.blit(reload_text, (226, 235))
         if outAmmoUI == True:
-            if interactText == False:
-                screen.blit(outAmmo_text, (215, 235))
-            elif interactText == True:
-                screen.blit(outAmmo_text, (215, 220))
+            screen.blit(outAmmo_text, (215, 235))
+
 
     # hotbar
     if startGame == True and scopeScreen == False:
@@ -1166,13 +1172,19 @@ def showHUD():
         screen.blit(asset_hotbar_select, (activeSlotx1 - 3, 565 - 33))
 
     # loot text
-    if startGame == True and insideShop == False and outAmmoUI == False and reloadUI == False:
+    if startGame == True and insideShop == False:
         for bandit in Bandit.instances:
             if bandit.looted == False and bandit.stoodOn == True:
-                if interactText == False:
-                    screen.blit(loot_text, (235, 235))
-                elif interactText == True:
+                if (outAmmoUI or reloadUI) and interactText == True:
+                    screen.blit(loot_text, (235, 205))
+                elif outAmmoUI == True or reloadUI == True or interactText == True:
                     screen.blit(loot_text, (235, 220))
+                else:
+                    screen.blit(loot_text, (235, 235))
+
+    # money gained text
+    if showMoneyGainedText == True:
+        screen.blit(moneyGained_text, (26, 480))
 
 
 def interactCheck():
@@ -1235,7 +1247,8 @@ def resetValues():
         musicRightButtonHover, musicRightButtonClicked, playerRoll1Right, playerRoll2Right, playerRoll3Right, \
         playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y, walkingLeft, \
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
-        masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting
+        masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
+        showMoneyGainedText
 
     # player vals
     playerHP = 100
@@ -1343,6 +1356,7 @@ def resetValues():
     playerRoll3Left = False
     rollReady = True
     looting = False
+    showMoneyGainedText = False
 
     # reset seed
     random.seed()
@@ -1782,6 +1796,12 @@ def loot_timer_handler():
     loot_timer.stop()
 
 
+def showMoneyGained_timer_handler():
+    global showMoneyGainedText
+    showMoneyGainedText = False
+    showMoneyGained_timer.stop()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -1805,13 +1825,15 @@ walk1_timer = simplegui.create_timer(1, walk1_timer_handler)
 walk2_timer = simplegui.create_timer(150, walk2_timer_handler)
 reloadEnded_timer = simplegui.create_timer(125, reloadEnded_timer_handler)
 loot_timer = simplegui.create_timer(300, loot_timer_handler)
+showMoneyGained_timer = simplegui.create_timer(2000, showMoneyGained_timer_handler)
 
 
 # timers tuple
 timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
               drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
               volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
-              rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer)
+              rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
+              showMoneyGained_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -2639,6 +2661,10 @@ while True:
             interactText = False
         else:
             outAmmoUI = False
+
+        # disable interact text while looting
+        if looting == True:
+            interactText = False
 
 
         # text refresh
