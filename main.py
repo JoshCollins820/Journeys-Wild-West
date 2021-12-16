@@ -1825,7 +1825,7 @@ rollCooldown_timer = simplegui.create_timer(1500, rollCooldown_timer_handler)
 walk1_timer = simplegui.create_timer(1, walk1_timer_handler)
 walk2_timer = simplegui.create_timer(150, walk2_timer_handler)
 reloadEnded_timer = simplegui.create_timer(125, reloadEnded_timer_handler)
-loot_timer = simplegui.create_timer(300, loot_timer_handler)
+loot_timer = simplegui.create_timer(200, loot_timer_handler)
 showMoneyGained_timer = simplegui.create_timer(2000, showMoneyGained_timer_handler)
 
 
