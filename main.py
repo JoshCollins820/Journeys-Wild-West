@@ -759,7 +759,7 @@ def fire():
         playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag, sniperRoundsTotal, playerSniper, pause, \
         sawedOffRoundsMag
 
-    if pause == False and dead == False:
+    if pause == False and dead == False and rolling == False:
         # Revolver
         if hotbarSlot1 == True:
             playerShoot = True
@@ -2075,7 +2075,7 @@ while True:
                             heartbeat.play(-1)
 
                 # Loot body
-                if event.key == pygame.K_f:
+                if event.key == pygame.K_f and rolling == False:
                     for bandit in Bandit.instances:
                         if bandit.looted == False and bandit.stoodOn:
                             bandit.looted = True

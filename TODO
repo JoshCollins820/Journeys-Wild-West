@@ -1,10 +1,10 @@
 ------------------------ KNOWN BUGS------------------------
 - find better sawed off shot sound
+
 --------------------------IMPROVE--------------------------
--
+- maybe add delay for firing sawed-off
 
 ----------------------------ADD----------------------------
-- Sawed Off
 - Click to buy in catalog
 - Robbing the store clerk
   (minigame for pursuading him to give free items/money)
@@ -21,6 +21,7 @@
 v0.4
 New Features
 - Combat Rolling
+- Sawed-Off
 - More Bandits
 - Looting
 - Main Menu
