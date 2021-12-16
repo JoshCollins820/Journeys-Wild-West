@@ -47,7 +47,7 @@ if collapse:
     revolverReloadSpeed = 500
     sniperRoundsMag = 1
     sniperRoundsTotal = 3
-    buckRoundsMag = 2
+    sawedOffRoundsMag = 2
     buckRoundsTotal = 6
     hpPotionCount = 5
     drinkTime = 100
@@ -108,8 +108,10 @@ if collapse:
     outAmmoUI = False
     revolverOutMag = False
     sniperOutMag = False
+    sawedOffOutMag = False
     revolverOutAmmo = False
     sniperOutAmmo = False
+    sawedOffOutAmmo = False
     dead = False
     scopeScreen = False
     insideShop = False
@@ -177,8 +179,8 @@ if collapse:
 
 # audio
 if collapse:
-    masterVolume = 1  # (0-1)
-    musicVolume = 1  # (0-1)
+    masterVolume = 5  # (0-1)
+    musicVolume = 0  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
     intro = pygame.mixer.Sound('assets/sounds/start_music.wav')
@@ -205,6 +207,9 @@ if collapse:
     sniper_reload = pygame.mixer.Sound('assets/sounds/sniper_reload.wav')
     combatroll = pygame.mixer.Sound('assets/sounds/combatroll.wav')
     lootBody = pygame.mixer.Sound('assets/sounds/loot.wav')
+    sawedoffshot = pygame.mixer.Sound('assets/sounds/sawedoffshot.wav')
+    sawedoffopen = pygame.mixer.Sound('assets/sounds/sawedoffopen.wav')
+    loadshell = pygame.mixer.Sound('assets/sounds/loadshell.wav')
 
 # sprites
 if collapse:
@@ -214,8 +219,9 @@ if collapse:
     asset_saloon = pygame.image.load("assets/buildings/cianfarano_saloon.png")
     asset_store = pygame.image.load("assets/buildings/solee_os_store.png")
     asset_hotbar = pygame.image.load("assets/UI/hotbar.png")
-    asset_revolver = pygame.image.load("assets/UI/revolver_icon.png")
-    asset_sniper = pygame.image.load("assets/UI/sniper_rifle_icon.png")
+    asset_revolver_icon = pygame.image.load("assets/UI/revolver_icon.png")
+    asset_sniper_icon = pygame.image.load("assets/UI/sniper_rifle_icon.png")
+    asset_sawed_off_icon = pygame.image.load("assets/UI/sawed_off_icon.png")
     asset_bandit1left = pygame.image.load("assets/npc/bandit1.png")
     asset_bandit2left = pygame.image.load("assets/npc/bandit2.png")
     asset_bandit3left = pygame.image.load("assets/npc/bandit3.png")
@@ -254,6 +260,8 @@ if collapse:
     asset_shop_interior = pygame.image.load("assets/buildings/shop_interior.png")
     asset_text_1000_green = pygame.image.load("assets/UI/text_1000_green.png")
     asset_text_1000_red = pygame.image.load("assets/UI/text_1000_red.png")
+    asset_text_3000_green = pygame.image.load("assets/UI/text_3000_green.png")
+    asset_text_3000_red = pygame.image.load("assets/UI/text_3000_red.png")
     asset_text_100_green = pygame.image.load("assets/UI/text_100_green.png")
     asset_text_100_red = pygame.image.load("assets/UI/text_100_red.png")
     asset_text_50_green = pygame.image.load("assets/UI/text_50_green.png")
@@ -369,6 +377,7 @@ if collapse:
     playerMoney_text = font2.render((str(moneyCount)), True, (255,255,255))
     revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255,255,255))
     sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255,255,255))
+    sawedOffAmmo_text = font2.render((str(sawedOffRoundsMag) + "/" + str(buckRoundsTotal)), True, (255, 255, 255))
     blankAmmo_text = font2.render("-", True, (255,255,255))
     reload_text = font1.render("RELOAD", True, (255,0,0))
     outAmmo_text = font1.render("Out of Ammo", True, (255,0,0))
@@ -583,6 +592,8 @@ def walkRight():
             lookingLeft = False
             if hotbarSlot1 == True:
                 playerHolster = True
+            if hotbarSlot3 == True and ownSawedOff:
+                playerHolster = True
             if insideShop == False:
                 step.stop()
                 step.play()
@@ -617,6 +628,8 @@ def walkLeft():
             lookingRight = False
             lookingLeft = True
             if hotbarSlot1 == True:
+                playerHolster = True
+            if hotbarSlot3 == True and ownSawedOff:
                 playerHolster = True
             if insideShop == False:
                 step.stop()
@@ -663,6 +676,8 @@ def roll():
                 lookingLeft = False
                 if hotbarSlot1 == True:
                     playerHolster = True
+                if hotbarSlot3 == True and ownSawedOff:
+                    playerHolster = True
                 if insideShop == False:
                     step.stop()
                     step.play()
@@ -679,6 +694,8 @@ def roll():
                 lookingLeft = True
                 if hotbarSlot1 == True:
                     playerHolster = True
+                if hotbarSlot3 == True and ownSawedOff:
+                    playerHolster = True
                 if insideShop == False:
                     step.stop()
                     step.play()
@@ -694,10 +711,12 @@ def loot():
         disableText()
         if hotbarSlot1 == True:
             playerHolster = True
+        if hotbarSlot3 == True and ownSawedOff:
+            playerHolster = True
         looting = True
         standing = False
         moveAbility = False
-        stopRevolverReload()
+        stopReload()
         giveMoney()
         lootBody.play()
         loot_timer.start()
@@ -737,51 +756,38 @@ def scoped():
 def fire():
     global score, moneyCount, startGame, moveAbility, hotbarSlot2, hotbarSlot6, dead, bulletx, hotbarSlot1, \
         lookingLeft, lookingRight, revRoundsMag, reloadUI, outAmmoUI, interactText, scopeScreen,\
-        playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag, sniperRoundsTotal, playerSniper, pause
+        playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag, sniperRoundsTotal, playerSniper, pause, \
+        sawedOffRoundsMag
 
     if pause == False and dead == False:
         # Revolver
         if hotbarSlot1 == True:
             playerShoot = True
             playerHolster = False
-            if revRoundsMag > 0:
-                if lookingRight == True:
-                    bulletx = 330
-                if lookingLeft == True:
-                    bulletx = 330
-                shot.stop()
-                shot.play()
-                revRoundsMag -= 1
-                stopRevolverReload()
-
-            elif revRoundsMag == 0:
-                empty.stop()
-                empty.play()
-
-            if revRoundsMag > 0:
-                if lookingRight:
-                    for bandit in Bandit.instances:
-                        if bandit.x_location <= 600 and bandit.x_location >= 250:
-                            if bandit.hp > 0:
-                                bandit.hp -= 20
-                if lookingLeft:
-                    for bandit in Bandit.instances:
-                        if bandit.x_location >= 0 and bandit.x_location <= 250:
-                            if bandit.hp > 0:
-                                bandit.hp -= 20
+            shot.stop()
+            shot.play()
+            revRoundsMag -= 1
+            bulletx = 330
+            stopReload()
+            if lookingRight:
+                for bandit in Bandit.instances:
+                    if bandit.x_location <= 600 and bandit.x_location >= 250:
+                        if bandit.hp > 0:
+                            bandit.hp -= 20
+            if lookingLeft:
+                for bandit in Bandit.instances:
+                    if bandit.x_location >= 0 and bandit.x_location <= 250:
+                        if bandit.hp > 0:
+                            bandit.hp -= 20
 
         # sniper rifle
         if hotbarSlot2 == True and scopeScreen == True:
             interactText = False
-            if sniperRoundsMag > 0:
-                snipershot.stop()
-                snipershot.play()
-                scopeScreen = False
-                sniperRoundsMag -= 1
-                sniper_reload.stop()
-            elif sniperRoundsMag == 0:
-                empty.stop()
-                empty.play()
+            snipershot.stop()
+            snipershot.play()
+            scopeScreen = False
+            sniperRoundsMag -= 1
+            stopReload()
             if lookingRight:
                 for bandit in Bandit.instances:
                     if bandit.x_location <= 700 and bandit.x_location >= 250:
@@ -792,6 +798,27 @@ def fire():
                     if bandit.x_location >= -100 and bandit.x_location <= 250:
                         if bandit.hp > 0:
                             bandit.hp -= 100
+
+        # sawed off
+        if hotbarSlot3 == True:
+            playerShoot = True
+            playerHolster = False
+            interactText = False
+            bulletx = 330
+            sawedoffshot.stop()
+            sawedoffshot.play()
+            sawedOffRoundsMag -= 1
+            stopReload()
+            if lookingRight:
+                for bandit in Bandit.instances:
+                    if bandit.x_location <= 600 and bandit.x_location >= 250:
+                        if bandit.hp > 0:
+                            bandit.hp -= 50
+            if lookingLeft:
+                for bandit in Bandit.instances:
+                    if bandit.x_location >= 0 and bandit.x_location <= 250:
+                        if bandit.hp > 0:
+                            bandit.hp -= 50
 
 
 def hpPotion():
@@ -1117,6 +1144,9 @@ def showSettings():
     sniper_reload.set_volume(masterVolume)
     combatroll.set_volume(masterVolume)
     lootBody.set_volume(masterVolume)
+    sawedoffshot.set_volume(masterVolume)
+    sawedoffopen.set_volume(masterVolume)
+    loadshell.set_volume(masterVolume)
     intromusic.set_volume(musicVolume * masterVolume)
     intro.set_volume(musicVolume * masterVolume)
     music.set_volume(musicVolume * masterVolume)
@@ -1139,8 +1169,10 @@ def showHUD():
     screen.blit(asset_ammo_icon, (11, 573))
     if hotbarSlot1 == True:
         screen.blit(revolverAmmo_text, (41, 571))
-    elif hotbarSlot2 == True:
+    elif hotbarSlot2 == True and ownSniperRifle == True:
         screen.blit(sniperAmmo_text, (41, 571))
+    elif hotbarSlot3 == True and ownSawedOff == True:
+        screen.blit(sawedOffAmmo_text, (41, 571))
     else:
         screen.blit(blankAmmo_text, (42, 569))
 
@@ -1172,9 +1204,11 @@ def showHUD():
     # hotbar
     if startGame == True and scopeScreen == False:
         screen.blit(asset_hotbar, (300 - 153.5, 560 - 28.5))
-        screen.blit(asset_revolver, (300 - 153.5, 560 - 28.5))
+        screen.blit(asset_revolver_icon, (300 - 153.5, 560 - 28.5))
         if ownSniperRifle == True:
-            screen.blit(asset_sniper, (300 - 153.5, 560 - 28.5))
+            screen.blit(asset_sniper_icon, (300 - 153.5, 560 - 28.5))
+        if ownSawedOff == True:
+            screen.blit(asset_sawed_off_icon, (300 - 153.5, 560 - 28.5))
         if hpPotionCount > 0:
             screen.blit(asset_hearty_beer_icon, (500 - 153.5, 562 - 28.5))
             screen.blit(potionCount_text, (403, 537))
@@ -1257,7 +1291,7 @@ def resetValues():
         playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y, walkingLeft, \
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
-        showMoneyGainedText, buckRoundsMag, buckRoundsTotal,ownSawedOff
+        showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo
 
     # player vals
     playerHP = 100
@@ -1267,7 +1301,7 @@ def resetValues():
     revolverFireRate = 120
     sniperRoundsMag = 1
     sniperRoundsTotal = 3
-    buckRoundsMag = 2
+    sawedOffRoundsMag = 2
     buckRoundsTotal = 6
     hpPotionCount = 0
     score = 0
@@ -1309,8 +1343,10 @@ def resetValues():
     outAmmoUI = False
     revolverOutMag = False
     sniperOutMag = False
+    sawedOffOutMag = False
     revolverOutAmmo = False
     sniperOutAmmo = False
+    sawedOffOutAmmo = False
     scopeScreen = False
     insideShop = False
     ownSniperRifle = True
@@ -1437,15 +1473,17 @@ def switchSlots(slot):
         hotbarSlot4 = False
         hotbarSlot5 = False
         hotbarSlot6 = False
-        stopRevolverReload()
+        stopReload()
         griprevolver.stop()
         griprevolver.play()
-        playerHolster = not playerHolster
-        playerIdle = not playerIdle
+        playerHolster = True
+        playerShoot = False
+        playerIdle = False
         playerSniper = False
         if hotbarSlot1 == False:
             playerShoot = False
             playerHolster = False
+            playerIdle = True
 
     elif slot == 2:
         if scopeScreen == False:
@@ -1457,7 +1495,7 @@ def switchSlots(slot):
             hotbarSlot6 = False
             playerHolster = False
             playerShoot = False
-            stopRevolverReload()
+            stopReload()
             if ownSniperRifle == True:
                 playerSniper = not playerSniper
                 playerGrab = True
@@ -1476,7 +1514,18 @@ def switchSlots(slot):
         interactText = False
         playerHolster = False
         playerSniper = False
-        stopRevolverReload()
+        playerShoot = False
+        stopReload()
+        if ownSawedOff == True:
+            playerHolster = True
+            playerIdle = False
+            griprevolver.stop()
+            griprevolver.play()
+        if hotbarSlot3 == False:
+            playerShoot = False
+            playerHolster = False
+            playerIdle = True
+
     elif slot == 4:
         hotbarSlot1 = False
         hotbarSlot2 = False
@@ -1487,7 +1536,7 @@ def switchSlots(slot):
         interactText = False
         playerSniper = False
         playerHolster = False
-        stopRevolverReload()
+        stopReload()
     elif slot == 5:
         hotbarSlot5 = not hotbarSlot5
         hotbarSlot1 = False
@@ -1498,7 +1547,7 @@ def switchSlots(slot):
         interactText = False
         playerSniper = False
         playerHolster = False
-        stopRevolverReload()
+        stopReload()
     elif slot == 6:
         hotbarSlot6 = not hotbarSlot6
         hotbarSlot1 = False
@@ -1506,17 +1555,22 @@ def switchSlots(slot):
         hotbarSlot3 = False
         hotbarSlot4 = False
         hotbarSlot5 = False
-        stopRevolverReload()
+        stopReload()
         interactText = False
         playerHolster = False
         playerSniper = False
         playerShoot = False
 
 
-def stopRevolverReload():
+def stopReload():
     revolver_reload_timer.stop()
+    sniper_reload_timer.stop()
+    sawed_off_reload_timer.stop()
     reload.stop()
     revolverspin.stop()
+    sniper_reload.stop()
+    sawedoffopen.stop()
+    loadshell.stop()
 
 
 def volumeButtonReset_timer_handler():
@@ -1547,6 +1601,18 @@ def sniper_reload_timer_handler():
         sniperRoundsMag += 1
     if sniperRoundsMag == 1:
         sniper_reload_timer.stop()
+
+
+def sawed_off_reload_timer_handler():
+    global sawedOffRoundsMag, buckRoundsTotal
+    if buckRoundsTotal > 0:
+        buckRoundsTotal -= 1
+        sawedOffRoundsMag += 1
+        loadshell.stop()
+        loadshell.play()
+    if sawedOffRoundsMag == 2 or buckRoundsTotal == 0:
+        sawedOffreloadEnded_timer.start()
+        sawed_off_reload_timer.stop()
 
 
 def music_timer_handler():
@@ -1800,6 +1866,12 @@ def reloadEnded_timer_handler():
     reloadEnded_timer.stop()
 
 
+def sawedOffreloadEnded_timer_handler():
+    sawedoffopen.stop()
+    sawedoffopen.play()
+    sawedOffreloadEnded_timer.stop()
+
+
 def loot_timer_handler():
     global looting, standing, moveAbility
     looting = False
@@ -1817,6 +1889,7 @@ def showMoneyGained_timer_handler():
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
+sawed_off_reload_timer = simplegui.create_timer(500, sawed_off_reload_timer_handler)
 music_timer = simplegui.create_timer(15000, music_timer_handler)
 startGame_timer = simplegui.create_timer(50, startGame_timer_handler)
 mainMenu_timer = simplegui.create_timer(50, mainMenu_timer_handler)
@@ -1836,6 +1909,7 @@ rollCooldown_timer = simplegui.create_timer(1500, rollCooldown_timer_handler)
 walk1_timer = simplegui.create_timer(1, walk1_timer_handler)
 walk2_timer = simplegui.create_timer(150, walk2_timer_handler)
 reloadEnded_timer = simplegui.create_timer(125, reloadEnded_timer_handler)
+sawedOffreloadEnded_timer = simplegui.create_timer(500, sawedOffreloadEnded_timer_handler)
 loot_timer = simplegui.create_timer(200, loot_timer_handler)
 showMoneyGained_timer = simplegui.create_timer(2000, showMoneyGained_timer_handler)
 
@@ -1845,7 +1919,7 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
               drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
               volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
               rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
-              showMoneyGained_timer)
+              showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -1930,7 +2004,6 @@ while True:
                                 reload.stop()
                                 reload.play()
                                 revolver_reload_timer.start()
-
                     # Sniper Rifle
                     if hotbarSlot2 == True or scopeScreen == True:
                         if sniperRoundsMag < 1:
@@ -1940,19 +2013,49 @@ while True:
                                 sniper_reload.stop()
                                 sniper_reload.play()
                                 sniper_reload_timer.start()
+                    # Sawed Off
+                    if hotbarSlot3 == True:
+                        if sawedOffRoundsMag < 2:
+                            playerHolster = True
+                            playerShoot = False
+                            if buckRoundsTotal > 0:
+                                sawedoffopen.stop()
+                                sawedoffopen.play()
+                                sawed_off_reload_timer.start()
 
                 # Use Item (Space)
                 if event.key == pygame.K_SPACE:
                     # Revolver fire
                     if hotbarSlot1 == True:
                         if moveAbility == True and readyToFireRevolver == True:
-                            fire()
-                            readyToFireRevolver = False
-                            revolverFireDelay_timer.start()
+                            if revRoundsMag > 0:
+                                fire()
+                                readyToFireRevolver = False
+                                revolverFireDelay_timer.start()
+                            else:
+                                playerShoot = True
+                                playerHolster = False
+                                empty.stop()
+                                empty.play()
 
                     # Sniper Rifle fires
                     if hotbarSlot2 == True and ownSniperRifle == True and scopeScreen == True:
-                        fire()
+                        if sniperRoundsMag > 0:
+                            fire()
+                        else:
+                            empty.stop()
+                            empty.play()
+
+
+                    # Sawed-Off fires
+                    if hotbarSlot3 == True and ownSawedOff == True:
+                        if sawedOffRoundsMag > 0:
+                            fire()
+                        else:
+                            playerShoot = True
+                            playerHolster = False
+                            empty.stop()
+                            empty.play()
 
                     # HP Potion is used
                     if hotbarSlot6 == True and hpPotionCount > 0:
@@ -2071,6 +2174,19 @@ while True:
                                 insufFundsText = True
                                 error.stop()
                                 error.play()
+                        # Purchase Sawed Off
+                        if event.key == pygame.K_3:
+                            if moneyCount >= 3000 and ownSawedOff == False:
+                                purchasedText = True
+                                ownSawedOff = True
+                                hotbarSlot3 = False
+                                moneyCount -= 3000
+                                cashregister.stop()
+                                cashregister.play()
+                            elif moneyCount < 3000 and ownSawedOff == False:
+                                insufFundsText = True
+                                error.stop()
+                                error.play()
                         if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                             catalogPage1 = False
                             catalogPage2 = False
@@ -2106,6 +2222,20 @@ while True:
                                 insufFundsText = False
                                 purchasedText = True
                                 sniperRoundsTotal += 6
+                                moneyCount -= 100
+                                cashregister.stop()
+                                cashregister.play()
+                            elif moneyCount < 100:
+                                purchasedText = False
+                                insufFundsText = True
+                                error.stop()
+                                error.play()
+                        # Purchase 12 Gauge Shells
+                        if event.key == pygame.K_3:
+                            if moneyCount >= 100:
+                                insufFundsText = False
+                                purchasedText = True
+                                buckRoundsTotal += 12
                                 moneyCount -= 100
                                 cashregister.stop()
                                 cashregister.play()
@@ -2290,15 +2420,34 @@ while True:
                     hpPotion()
                     drinkResetDelay_timer.start()
                     playerIdle = False
-                # Fire Revolver
+                # Revolver fires
                 if hotbarSlot1 == True:
                     if moveAbility == True and readyToFireRevolver == True:
-                        fire()
-                        readyToFireRevolver = False
-                        revolverFireDelay_timer.start()
-                # Fire Sniper Rifle
+                        if revRoundsMag > 0:
+                            fire()
+                            readyToFireRevolver = False
+                            revolverFireDelay_timer.start()
+                        else:
+                            playerShoot = True
+                            playerHolster = False
+                            empty.stop()
+                            empty.play()
+                # Sniper Rifle fires
                 if hotbarSlot2 == True and ownSniperRifle == True and scopeScreen == True:
-                    fire()
+                    if sniperRoundsMag > 0:
+                        fire()
+                    else:
+                        empty.stop()
+                        empty.play()
+                # Sawed-Off fires
+                if hotbarSlot3 == True and ownSawedOff == True:
+                    if sawedOffRoundsMag > 0:
+                        fire()
+                    else:
+                        playerShoot = True
+                        playerHolster = False
+                        empty.stop()
+                        empty.play()
 
     # Mouse Position
     mouse_posx,mouse_posy = pygame.mouse.get_pos()
@@ -2438,11 +2587,16 @@ while True:
                         screen.blit(asset_holster_right, (217, 259))
                 # bandana right
                 screen.blit(asset_bandana_right, (217, 253))
-                # extended arm right
-                if playerShoot == True:
+                # shoot revolver right
+                if playerShoot == True and hotbarSlot1 == True:
                     screen.blit(asset_revolver_right, (279, 311))
                     screen.blit(asset_player_shoot_right, (227, 252))
                     screen.blit(asset_muzzleflash_right, (bulletx-12, 307))
+                # shoot sawed off right
+                if playerShoot == True and hotbarSlot3 == True:
+                    screen.blit(asset_sawed_off_right, (276, 305))
+                    screen.blit(asset_player_shoot_right, (227, 252))
+                    screen.blit(asset_muzzleflash_buck_right, (bulletx+2, 295))
             if lookingLeft == True:
                 # revolver on hip
                 if playerShoot == False:
@@ -2500,12 +2654,18 @@ while True:
                         if ownSniperRifle == True and playerSniper == False:
                             screen.blit(asset_sniper_rifle_left, (253, 302))
                         screen.blit(asset_player_legs_walk_left, (217, 252))
-                # extended arm left
-                if playerShoot == True:
+                # shoot revolver left
+                if playerShoot == True and hotbarSlot1 == True:
                     screen.blit(asset_player_shoot_left, (207, 252))
                     screen.blit(asset_player_arms_idle, (217, 252))
                     screen.blit(asset_revolver_left, (182, 311))
                     screen.blit(asset_muzzleflash_left, (bulletx-250, 307))
+                # shoot sawed off left
+                if playerShoot == True and hotbarSlot3 == True:
+                    screen.blit(asset_player_shoot_left, (207, 252))
+                    screen.blit(asset_player_arms_idle, (217, 252))
+                    screen.blit(asset_sawed_off_left, (172, 305))
+                    screen.blit(asset_muzzleflash_buck_left, (bulletx-248, 295))
                 # bandana left
                 screen.blit(asset_bandana_left, (217, 253))
         # Roll
@@ -2563,17 +2723,28 @@ while True:
                     screen.blit(asset_text_1000_red, (226, 293))
                 elif moneyCount >= 1000:
                     screen.blit(asset_text_1000_green, (226, 293))
+            if ownSawedOff == True:
+                screen.blit(asset_text_owned, (220, 384))
+            if ownSawedOff == False:
+                if moneyCount < 3000:
+                    screen.blit(asset_text_3000_red, (226, 383))
+                elif moneyCount >= 3000:
+                    screen.blit(asset_text_3000_green, (226, 383))
         if catalogPage3 == True:
             if moneyCount < 100:
                 # hearty beer
                 screen.blit(asset_text_100_red, (505, 202))
                 # 30-50 rounds
                 screen.blit(asset_text_100_red, (235, 293))
+                # 12 gauge rounds
+                screen.blit(asset_text_100_red, (235, 383))
             elif moneyCount >= 100:
                 # hearty beer
                 screen.blit(asset_text_100_green, (505, 202))
                 # 30-50 rounds
                 screen.blit(asset_text_100_green, (235, 293))
+                # 12 gauge rounds
+                screen.blit(asset_text_100_green, (235, 383))
             if moneyCount < 50:
                 # .45 rounds
                 screen.blit(asset_text_50_red, (240, 200))
@@ -2647,6 +2818,17 @@ while True:
             sniperOutMag = False
         else:
             sniperOutAmmo = False
+        # sawed off ----------------
+        if sawedOffRoundsMag <= 0 and buckRoundsTotal > 0:
+            sawedOffOutMag = True
+        else:
+            sawedOffOutMag = False
+
+        if buckRoundsTotal <= 0 and sawedOffRoundsMag <= 0:
+            sawedOffOutAmmo = True
+            sawedOffOutMag = False
+        else:
+            sawedOffOutAmmo = False
 
         # check for whether or not to show reload
         # revolver
@@ -2654,6 +2836,10 @@ while True:
             reloadUI = True
         # sniper
         elif sniperOutMag and hotbarSlot2:
+            reloadUI = True
+            interactText = False
+        # sawed off
+        elif sawedOffOutMag and hotbarSlot3:
             reloadUI = True
             interactText = False
         else:
@@ -2665,6 +2851,11 @@ while True:
             outAmmoUI = True
         # sniper
         elif sniperOutAmmo and hotbarSlot2:
+            reloadUI = False
+            outAmmoUI = True
+            interactText = False
+        # sawed off
+        elif sawedOffOutAmmo and hotbarSlot3:
             reloadUI = False
             outAmmoUI = True
             interactText = False
@@ -2682,6 +2873,7 @@ while True:
         playerMoney_text = font2.render((str(moneyCount)), True, (255, 255, 255))
         revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255, 255, 255))
         sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255, 255, 255))
+        sawedOffAmmo_text = font2.render((str(sawedOffRoundsMag) + "/" + str(buckRoundsTotal)), True, (255, 255, 255))
         potionCount_text = font1.render((str(hpPotionCount)), True, (255, 255, 255))
         deathScore_text = font1.render(("Score: " + str(score)), True, (255, 255, 255))
         masterVolume_text = font1.render((str(masterVolume)), True, (255, 255, 255))
@@ -2712,6 +2904,9 @@ while True:
         sniper_reload.set_volume(masterVolume)
         combatroll.set_volume(masterVolume)
         lootBody.set_volume(masterVolume)
+        sawedoffshot.set_volume(masterVolume)
+        sawedoffopen.set_volume(masterVolume)
+        loadshell.set_volume(masterVolume)
         intromusic.set_volume(musicVolume * masterVolume)
         intro.set_volume(musicVolume * masterVolume)
         music.set_volume(musicVolume * masterVolume)
