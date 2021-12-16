@@ -79,7 +79,10 @@ if collapse:
     scopeWalk = 0
 
     # statements
+    devMode = True
+    godMode = False
     invincibility = False
+    invisible = False
     moveAbility = True
     banMoveAbility = True
     interactText = False
@@ -448,7 +451,7 @@ class Bandit:
     # bandit movement
     def move(self, vel=8):
         # bandit is right of player
-        if self.hp > 0 and banMoveAbility == True:
+        if self.hp > 0 and banMoveAbility == True and invisible == False:
             if self.x_location >= 280:
                 self.x_location -= vel
                 self.bandit_left = False
@@ -759,66 +762,65 @@ def fire():
         playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag, sniperRoundsTotal, playerSniper, pause, \
         sawedOffRoundsMag
 
-    if pause == False and dead == False and rolling == False:
-        # Revolver
-        if hotbarSlot1 == True:
-            playerShoot = True
-            playerHolster = False
-            shot.stop()
-            shot.play()
-            revRoundsMag -= 1
-            bulletx = 330
-            stopReload()
-            if lookingRight:
-                for bandit in Bandit.instances:
-                    if bandit.x_location <= 600 and bandit.x_location >= 250:
-                        if bandit.hp > 0:
-                            bandit.hp -= 20
-            if lookingLeft:
-                for bandit in Bandit.instances:
-                    if bandit.x_location >= 0 and bandit.x_location <= 250:
-                        if bandit.hp > 0:
-                            bandit.hp -= 20
+    # Revolver
+    if hotbarSlot1 == True:
+        playerShoot = True
+        playerHolster = False
+        shot.stop()
+        shot.play()
+        revRoundsMag -= 1
+        bulletx = 330
+        stopReload()
+        if lookingRight:
+            for bandit in Bandit.instances:
+                if bandit.x_location <= 600 and bandit.x_location >= 250:
+                    if bandit.hp > 0:
+                        bandit.hp -= 20
+        if lookingLeft:
+            for bandit in Bandit.instances:
+                if bandit.x_location >= 0 and bandit.x_location <= 250:
+                    if bandit.hp > 0:
+                        bandit.hp -= 20
 
-        # sniper rifle
-        if hotbarSlot2 == True and scopeScreen == True:
-            interactText = False
-            snipershot.stop()
-            snipershot.play()
-            scopeScreen = False
-            sniperRoundsMag -= 1
-            stopReload()
-            if lookingRight:
-                for bandit in Bandit.instances:
-                    if bandit.x_location <= 700 and bandit.x_location >= 250:
-                        if bandit.hp > 0:
-                            bandit.hp -= 100
-            if lookingLeft:
-                for bandit in Bandit.instances:
-                    if bandit.x_location >= -100 and bandit.x_location <= 250:
-                        if bandit.hp > 0:
-                            bandit.hp -= 100
+    # sniper rifle
+    if hotbarSlot2 == True and scopeScreen == True:
+        interactText = False
+        snipershot.stop()
+        snipershot.play()
+        scopeScreen = False
+        sniperRoundsMag -= 1
+        stopReload()
+        if lookingRight:
+            for bandit in Bandit.instances:
+                if bandit.x_location <= 700 and bandit.x_location >= 250:
+                    if bandit.hp > 0:
+                        bandit.hp -= 100
+        if lookingLeft:
+            for bandit in Bandit.instances:
+                if bandit.x_location >= -100 and bandit.x_location <= 250:
+                    if bandit.hp > 0:
+                        bandit.hp -= 100
 
-        # sawed off
-        if hotbarSlot3 == True:
-            playerShoot = True
-            playerHolster = False
-            interactText = False
-            bulletx = 330
-            sawedoffshot.stop()
-            sawedoffshot.play()
-            sawedOffRoundsMag -= 1
-            stopReload()
-            if lookingRight:
-                for bandit in Bandit.instances:
-                    if bandit.x_location <= 600 and bandit.x_location >= 250:
-                        if bandit.hp > 0:
-                            bandit.hp -= 50
-            if lookingLeft:
-                for bandit in Bandit.instances:
-                    if bandit.x_location >= 0 and bandit.x_location <= 250:
-                        if bandit.hp > 0:
-                            bandit.hp -= 50
+    # sawed off
+    if hotbarSlot3 == True:
+        playerShoot = True
+        playerHolster = False
+        interactText = False
+        bulletx = 330
+        sawedoffshot.stop()
+        sawedoffshot.play()
+        sawedOffRoundsMag -= 1
+        stopReload()
+        if lookingRight:
+            for bandit in Bandit.instances:
+                if bandit.x_location <= 600 and bandit.x_location >= 250:
+                    if bandit.hp > 0:
+                        bandit.hp -= 50
+        if lookingLeft:
+            for bandit in Bandit.instances:
+                if bandit.x_location >= 0 and bandit.x_location <= 250:
+                    if bandit.hp > 0:
+                        bandit.hp -= 50
 
 
 def hpPotion():
@@ -1250,9 +1252,9 @@ def interactCheck():
 
 
 def playerHit(damage):
-    global playerHP, invincibility
+    global playerHP, invincibility, godMode
 
-    if playerHP > 0 and invincibility == False:
+    if playerHP > 0 and invincibility == False and godMode == False:
         playerHP -= damage
         playerHitSound_timer.start()
 
@@ -1956,6 +1958,31 @@ while True:
         checkWalkBoth()
         # Key Down Handler
         if event.type == pygame.KEYDOWN:
+            # Developer Tools
+            if devMode == True:
+                mods = pygame.key.get_mods()
+                # god mode
+                if event.key == pygame.K_g and mods & pygame.KMOD_SHIFT:
+                    godMode = not godMode
+                    potion.play()
+                # invisible mode
+                if event.key == pygame.K_h and mods & pygame.KMOD_SHIFT:
+                    invisible = not invisible
+                    potion.play()
+                # spawn bandit
+                if event.key == pygame.K_b and mods & pygame.KMOD_SHIFT:
+                    ban = Bandit()
+                    button.play()
+                # give ammo
+                if event.key == pygame.K_n and mods & pygame.KMOD_SHIFT:
+                    revRoundsTotal += 1000
+                    sniperRoundsTotal += 1000
+                    buckRoundsTotal += 1000
+                    revolverspin.play()
+                # give money
+                if event.key == pygame.K_m and mods & pygame.KMOD_SHIFT:
+                    giveMoney(10000)
+                    cashregister.play()
             # Pause Game
             if event.key == pygame.K_ESCAPE and pause == False and startGame == True and dead == False:
                 pygame.mixer.pause()
@@ -2025,43 +2052,40 @@ while True:
 
                 # Use Item (Space)
                 if event.key == pygame.K_SPACE:
-                    # Revolver fire
-                    if hotbarSlot1 == True:
-                        if moveAbility == True and readyToFireRevolver == True:
-                            if revRoundsMag > 0:
+                    if pause == False and dead == False and rolling == False:
+                        # Revolver fire
+                        if hotbarSlot1 == True:
+                            if moveAbility == True and readyToFireRevolver == True:
+                                if revRoundsMag > 0:
+                                    fire()
+                                    readyToFireRevolver = False
+                                    revolverFireDelay_timer.start()
+                                else:
+                                    playerShoot = True
+                                    playerHolster = False
+                                    empty.stop()
+                                    empty.play()
+                        # Sniper Rifle fires
+                        if hotbarSlot2 == True and ownSniperRifle == True and scopeScreen == True:
+                            if sniperRoundsMag > 0:
                                 fire()
-                                readyToFireRevolver = False
-                                revolverFireDelay_timer.start()
+                            else:
+                                empty.stop()
+                                empty.play()
+                        # Sawed-Off fires
+                        if hotbarSlot3 == True and ownSawedOff == True:
+                            if sawedOffRoundsMag > 0:
+                                fire()
                             else:
                                 playerShoot = True
                                 playerHolster = False
                                 empty.stop()
                                 empty.play()
-
-                    # Sniper Rifle fires
-                    if hotbarSlot2 == True and ownSniperRifle == True and scopeScreen == True:
-                        if sniperRoundsMag > 0:
-                            fire()
-                        else:
-                            empty.stop()
-                            empty.play()
-
-
-                    # Sawed-Off fires
-                    if hotbarSlot3 == True and ownSawedOff == True:
-                        if sawedOffRoundsMag > 0:
-                            fire()
-                        else:
-                            playerShoot = True
-                            playerHolster = False
-                            empty.stop()
-                            empty.play()
-
-                    # HP Potion is used
-                    if hotbarSlot6 == True and hpPotionCount > 0:
-                        hpPotion()
-                        drinkResetDelay_timer.start()
-                        playerIdle = False
+                        # HP Potion is used
+                        if hotbarSlot6 == True and hpPotionCount > 0:
+                            hpPotion()
+                            drinkResetDelay_timer.start()
+                            playerIdle = False
 
                 # Aim Sniper Rifle
                 if event.key == pygame.K_w or event.key == pygame.K_UP:
@@ -2414,40 +2438,40 @@ while True:
                         musicIconButtonHover = False
                         musicIconButtonClicked = True
 
-
-                # Use HP Beer
-                if hotbarSlot6 == True and hpPotionCount > 0:
-                    hpPotion()
-                    drinkResetDelay_timer.start()
-                    playerIdle = False
-                # Revolver fires
-                if hotbarSlot1 == True:
-                    if moveAbility == True and readyToFireRevolver == True:
-                        if revRoundsMag > 0:
+                if pause == False and dead == False and rolling == False:
+                    # Revolver fires
+                    if hotbarSlot1 == True:
+                        if moveAbility == True and readyToFireRevolver == True:
+                            if revRoundsMag > 0:
+                                fire()
+                                readyToFireRevolver = False
+                                revolverFireDelay_timer.start()
+                            else:
+                                playerShoot = True
+                                playerHolster = False
+                                empty.stop()
+                                empty.play()
+                    # Sniper Rifle fires
+                    if hotbarSlot2 == True and ownSniperRifle == True and scopeScreen == True:
+                        if sniperRoundsMag > 0:
                             fire()
-                            readyToFireRevolver = False
-                            revolverFireDelay_timer.start()
+                        else:
+                            empty.stop()
+                            empty.play()
+                    # Sawed-Off fires
+                    if hotbarSlot3 == True and ownSawedOff == True:
+                        if sawedOffRoundsMag > 0:
+                            fire()
                         else:
                             playerShoot = True
                             playerHolster = False
                             empty.stop()
                             empty.play()
-                # Sniper Rifle fires
-                if hotbarSlot2 == True and ownSniperRifle == True and scopeScreen == True:
-                    if sniperRoundsMag > 0:
-                        fire()
-                    else:
-                        empty.stop()
-                        empty.play()
-                # Sawed-Off fires
-                if hotbarSlot3 == True and ownSawedOff == True:
-                    if sawedOffRoundsMag > 0:
-                        fire()
-                    else:
-                        playerShoot = True
-                        playerHolster = False
-                        empty.stop()
-                        empty.play()
+                    # Use HP Beer
+                    if hotbarSlot6 == True and hpPotionCount > 0:
+                        hpPotion()
+                        drinkResetDelay_timer.start()
+                        playerIdle = False
 
     # Mouse Position
     mouse_posx,mouse_posy = pygame.mouse.get_pos()
