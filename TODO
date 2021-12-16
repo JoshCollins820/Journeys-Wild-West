@@ -5,7 +5,6 @@
 -
 
 ----------------------------ADD----------------------------
-- HP Beer + effect
 - Robbing the store clerk
   (minigame for pursuading him to give free items/money)
 - Open saloon
@@ -36,12 +35,14 @@ Balance
 - Improved continuous walking
 - Fire rate cap to revolver
 - Rebalanced audio
+- Overhauled HP Beer
 
 Bug Fixes
 - Fixed player model bugs
 - Fixed HP Beer animation being too short
 - Fixed sniper rifle firing without ammo
-- Fixed enemies in sniper scope not moving
+- Fixed sniper scope inconsistancy
+- Fixed last bullet not registering
 
 ---------------------------NOTES---------------------------
 

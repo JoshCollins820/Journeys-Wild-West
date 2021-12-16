@@ -2669,7 +2669,7 @@ while True:
                     elif sawedOffRoundsMag == 0:
                         screen.blit(asset_sawed_off_right, (276, 305))
                     screen.blit(asset_player_shoot_right, (227, 252))
-                    screen.blit(asset_muzzleflash_buck_right, (bulletx+2, 295))
+                    screen.blit(asset_muzzleflash_buck_right, (bulletx-2, 295))
             if lookingLeft == True:
                 # revolver on hip
                 if playerShoot == False:
@@ -2740,9 +2740,9 @@ while True:
                     screen.blit(asset_player_left, (217, 253))
                     screen.blit(asset_player_arms_idle, (217, 253))
                     if sawedOffRoundsMag >= 1:
-                        screen.blit(asset_sawed_off_half_left, (170, 305))
+                        screen.blit(asset_sawed_off_half_left, (172, 305))
                     elif sawedOffRoundsMag == 0:
-                        screen.blit(asset_sawed_off_left, (170, 305))
+                        screen.blit(asset_sawed_off_left, (172, 305))
                     screen.blit(asset_muzzleflash_buck_left, (bulletx-249, 295))
                 # bandana left
                 screen.blit(asset_bandana_left, (217, 253))
@@ -2772,7 +2772,7 @@ while True:
         if standing == True and healing == True:
             screen.blit(asset_player_hp_gain_particle, (208, hp_gain1_y))
             screen.blit(asset_player_hp_gain_particle, (240, hp_gain2_y))
-            screen.blit(asset_player_hp_gain_particle, (286, hp_gain3_y))
+            screen.blit(asset_player_hp_gain_particle, (282, hp_gain3_y))
 
 
         # Loot
