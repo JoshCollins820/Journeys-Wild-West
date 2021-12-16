@@ -6,7 +6,6 @@
 # Modules
 import pygame
 import random
-import time
 import sys
 import pickle
 
@@ -50,12 +49,15 @@ if collapse:
     sawedOffRoundsMag = 2
     buckRoundsTotal = 6
     hpPotionCount = 5
-    drinkTime = 100
+    drinkTime = 250
+    beerRegenRate = 30
+    beerRegenAmount = 50
+    hpLooped = 0
     score = 0
     highscore = 0
     masterVolumeStored = 0
     musicVolumeStored = 0
-    initialBandits = 1
+    initialBandits = 0
 
     # speed
     speedMove = 50
@@ -73,6 +75,9 @@ if collapse:
     store2x = 1400
     cactusx = 450
     cooldown_sweat_y = 252
+    hp_gain1_y = 250
+    hp_gain2_y = 235
+    hp_gain3_y = 262
     activeSlotx1 = -50
     activeSlotx2 = -50
     bulletx = 330
@@ -177,6 +182,7 @@ if collapse:
     rollReady = True
     looting = False
     showMoneyGainedText = False
+    healing = False
 
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
@@ -312,6 +318,7 @@ if collapse:
     asset_player_loot_right = pygame.image.load("assets/player/player_loot_right.png")
     asset_player_cooldown_sweat_right = pygame.image.load("assets/player/cooldown_sweat_right.png")
     asset_player_cooldown_sweat_left = pygame.image.load("assets/player/cooldown_sweat_left.png")
+    asset_player_hp_gain_particle = pygame.image.load("assets/player/hp_gain_particle.png")
     asset_hearty_beer_icon = pygame.image.load("assets/UI/hearty_beer_icon.png")
     asset_hearty_beer_right = pygame.image.load("assets/props/hearty_beer_right.png")
     asset_hearty_beer_left = pygame.image.load("assets/props/hearty_beer_left.png")
@@ -829,17 +836,12 @@ def fire():
 
 
 def hpPotion():
-    global playerHP, hpPotionCount, playerDrink
-    for i in range(0, 1):
-        time.sleep(0.09)
-        for j in range(0, 50):
-            if playerHP < 100:
-                playerHP += 1
-            else:
-                j = 50
+    global playerHP, hpPotionCount, playerDrink, playerIdle
+    beerHealing_timer.start()
     hpPotionCount -= 1
     playerDrink = True
-    potion.stop()
+    playerIdle = False
+    drinkResetDelay_timer.start()
     potion.play()
     burp.stop()
     burp2.stop()
@@ -1228,7 +1230,7 @@ def showHUD():
         screen.blit(asset_hotbar_select, (activeSlotx1 - 3, 565 - 33))
 
     # loot text
-    if startGame == True and insideShop == False:
+    if startGame == True and insideShop == False and standing == True:
         for bandit in Bandit.instances:
             if bandit.looted == False and bandit.stoodOn == True:
                 if (outAmmoUI or reloadUI) and interactText == True:
@@ -1304,10 +1306,11 @@ def resetValues():
         playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y, walkingLeft, \
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
-        showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo
+        showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
+        healing, hpLooped
 
     # player vals
-    playerHP = 100
+    playerHP = 50
     moneyCount = 0
     revRoundsMag = 6
     revRoundsTotal = 24
@@ -1317,6 +1320,7 @@ def resetValues():
     sawedOffRoundsMag = 2
     buckRoundsTotal = 6
     hpPotionCount = 100
+    hpLooped = 0
     score = 0
 
     # x-pos
@@ -1418,6 +1422,7 @@ def resetValues():
     rollReady = True
     looting = False
     showMoneyGainedText = False
+    healing = False
 
     # reset seed
     random.seed()
@@ -1915,6 +1920,20 @@ def burp_timer_handler():
     burp_timer.stop()
 
 
+def beerHealing_timer_handler():
+    global playerHP, healing, hpLooped
+    # loops until playerHP is 100 or times looped is 50
+    if playerHP < 100 and hpLooped < beerRegenAmount:
+        playerHP += 1
+        hpLooped += 1
+        healing = True
+        beerHealing_timer.start()
+    else:
+        hpLooped = 0
+        healing = False
+        beerHealing_timer.stop()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -1942,6 +1961,7 @@ sawedOffreloadEnded_timer = simplegui.create_timer(500, sawedOffreloadEnded_time
 loot_timer = simplegui.create_timer(200, loot_timer_handler)
 showMoneyGained_timer = simplegui.create_timer(2000, showMoneyGained_timer_handler)
 burp_timer = simplegui.create_timer(1000, burp_timer_handler)
+beerHealing_timer = simplegui.create_timer(beerRegenRate, beerHealing_timer_handler)
 
 
 # timers tuple
@@ -1949,7 +1969,7 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
               drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
               volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
               rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
-              showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer)
+              showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer, beerHealing_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -1990,25 +2010,25 @@ while True:
             if devMode == True:
                 mods = pygame.key.get_mods()
                 # god mode
-                if event.key == pygame.K_g and mods & pygame.KMOD_SHIFT:
+                if event.key == pygame.K_g and mods & pygame.KMOD_CTRL:
                     godMode = not godMode
                     potion.play()
                 # invisible mode
-                if event.key == pygame.K_h and mods & pygame.KMOD_SHIFT:
+                if event.key == pygame.K_h and mods & pygame.KMOD_CTRL:
                     invisible = not invisible
                     potion.play()
                 # spawn bandit
-                if event.key == pygame.K_b and mods & pygame.KMOD_SHIFT:
+                if event.key == pygame.K_b and mods & pygame.KMOD_CTRL:
                     ban = Bandit()
                     button.play()
                 # give ammo
-                if event.key == pygame.K_n and mods & pygame.KMOD_SHIFT:
+                if event.key == pygame.K_n and mods & pygame.KMOD_CTRL:
                     revRoundsTotal += 1000
                     sniperRoundsTotal += 1000
                     buckRoundsTotal += 1000
                     revolverspin.play()
                 # give money
-                if event.key == pygame.K_m and mods & pygame.KMOD_SHIFT:
+                if event.key == pygame.K_m and mods & pygame.KMOD_CTRL:
                     giveMoney(10000)
                     cashregister.play()
             # Pause Game
@@ -2110,10 +2130,8 @@ while True:
                                 empty.stop()
                                 empty.play()
                         # HP Potion is used
-                        if hotbarSlot6 == True and hpPotionCount > 0:
+                        if hotbarSlot6 == True and hpPotionCount > 0 and playerDrink == False:
                             hpPotion()
-                            drinkResetDelay_timer.start()
-                            playerIdle = False
 
                 # Aim Sniper Rifle
                 if event.key == pygame.K_w or event.key == pygame.K_UP:
@@ -2496,10 +2514,8 @@ while True:
                             empty.stop()
                             empty.play()
                     # Use HP Beer
-                    if hotbarSlot6 == True and hpPotionCount > 0:
+                    if hotbarSlot6 == True and hpPotionCount > 0 and playerDrink == False:
                         hpPotion()
-                        drinkResetDelay_timer.start()
-                        playerIdle = False
 
     # Mouse Position
     mouse_posx,mouse_posy = pygame.mouse.get_pos()
@@ -2752,6 +2768,12 @@ while True:
                 screen.blit(asset_player_cooldown_sweat_right, (212, cooldown_sweat_y))
             if lookingLeft:
                 screen.blit(asset_player_cooldown_sweat_left, (222, cooldown_sweat_y))
+        # HP Gain Particles
+        if standing == True and healing == True:
+            screen.blit(asset_player_hp_gain_particle, (208, hp_gain1_y))
+            screen.blit(asset_player_hp_gain_particle, (240, hp_gain2_y))
+            screen.blit(asset_player_hp_gain_particle, (286, hp_gain3_y))
+
 
         # Loot
         if looting == True:
@@ -3042,11 +3064,28 @@ while True:
         # bullet reset
         bulletx = -330
 
+
         # cooldown sweat pos
         if rollReady == False:
             cooldown_sweat_y += 1
         if cooldown_sweat_y > 273:
             cooldown_sweat_y = 252
+
+        # hp gain particle1 pos
+        if healing == True:
+            hp_gain1_y -= 1
+        if hp_gain1_y < random.randrange(226,232):
+            hp_gain1_y = random.randrange(247,262)
+        # hp gain particle2 pos
+        if healing == True:
+            hp_gain2_y -= 1
+        if hp_gain2_y < random.randrange(214,220):
+            hp_gain2_y = random.randrange(230,240)
+        # hp gain particle3 pos
+        if healing == True:
+            hp_gain3_y -= 1
+        if hp_gain3_y < random.randrange(227,236):
+            hp_gain3_y = random.randrange(247,260)
 
         if banMoveAbility == True:
             banMove = 8

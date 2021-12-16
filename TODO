@@ -1,11 +1,10 @@
 ------------------------ KNOWN BUGS------------------------
-- find better sawed off shot sound
+-
 
 --------------------------IMPROVE--------------------------
-- maybe add delay for firing sawed-off
+-
 
 ----------------------------ADD----------------------------
-- Click to buy in catalog
 - HP Beer + effect
 - Robbing the store clerk
   (minigame for pursuading him to give free items/money)
@@ -22,7 +21,7 @@
 v0.4
 New Features
 - Combat Rolling
-- Sawed-Off
+- Sawed-Off Shotgun
 - More Bandits
 - Looting
 - Main Menu
