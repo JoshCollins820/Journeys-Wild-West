@@ -248,6 +248,8 @@ if collapse:
     asset_sniper_right = pygame.image.load("assets/weapons/rolling_block_right.png")
     asset_sawed_off_left = pygame.image.load("assets/weapons/sawed_off_left.png")
     asset_sawed_off_right = pygame.image.load("assets/weapons/sawed_off_right.png")
+    asset_sawed_off_half_left = pygame.image.load("assets/weapons/sawed_off_left_half.png")
+    asset_sawed_off_half_right = pygame.image.load("assets/weapons/sawed_off_right_half.png")
     asset_muzzleflash_right = pygame.image.load("assets/weapons/muzzle_flash_bullet_right.png")
     asset_muzzleflash_left = pygame.image.load("assets/weapons/muzzle_flash_bullet_left.png")
     asset_muzzleflash_buck_right = pygame.image.load("assets/weapons/muzzle_flash_buck_right.png")
@@ -1305,7 +1307,7 @@ def resetValues():
     sniperRoundsTotal = 3
     sawedOffRoundsMag = 2
     buckRoundsTotal = 6
-    hpPotionCount = 0
+    hpPotionCount = 100
     score = 0
 
     # x-pos
@@ -2549,7 +2551,7 @@ while True:
             if lookingRight == True:
                 # drink potion right
                 if playerDrink == True:
-                    screen.blit(asset_player_drink_right, (204, 246))
+                    screen.blit(asset_player_drink_right, (203, 246))
                 else:
                     # base player right
                     screen.blit(asset_player_right, (217, 253))
@@ -2596,7 +2598,6 @@ while True:
                             screen.blit(asset_revolver_vert_right, (236, 344))
                         screen.blit(asset_holster_right, (217, 259))
                         screen.blit(asset_player_holsterwalk_right, (217, 253))
-
                     else:
                         # hp beer in hand right
                         if hotbarSlot6 == True and hpPotionCount > 0:
@@ -2610,7 +2611,8 @@ while True:
                             screen.blit(asset_revolver_vert_right, (236, 344))
                         screen.blit(asset_holster_right, (217, 259))
                 # bandana right
-                screen.blit(asset_bandana_right, (217, 253))
+                if playerDrink == False:
+                    screen.blit(asset_bandana_right, (217, 253))
                 # shoot revolver right
                 if playerShoot == True and hotbarSlot1 == True:
                     screen.blit(asset_revolver_right, (279, 311))
@@ -2618,7 +2620,12 @@ while True:
                     screen.blit(asset_muzzleflash_right, (bulletx-12, 307))
                 # shoot sawed off right
                 if playerShoot == True and hotbarSlot3 == True:
-                    screen.blit(asset_sawed_off_right, (276, 305))
+                    screen.blit(asset_revolver_vert_right, (236, 344))
+                    screen.blit(asset_holster_right, (217, 259))
+                    if sawedOffRoundsMag >= 1:
+                        screen.blit(asset_sawed_off_half_right, (276, 305))
+                    elif sawedOffRoundsMag == 0:
+                        screen.blit(asset_sawed_off_right, (276, 305))
                     screen.blit(asset_player_shoot_right, (227, 252))
                     screen.blit(asset_muzzleflash_buck_right, (bulletx+2, 295))
             if lookingLeft == True:
@@ -2633,7 +2640,7 @@ while True:
                     screen.blit(asset_hearty_beer_left, (240, 353))
                 # drink potion left
                 if playerDrink == True:
-                    screen.blit(asset_player_drink_left, (199, 247))
+                    screen.blit(asset_player_drink_left, (198, 245))
                 else:
                     # base player left
                     screen.blit(asset_player_left, (217, 253))
@@ -2681,15 +2688,20 @@ while True:
                 # shoot revolver left
                 if playerShoot == True and hotbarSlot1 == True:
                     screen.blit(asset_player_shoot_left, (207, 252))
-                    screen.blit(asset_player_arms_idle, (217, 252))
+                    screen.blit(asset_player_left, (217, 253))
+                    screen.blit(asset_player_arms_idle, (217, 253))
                     screen.blit(asset_revolver_left, (182, 311))
                     screen.blit(asset_muzzleflash_left, (bulletx-250, 307))
                 # shoot sawed off left
                 if playerShoot == True and hotbarSlot3 == True:
                     screen.blit(asset_player_shoot_left, (207, 252))
-                    screen.blit(asset_player_arms_idle, (217, 252))
-                    screen.blit(asset_sawed_off_left, (172, 305))
-                    screen.blit(asset_muzzleflash_buck_left, (bulletx-248, 295))
+                    screen.blit(asset_player_left, (217, 253))
+                    screen.blit(asset_player_arms_idle, (217, 253))
+                    if sawedOffRoundsMag >= 1:
+                        screen.blit(asset_sawed_off_half_left, (170, 305))
+                    elif sawedOffRoundsMag == 0:
+                        screen.blit(asset_sawed_off_left, (170, 305))
+                    screen.blit(asset_muzzleflash_buck_left, (bulletx-249, 295))
                 # bandana left
                 screen.blit(asset_bandana_left, (217, 253))
         # Roll
