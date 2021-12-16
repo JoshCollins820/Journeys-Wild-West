@@ -47,6 +47,8 @@ if collapse:
     revolverReloadSpeed = 500
     sniperRoundsMag = 1
     sniperRoundsTotal = 3
+    buckRoundsMag = 2
+    buckRoundsTotal = 6
     hpPotionCount = 5
     drinkTime = 100
     score = 0
@@ -112,6 +114,7 @@ if collapse:
     scopeScreen = False
     insideShop = False
     ownSniperRifle = True
+    ownSawedOff = True
     catalog = False
     catalogPage1 = False
     catalogPage2 = False
@@ -174,8 +177,8 @@ if collapse:
 
 # audio
 if collapse:
-    masterVolume = 0.3  # 1 # (0-1)
-    musicVolume = 0  # 1  # (0-1)
+    masterVolume = 1  # (0-1)
+    musicVolume = 1  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
     intro = pygame.mixer.Sound('assets/sounds/start_music.wav')
@@ -234,8 +237,12 @@ if collapse:
     asset_revolver_left = pygame.image.load("assets/weapons/revolver_left.png")
     asset_sniper_left = pygame.image.load("assets/weapons/rolling_block_left.png")
     asset_sniper_right = pygame.image.load("assets/weapons/rolling_block_right.png")
+    asset_sawed_off_left = pygame.image.load("assets/weapons/sawed_off_left.png")
+    asset_sawed_off_right = pygame.image.load("assets/weapons/sawed_off_right.png")
     asset_muzzleflash_right = pygame.image.load("assets/weapons/muzzle_flash_bullet_right.png")
     asset_muzzleflash_left = pygame.image.load("assets/weapons/muzzle_flash_bullet_left.png")
+    asset_muzzleflash_buck_right = pygame.image.load("assets/weapons/muzzle_flash_buck_right.png")
+    asset_muzzleflash_buck_left = pygame.image.load("assets/weapons/muzzle_flash_buck_left.png")
     asset_sniperscope = pygame.image.load("assets/weapons/sniper_scope.png")
     asset_bandit1_fp = pygame.image.load("assets/npc/bandit1_fp.png")
     asset_bandit2_fp = pygame.image.load("assets/npc/bandit2_fp.png")
@@ -1250,7 +1257,7 @@ def resetValues():
         playerRoll1Left, playerRoll2Left, playerRoll3Left, rolling, rollReady, cooldown_sweat_y, walkingLeft, \
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
-        showMoneyGainedText
+        showMoneyGainedText, buckRoundsMag, buckRoundsTotal,ownSawedOff
 
     # player vals
     playerHP = 100
@@ -1260,6 +1267,8 @@ def resetValues():
     revolverFireRate = 120
     sniperRoundsMag = 1
     sniperRoundsTotal = 3
+    buckRoundsMag = 2
+    buckRoundsTotal = 6
     hpPotionCount = 0
     score = 0
 
@@ -1305,6 +1314,7 @@ def resetValues():
     scopeScreen = False
     insideShop = False
     ownSniperRifle = True
+    ownSawedOff = True
     catalog = False
     catalogPage1 = False
     catalogPage2 = False
