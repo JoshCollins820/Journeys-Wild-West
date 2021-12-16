@@ -213,6 +213,9 @@ if collapse:
     sawedoffshot = pygame.mixer.Sound('assets/sounds/sawedoffshot.wav')
     sawedoffopen = pygame.mixer.Sound('assets/sounds/sawedoffopen.wav')
     loadshell = pygame.mixer.Sound('assets/sounds/loadshell.wav')
+    burp = pygame.mixer.Sound('assets/sounds/burp.wav')
+    burp2 = pygame.mixer.Sound('assets/sounds/burp2.wav')
+    burp3 = pygame.mixer.Sound('assets/sounds/burp3.wav')
 
 # sprites
 if collapse:
@@ -838,6 +841,9 @@ def hpPotion():
     playerDrink = True
     potion.stop()
     potion.play()
+    burp.stop()
+    burp2.stop()
+    burp_timer.start()
 
 
 def giveMoney(amount = 0):
@@ -1151,6 +1157,9 @@ def showSettings():
     sawedoffshot.set_volume(masterVolume)
     sawedoffopen.set_volume(masterVolume)
     loadshell.set_volume(masterVolume)
+    burp.set_volume(masterVolume)
+    burp2.set_volume(masterVolume)
+    burp3.set_volume(masterVolume)
     intromusic.set_volume(musicVolume * masterVolume)
     intro.set_volume(musicVolume * masterVolume)
     music.set_volume(musicVolume * masterVolume)
@@ -1890,6 +1899,22 @@ def showMoneyGained_timer_handler():
     showMoneyGained_timer.stop()
 
 
+def burp_timer_handler():
+    # common burp rarity
+    x = random.randint(1,5)
+    # rare burp rarity
+    y = random.randint(1,25)
+    # legendary burp rarity
+    z = random.randint(1, 1000)
+    if z == 1:
+        burp3.play()
+    elif y == 1:
+        burp2.play()
+    elif x == 1:
+        burp.play()
+    burp_timer.stop()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -1916,6 +1941,7 @@ reloadEnded_timer = simplegui.create_timer(125, reloadEnded_timer_handler)
 sawedOffreloadEnded_timer = simplegui.create_timer(500, sawedOffreloadEnded_timer_handler)
 loot_timer = simplegui.create_timer(200, loot_timer_handler)
 showMoneyGained_timer = simplegui.create_timer(2000, showMoneyGained_timer_handler)
+burp_timer = simplegui.create_timer(1000, burp_timer_handler)
 
 
 # timers tuple
@@ -1923,7 +1949,7 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
               drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
               volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
               rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
-              showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer)
+              showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -2943,6 +2969,9 @@ while True:
         sawedoffshot.set_volume(masterVolume)
         sawedoffopen.set_volume(masterVolume)
         loadshell.set_volume(masterVolume)
+        burp.set_volume(masterVolume)
+        burp2.set_volume(masterVolume)
+        burp3.set_volume(masterVolume)
         intromusic.set_volume(musicVolume * masterVolume)
         intro.set_volume(musicVolume * masterVolume)
         music.set_volume(musicVolume * masterVolume)
