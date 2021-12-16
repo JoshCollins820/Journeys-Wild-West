@@ -381,7 +381,7 @@ if collapse:
 
 # list of names
 list_names = ['Bob', 'Richard', 'Aaron', 'Arthur', 'Henry', 'Frank', 'Edward', 'Albert','James', 'John', 'Walter',
-              'Roy', 'Louis', 'Carl', 'Paul', 'Pedro', 'Samuel', 'Raymond', 'Howard', 'Oscar', 'Leo', 'Jack', 'Lee']
+              'Roy', 'Louis', 'Carl', 'Paul', 'Pedro', 'Samuel', 'Ray', 'Howard', 'Oscar', 'Leo', 'Jack', 'Lee']
 
 
 # bandit methods
@@ -416,6 +416,7 @@ class Bandit:
         self.bandit_left = None  # is the bandit on the left side of player
         self.nameTag = font1.render("Bandit: " + self.name, True, (150, 240, 41))
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255,255,255))
+        self.nameLength = len(self.name)
         self.banW = 200  # bandit fp img width
         self.banH = 330  # bandit fp img height
         self.stoodOn = False  # is the bandit being stood on by player
@@ -446,8 +447,8 @@ class Bandit:
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255, 255, 255))
         # draw alive bandit
         if self.hp > 0:
-            screen.blit(self.nameTag, (self.x_location-30,232))
-            screen.blit(self.hpTag, (self.x_location-6,246))
+            screen.blit(self.nameTag, (self.x_location-20-self.nameLength,232))
+            screen.blit(self.hpTag, (self.x_location-7,246))
             if self.bandit_left == False:
                 screen.blit(self.bandit_left_img, (self.x_location-39.5, 262))
             elif self.bandit_left == True:
@@ -2152,8 +2153,6 @@ while True:
                 walk1_timer.start()
         # Mouse Handler
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 2:
-                ban = Bandit()
             # Mouse Button 1
             if event.button == 1:
                 # In Main Menu Screen
