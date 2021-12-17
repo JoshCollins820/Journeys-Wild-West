@@ -1,5 +1,5 @@
 ## JOURNEYS WILD WEST
-## v0.4
+## v0.5
 ## Developed by: Josh Collins
 ## --------------------------
 
@@ -31,7 +31,7 @@ screen = pygame.display.set_mode((height, width))
 pygame.display.set_caption("JOURNEYS: WILD WEST")
 pygame.display.set_icon(pygame.image.load("assets/icon/window_icon.png"))
 collapse = True
-version = "0.4"
+version = "0.5"
 
 # values and statements
 if collapse:
@@ -87,7 +87,7 @@ if collapse:
     scopeWalk = 0
 
     # statements
-    devMode = True
+    devMode = False
     godMode = False
     invincibility = False
     invisible = False
@@ -414,8 +414,9 @@ if collapse:
     playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
     loot_text = font1.render("LOOT", True, (255, 255, 255))
     moneyGained_text = font4.render("+ $", True, (50, 100, 50))
-    wave_text = font5.render("Wave " + str(wave) + " Started!", True, (220, 45, 55))
-    wave_text_rect = wave_text.get_rect(center = [300,100])
+    wave_text = font5.render("Wave " + str(wave), True, (240, 177, 29))
+    wave_text_rect = wave_text.get_rect(center=[300, 150])
+    infinity_text = font2.render("-1", True, (255,255,255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 # list of names
@@ -1190,7 +1191,10 @@ def showHUD():
     if displayHUD == True:
         # hp
         screen.blit(asset_hp_icon, (11, 507))
-        screen.blit(playerHP_text, (41, 505))
+        if godMode == False:
+            screen.blit(playerHP_text, (41, 505))
+        elif godMode == True:
+            screen.blit(infinity_text, (41, 505))
 
         # kills
         screen.blit(asset_kills_icon, (11, 530))
@@ -2058,9 +2062,10 @@ while True:
         # When game is closed
         if event.type == pygame.QUIT:
             # save highscore to file
-            pickle_out = open("savedata/highscore.txt","wb")
-            pickle.dump(highscore, pickle_out)
-            pickle_out.close()
+            if devMode == False:
+                pickle_out = open("savedata/highscore.txt","wb")
+                pickle.dump(highscore, pickle_out)
+                pickle_out.close()
             # close game
             pygame.mixer.stop()
             music_timer.stop()
@@ -2096,7 +2101,10 @@ while True:
                 if event.key == pygame.K_m and mods & pygame.KMOD_CTRL:
                     giveMoney(10000)
                     cashregister.play()
-
+            # Enable Cheats
+            if event.key == pygame.K_o and mods & pygame.KMOD_CTRL:
+                devMode = True
+                burp2.play()
             # Hide HUD
             if event.key == pygame.K_u and mods & pygame.KMOD_CTRL:
                 displayHUD = not displayHUD
@@ -2950,7 +2958,7 @@ while True:
         interactCheck()
 
         # check for highscore
-        if score > highscore:
+        if score > highscore and devMode == False:
             highscore = score
 
         # check for out of ammo or needed reload
@@ -3037,8 +3045,9 @@ while True:
         masterVolume_text = font1.render((str(masterVolume)), True, (255, 255, 255))
         musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
         playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
-        wave_text = font5.render("Wave " + str(wave) + " Started", True, (235, 45, 55))
+        wave_text = font5.render("Wave " + str(wave), True, (240, 177, 29))
         wave_text_rect = wave_text.get_rect(center=[300, 150])
+        infinity_text = font2.render("-1", True, (255, 255, 255))
 
         # volume refresh
         step.set_volume(masterVolume)
