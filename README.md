@@ -14,5 +14,4 @@ From slaying zombies with magic and gunning down western bandits, to begging for
 
 Game Page: https://jhams.itch.io/journeys-wild-west
 
-‎
-Trello: https://trello.com/b/yS0l1qXa/journeys-minigames
+‎Trello: https://trello.com/b/yS0l1qXa/journeys-minigames
