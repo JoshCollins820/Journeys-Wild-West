@@ -1,5 +1,5 @@
 ## JOURNEYS WILD WEST
-## v0.5
+## v0.4
 ## Developed by: Josh Collins
 ## --------------------------
 
@@ -31,7 +31,7 @@ screen = pygame.display.set_mode((height, width))
 pygame.display.set_caption("JOURNEYS: WILD WEST")
 pygame.display.set_icon(pygame.image.load("assets/icon/window_icon.png"))
 collapse = True
-version = "0.5"
+version = "0.4"
 
 # values and statements
 if collapse:
@@ -417,6 +417,7 @@ if collapse:
     wave_text = font5.render("Wave " + str(wave), True, (240, 177, 29))
     wave_text_rect = wave_text.get_rect(center=[300, 150])
     infinity_text = font2.render("-1", True, (255,255,255))
+    devMode_text = font1.render("Dev Mode", True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 # list of names
@@ -1214,6 +1215,10 @@ def showHUD():
             screen.blit(sawedOffAmmo_text, (41, 571))
         else:
             screen.blit(blankAmmo_text, (42, 569))
+
+        # dev mode text
+        if devMode == True:
+            screen.blit(devMode_text, (width - 75, 569))
 
         # popup text
         if purchasedText == True:
