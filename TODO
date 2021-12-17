@@ -19,6 +19,7 @@
 -------------------------CHANGELOG-------------------------
 v0.4
 New Features
+- Wave System
 - Combat Rolling
 - Sawed-Off Shotgun
 - More Bandits
@@ -41,12 +42,11 @@ Bug Fixes
 - Fixed player model bugs
 - Fixed HP Beer animation being too short
 - Fixed sniper rifle firing without ammo
-- Fixed sniper scope inconsistancy
+- Fixed sniper scope inconsistency
 - Fixed last bullet not registering
 
 ---------------------------NOTES---------------------------
 
-- Wave based shooter / roguelike
 - Quests and bounties to complete for money or rewards
 -
 

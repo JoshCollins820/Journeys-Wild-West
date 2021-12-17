@@ -38,7 +38,6 @@ if collapse:
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
     # vals
     playerHP = 100
-    bodyWeight = 12
     moneyCount = 0
     revRoundsMag = 6
     revRoundsTotal = 24
@@ -51,7 +50,7 @@ if collapse:
     sawedOffRoundsMag = 2
     buckRoundsTotal = 6
     sawedOffDamage = 50
-    hpPotionCount = 5
+    hpPotionCount = 0
     drinkTime = 250
     beerRegenRate = 30
     beerRegenAmount = 50
@@ -60,7 +59,7 @@ if collapse:
     highscore = 0
     masterVolumeStored = 0
     musicVolumeStored = 0
-    initialBandits = 0
+    banditCount = 0
     wave = 0
     waveIntermissionLength = 1500
 
@@ -88,7 +87,7 @@ if collapse:
     scopeWalk = 0
 
     # statements
-    devMode = True
+    devMode = False
     godMode = False
     invincibility = False
     invisible = False
@@ -127,8 +126,8 @@ if collapse:
     dead = False
     scopeScreen = False
     insideShop = False
-    ownSniperRifle = True
-    ownSawedOff = True
+    ownSniperRifle = False
+    ownSawedOff = False
     catalog = False
     catalogPage1 = False
     catalogPage2 = False
@@ -187,13 +186,14 @@ if collapse:
     looting = False
     showMoneyGainedText = False
     healing = False
+    showWave = False
 
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
 # audio
 if collapse:
-    masterVolume = 0.5  # (0-1)
-    musicVolume = 0  # (0-1)
+    masterVolume = 1  # (0-1)
+    musicVolume = 1  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
     intro = pygame.mixer.Sound('assets/sounds/start_music.wav')
@@ -389,6 +389,7 @@ if collapse:
     font2 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 18)
     font3 = pygame.font.SysFont("ebrima", 20, True)
     font4 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 16)
+    font5 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 24)
     # syntax - (Name, Size, Bold, Italic)
 
     playerHP_text = font2.render((str(playerHP)), True, (255,255,255))
@@ -412,6 +413,8 @@ if collapse:
     playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
     loot_text = font1.render("LOOT", True, (255, 255, 255))
     moneyGained_text = font4.render("+ $", True, (50, 100, 50))
+    wave_text = font5.render("Wave " + str(wave) + " Started!", True, (220, 45, 55))
+    wave_text_rect = wave_text.get_rect(center = [300,100])
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 # list of names
@@ -421,9 +424,11 @@ list_names = ['Bob', 'Richard', 'Aaron', 'Arthur', 'Henry', 'Frank', 'Edward', '
 
 # bandit methods
 def getBanditRespawn():
-    x = random.randint(-2000, 2000)
-    if x <= 700 and x >= -100:
+    x = random.randint(-2500, 2500)
+    if x <= 1000 and x >= 300:
         x += 900
+    if x >= -400 and x < 300:
+        x -= 900
     return x
 
 
@@ -865,7 +870,7 @@ def giveMoney(amount = 0):
     global moneyCount, showMoneyGainedText, moneyGained_text
     # if amount wasn't provided
     if amount == 0:
-        amount = random.randint(20,45)
+        amount = random.randint(50,100)
     showMoneyGained_timer.stop()
     moneyCount += amount
     moneyGained_text = font4.render("+ $" + (str(amount)), True, (42, 235, 48))
@@ -1209,6 +1214,9 @@ def showHUD():
         screen.blit(asset_text_purchased, (201, 60))
     if insufFundsText == True:
         screen.blit(asset_text_insufficient, (201, 60))
+    if showWave == True:
+        screen.blit(wave_text, wave_text_rect)
+
 
     # interact text
     if interactText == True and rolling == False and scopeScreen == False:
@@ -1319,7 +1327,7 @@ def resetValues():
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
-        healing, hpLooped, wave, waveIntermissionLength
+        healing, hpLooped, wave, waveIntermissionLength, showWave, banditCount
 
     # player vals
     playerHP = 100
@@ -1331,9 +1339,10 @@ def resetValues():
     sniperRoundsTotal = 3
     sawedOffRoundsMag = 2
     buckRoundsTotal = 6
-    hpPotionCount = 5
+    hpPotionCount = 0
     hpLooped = 0
     score = 0
+    banditCount = 0
     wave = 0
     waveIntermissionLength = 1500
 
@@ -1380,8 +1389,8 @@ def resetValues():
     sawedOffOutAmmo = False
     scopeScreen = False
     insideShop = False
-    ownSniperRifle = True
-    ownSawedOff = True
+    ownSniperRifle = False
+    ownSawedOff = False
     catalog = False
     catalogPage1 = False
     catalogPage2 = False
@@ -1437,6 +1446,7 @@ def resetValues():
     looting = False
     showMoneyGainedText = False
     healing = False
+    showWave = False
 
     # reset seed
     random.seed()
@@ -1445,7 +1455,6 @@ def resetValues():
     Bandit.alive = 0
     for bandit in Bandit.instances[:]:
         Bandit.instances.remove(bandit)
-
 
 
 def stopAllTimers(tup):
@@ -1608,14 +1617,19 @@ def stopReload():
 
 
 def waveHandler(wave_num):
-    global wave, waveIntermissionLength
+    global wave, waveIntermissionLength, showWave, banditCount
     if wave_num == 0:
         wave += 1
+        banditCount += 1
+        showWave_timer.start()
         Bandit()
-    if wave_num >= 1:
+    if wave_num > 0:
         wave += 1
-        waveIntermissionLength = waveIntermissionLength * 1.5
-        for i in range(0, wave_num + 1):
+        if wave % 2 == 1:
+            banditCount += 1
+        showWave_timer.start()
+        waveIntermissionLength += 3000
+        for i in range(0, banditCount):
             Bandit()
 
 
@@ -1965,6 +1979,19 @@ def startWave_timer_handler():
     startWave_timer.stop()
 
 
+def showWave_timer_handler():
+    global showWave
+    showWave = True
+    hideWave_timer.start()
+    showWave_timer.stop()
+
+
+def hideWave_timer_handler():
+    global showWave
+    showWave = False
+    hideWave_timer.stop()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -1994,6 +2021,8 @@ showMoneyGained_timer = simplegui.create_timer(2000, showMoneyGained_timer_handl
 burp_timer = simplegui.create_timer(1000, burp_timer_handler)
 beerHealing_timer = simplegui.create_timer(beerRegenRate, beerHealing_timer_handler)
 startWave_timer = simplegui.create_timer(waveIntermissionLength, startWave_timer_handler)
+showWave_timer = simplegui.create_timer(100, showWave_timer_handler)
+hideWave_timer = simplegui.create_timer(3000, hideWave_timer_handler)
 
 
 
@@ -2003,7 +2032,7 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
               volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
               rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
               showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer, beerHealing_timer,
-              startWave_timer)
+              startWave_timer, hideWave_timer, showWave_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -2219,13 +2248,13 @@ while True:
                             # offset on screen bandits
                             for bandit in Bandit.instances:
                                 # if on screen
-                                if bandit.x_location >= 0 and bandit.x_location <= 600 and bandit.hp > 0:
+                                if bandit.x_location >= -120 and bandit.x_location <= 600 and bandit.hp > 0:
                                     # if to the left
-                                    if bandit.x_location < 250:
-                                        bandit.x_location -= 200
+                                    if bandit.x_location <= 250:
+                                        bandit.x_location -= 400
                                     # if to the right
                                     elif bandit.x_location > 250:
-                                        bandit.x_location += 200
+                                        bandit.x_location += 350
                             store1x = 150
                             store2x = 850
                             cactusx = -100
@@ -3001,6 +3030,8 @@ while True:
         masterVolume_text = font1.render((str(masterVolume)), True, (255, 255, 255))
         musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
         playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
+        wave_text = font5.render("Wave " + str(wave) + " Started", True, (235, 45, 55))
+        wave_text_rect = wave_text.get_rect(center=[300, 150])
 
         # volume refresh
         step.set_volume(masterVolume)
