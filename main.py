@@ -42,12 +42,15 @@ if collapse:
     moneyCount = 0
     revRoundsMag = 6
     revRoundsTotal = 24
+    revolverDamage = 20
     revolverFireRate = 12
     revolverReloadSpeed = 500
     sniperRoundsMag = 1
     sniperRoundsTotal = 3
+    sniperDamage = 100
     sawedOffRoundsMag = 2
     buckRoundsTotal = 6
+    sawedOffDamage = 50
     hpPotionCount = 5
     drinkTime = 250
     beerRegenRate = 30
@@ -58,10 +61,11 @@ if collapse:
     masterVolumeStored = 0
     musicVolumeStored = 0
     initialBandits = 0
+    wave = 0
+    waveIntermissionLength = 1500
 
     # speed
     speedMove = 50
-    boardWalk = 80
     cloudMove = 8
     cloudAuto = 0.2
     tumbleAuto = 15
@@ -188,7 +192,7 @@ if collapse:
 
 # audio
 if collapse:
-    masterVolume = 5  # (0-1)
+    masterVolume = 0.5  # (0-1)
     musicVolume = 0  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
@@ -427,6 +431,7 @@ def getBanditRespawn():
 class Bandit:
     # instance list for created bandits
     instances = []
+    alive = 0
 
     # dictionary for types of bandits
     TYPE_MAP = {
@@ -437,6 +442,7 @@ class Bandit:
 
     # constructor
     def __init__(self):
+        Bandit.alive += 1
         self.__class__.instances.append(self)
         self.name = random.choice(list_names)  # assign random name
         self.bandit_left_img, self.bandit_right_img, self.bandit_leftdead_img, self.bandit_rightdead_img, self.bandit_fp_img = \
@@ -507,6 +513,7 @@ class Bandit:
         if self.hp == 0:
             banpain.play()
             giveScore()
+            Bandit.alive -= 1
             self.hp -= 1
         # if player is on top of body
         if self.x_location <= 260 and self.x_location >= 120 and self.bandit_left == False \
@@ -786,13 +793,15 @@ def fire():
         if lookingRight:
             for bandit in Bandit.instances:
                 if bandit.x_location <= 600 and bandit.x_location >= 250:
-                    if bandit.hp > 0:
-                        bandit.hp -= 20
+                    for i in range(0,revolverDamage):
+                        if bandit.hp > 0:
+                            bandit.hp -= 1
         if lookingLeft:
             for bandit in Bandit.instances:
                 if bandit.x_location >= 0 and bandit.x_location <= 250:
-                    if bandit.hp > 0:
-                        bandit.hp -= 20
+                    for i in range(0,revolverDamage):
+                        if bandit.hp > 0:
+                            bandit.hp -= 1
 
     # sniper rifle
     if hotbarSlot2 == True and scopeScreen == True:
@@ -805,13 +814,15 @@ def fire():
         if lookingRight:
             for bandit in Bandit.instances:
                 if bandit.x_location <= 700 and bandit.x_location >= 250:
-                    if bandit.hp > 0:
-                        bandit.hp -= 100
+                    for i in range(0,sniperDamage):
+                        if bandit.hp > 0:
+                            bandit.hp -= 1
         if lookingLeft:
             for bandit in Bandit.instances:
                 if bandit.x_location >= -100 and bandit.x_location <= 250:
-                    if bandit.hp > 0:
-                        bandit.hp -= 100
+                    for i in range(0,sniperDamage):
+                        if bandit.hp > 0:
+                            bandit.hp -= 1
 
     # sawed off
     if hotbarSlot3 == True:
@@ -826,13 +837,15 @@ def fire():
         if lookingRight:
             for bandit in Bandit.instances:
                 if bandit.x_location <= 600 and bandit.x_location >= 250:
-                    if bandit.hp > 0:
-                        bandit.hp -= 50
+                    for i in range(0,sawedOffDamage):
+                        if bandit.hp > 0:
+                            bandit.hp -= 1
         if lookingLeft:
             for bandit in Bandit.instances:
                 if bandit.x_location >= 0 and bandit.x_location <= 250:
-                    if bandit.hp > 0:
-                        bandit.hp -= 50
+                    for i in range(0,sawedOffDamage):
+                        if bandit.hp > 0:
+                            bandit.hp -= 1
 
 
 def hpPotion():
@@ -1284,9 +1297,8 @@ def playerDead():
     startGame = False
     stopAllTimers(timerTuple)
     stopSounds()
-    if playerHP == 0:
-        death.stop()
-        death.play()
+    death.stop()
+    death.play()
 
 
 def resetValues():
@@ -1307,10 +1319,10 @@ def resetValues():
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
-        healing, hpLooped
+        healing, hpLooped, wave, waveIntermissionLength
 
     # player vals
-    playerHP = 50
+    playerHP = 100
     moneyCount = 0
     revRoundsMag = 6
     revRoundsTotal = 24
@@ -1319,9 +1331,11 @@ def resetValues():
     sniperRoundsTotal = 3
     sawedOffRoundsMag = 2
     buckRoundsTotal = 6
-    hpPotionCount = 100
+    hpPotionCount = 5
     hpLooped = 0
     score = 0
+    wave = 0
+    waveIntermissionLength = 1500
 
     # x-pos
     cloud1x = 100
@@ -1428,8 +1442,10 @@ def resetValues():
     random.seed()
 
     # despawn bandits
+    Bandit.alive = 0
     for bandit in Bandit.instances[:]:
         Bandit.instances.remove(bandit)
+
 
 
 def stopAllTimers(tup):
@@ -1591,6 +1607,18 @@ def stopReload():
     loadshell.stop()
 
 
+def waveHandler(wave_num):
+    global wave, waveIntermissionLength
+    if wave_num == 0:
+        wave += 1
+        Bandit()
+    if wave_num >= 1:
+        wave += 1
+        waveIntermissionLength = waveIntermissionLength * 1.5
+        for i in range(0, wave_num + 1):
+            Bandit()
+
+
 def volumeButtonReset_timer_handler():
     global masterRightButtonClicked, musicRightButtonClicked, masterLeftButtonClicked, musicLeftButtonClicked, \
         masterIconButtonClicked, musicIconButtonClicked
@@ -1647,8 +1675,6 @@ def startGame_timer_handler():
     playButtonClicked = False
     restartButtonClicked = False
     moveAbility = True
-    for i in range(initialBandits):
-        ban = Bandit()
     banMoveAbility = True
     music_timer.start()
     startGame_timer.stop()
@@ -1934,6 +1960,11 @@ def beerHealing_timer_handler():
         beerHealing_timer.stop()
 
 
+def startWave_timer_handler():
+    waveHandler(wave)
+    startWave_timer.stop()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -1962,6 +1993,8 @@ loot_timer = simplegui.create_timer(200, loot_timer_handler)
 showMoneyGained_timer = simplegui.create_timer(2000, showMoneyGained_timer_handler)
 burp_timer = simplegui.create_timer(1000, burp_timer_handler)
 beerHealing_timer = simplegui.create_timer(beerRegenRate, beerHealing_timer_handler)
+startWave_timer = simplegui.create_timer(waveIntermissionLength, startWave_timer_handler)
+
 
 
 # timers tuple
@@ -1969,7 +2002,8 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
               drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
               volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
               rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
-              showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer, beerHealing_timer)
+              showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer, beerHealing_timer,
+              startWave_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -2871,6 +2905,10 @@ while True:
         # Check if dead
         if playerHP <= 0:
             playerDead()
+
+        # If wave is completed, start a new one
+        if Bandit.alive == 0:
+            startWave_timer.start()
 
         # check for interact
         interactCheck()
