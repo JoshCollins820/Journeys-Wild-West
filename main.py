@@ -87,10 +87,11 @@ if collapse:
     scopeWalk = 0
 
     # statements
-    devMode = False
+    devMode = True
     godMode = False
     invincibility = False
     invisible = False
+    displayHUD = True
     moveAbility = True
     banMoveAbility = True
     interactText = False
@@ -1186,84 +1187,85 @@ def showSettings():
 
 
 def showHUD():
-    # hp
-    screen.blit(asset_hp_icon, (11, 507))
-    screen.blit(playerHP_text, (41, 505))
+    if displayHUD == True:
+        # hp
+        screen.blit(asset_hp_icon, (11, 507))
+        screen.blit(playerHP_text, (41, 505))
 
-    # kills
-    screen.blit(asset_kills_icon, (11, 530))
-    screen.blit(playerScore_text, (41, 528))
+        # kills
+        screen.blit(asset_kills_icon, (11, 530))
+        screen.blit(playerScore_text, (41, 528))
 
-    # money
-    screen.blit(asset_money_icon, (11, 552))
-    screen.blit(playerMoney_text, (41, 550))
+        # money
+        screen.blit(asset_money_icon, (11, 552))
+        screen.blit(playerMoney_text, (41, 550))
 
-    # ammo
-    screen.blit(asset_ammo_icon, (11, 573))
-    if hotbarSlot1 == True:
-        screen.blit(revolverAmmo_text, (41, 571))
-    elif hotbarSlot2 == True and ownSniperRifle == True:
-        screen.blit(sniperAmmo_text, (41, 571))
-    elif hotbarSlot3 == True and ownSawedOff == True:
-        screen.blit(sawedOffAmmo_text, (41, 571))
-    else:
-        screen.blit(blankAmmo_text, (42, 569))
-
-    # popup text
-    if purchasedText == True:
-        screen.blit(asset_text_purchased, (201, 60))
-    if insufFundsText == True:
-        screen.blit(asset_text_insufficient, (201, 60))
-    if showWave == True:
-        screen.blit(wave_text, wave_text_rect)
-
-
-    # interact text
-    if interactText == True and rolling == False and scopeScreen == False:
-        if reloadUI == True or outAmmoUI == True:
-            screen.blit(interact_text, (222, 220))
+        # ammo
+        screen.blit(asset_ammo_icon, (11, 573))
+        if hotbarSlot1 == True:
+            screen.blit(revolverAmmo_text, (41, 571))
+        elif hotbarSlot2 == True and ownSniperRifle == True:
+            screen.blit(sniperAmmo_text, (41, 571))
+        elif hotbarSlot3 == True and ownSawedOff == True:
+            screen.blit(sawedOffAmmo_text, (41, 571))
         else:
-            screen.blit(interact_text, (222, 235))
+            screen.blit(blankAmmo_text, (42, 569))
 
-    # buy text
-    if buyText == True:
-        screen.blit(buy_text, (137, 255))
-
-    # ammo text
-    if standing == True:
-        if reloadUI == True:
-            screen.blit(reload_text, (227, 235))
-        if outAmmoUI == True:
-            screen.blit(outAmmo_text, (215, 235))
+        # popup text
+        if purchasedText == True:
+            screen.blit(asset_text_purchased, (201, 60))
+        if insufFundsText == True:
+            screen.blit(asset_text_insufficient, (201, 60))
+        if showWave == True:
+            screen.blit(wave_text, wave_text_rect)
 
 
-    # hotbar
-    if startGame == True and scopeScreen == False:
-        screen.blit(asset_hotbar, (300 - 153.5, 560 - 28.5))
-        screen.blit(asset_revolver_icon, (300 - 153.5, 560 - 28.5))
-        if ownSniperRifle == True:
-            screen.blit(asset_sniper_icon, (300 - 153.5, 560 - 28.5))
-        if ownSawedOff == True:
-            screen.blit(asset_sawed_off_icon, (300 - 153.5, 560 - 28.5))
-        if hpPotionCount > 0:
-            screen.blit(asset_hearty_beer_icon, (500 - 153.5, 562 - 28.5))
-            screen.blit(potionCount_text, (403, 537))
-        screen.blit(asset_hotbar_select, (activeSlotx1 - 3, 565 - 33))
+        # interact text
+        if interactText == True and rolling == False and scopeScreen == False:
+            if reloadUI == True or outAmmoUI == True:
+                screen.blit(interact_text, (222, 220))
+            else:
+                screen.blit(interact_text, (222, 235))
 
-    # loot text
-    if startGame == True and insideShop == False and standing == True:
-        for bandit in Bandit.instances:
-            if bandit.looted == False and bandit.stoodOn == True:
-                if (outAmmoUI or reloadUI) and interactText == True:
-                    screen.blit(loot_text, (235, 205))
-                elif outAmmoUI == True or reloadUI == True or interactText == True:
-                    screen.blit(loot_text, (235, 220))
-                else:
-                    screen.blit(loot_text, (235, 235))
+        # buy text
+        if buyText == True:
+            screen.blit(buy_text, (137, 255))
 
-    # money gained text
-    if showMoneyGainedText == True:
-        screen.blit(moneyGained_text, (30, 480))
+        # ammo text
+        if standing == True:
+            if reloadUI == True:
+                screen.blit(reload_text, (227, 235))
+            if outAmmoUI == True:
+                screen.blit(outAmmo_text, (215, 235))
+
+
+        # hotbar
+        if startGame == True and scopeScreen == False:
+            screen.blit(asset_hotbar, (300 - 153.5, 560 - 28.5))
+            screen.blit(asset_revolver_icon, (300 - 153.5, 560 - 28.5))
+            if ownSniperRifle == True:
+                screen.blit(asset_sniper_icon, (300 - 153.5, 560 - 28.5))
+            if ownSawedOff == True:
+                screen.blit(asset_sawed_off_icon, (300 - 153.5, 560 - 28.5))
+            if hpPotionCount > 0:
+                screen.blit(asset_hearty_beer_icon, (500 - 153.5, 562 - 28.5))
+                screen.blit(potionCount_text, (403, 537))
+            screen.blit(asset_hotbar_select, (activeSlotx1 - 3, 565 - 33))
+
+        # loot text
+        if startGame == True and insideShop == False and standing == True:
+            for bandit in Bandit.instances:
+                if bandit.looted == False and bandit.stoodOn == True:
+                    if (outAmmoUI or reloadUI) and interactText == True:
+                        screen.blit(loot_text, (235, 205))
+                    elif outAmmoUI == True or reloadUI == True or interactText == True:
+                        screen.blit(loot_text, (235, 220))
+                    else:
+                        screen.blit(loot_text, (235, 235))
+
+        # money gained text
+        if showMoneyGainedText == True:
+            screen.blit(moneyGained_text, (30, 480))
 
 
 def interactCheck():
@@ -2069,9 +2071,9 @@ while True:
         checkWalkBoth()
         # Key Down Handler
         if event.type == pygame.KEYDOWN:
+            mods = pygame.key.get_mods()
             # Developer Tools
             if devMode == True:
-                mods = pygame.key.get_mods()
                 # god mode
                 if event.key == pygame.K_g and mods & pygame.KMOD_CTRL:
                     godMode = not godMode
@@ -2094,6 +2096,11 @@ while True:
                 if event.key == pygame.K_m and mods & pygame.KMOD_CTRL:
                     giveMoney(10000)
                     cashregister.play()
+
+            # Hide HUD
+            if event.key == pygame.K_u and mods & pygame.KMOD_CTRL:
+                displayHUD = not displayHUD
+
             # Pause Game
             if event.key == pygame.K_ESCAPE and pause == False and startGame == True and dead == False:
                 pygame.mixer.pause()
