@@ -1,5 +1,5 @@
 ## JOURNEYS WILD WEST
-## v0.4
+## v0.5
 ## Developed by: Josh Collins
 ## --------------------------
 
@@ -17,8 +17,9 @@ except ImportError:
 
 
 # window resolution
-height = 600
 width = 600
+height = 600
+
 
 # pygame initialization
 pygame.init()
@@ -27,11 +28,11 @@ clock = pygame.time.Clock()
 random.seed()
 
 # window properties
-screen = pygame.display.set_mode((height, width))
+screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("JOURNEYS: WILD WEST")
 pygame.display.set_icon(pygame.image.load("assets/icon/window_icon.png"))
 collapse = True
-version = "0.4"
+version = "0.5"
 
 # values and statements
 if collapse:
@@ -492,8 +493,9 @@ class Bandit:
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255, 255, 255))
         # draw alive bandit
         if self.hp > 0:
-            screen.blit(self.nameTag, (self.x_location-20-self.nameLength,232))
-            screen.blit(self.hpTag, (self.x_location-7,246))
+            if displayHUD == True:
+                screen.blit(self.nameTag, (self.x_location-20-self.nameLength,232))
+                screen.blit(self.hpTag, (self.x_location-7,246))
             if self.bandit_left == False:
                 screen.blit(self.bandit_left_img, (self.x_location-39.5, 262))
             elif self.bandit_left == True:
@@ -746,7 +748,6 @@ def loot():
         looting = True
         standing = False
         moveAbility = False
-        stopReload()
         giveMoney()
         lootBody.play()
         loot_timer.start()
@@ -2228,7 +2229,7 @@ while True:
                             heartbeat.play(-1)
 
                 # Loot body
-                if event.key == pygame.K_f and rolling == False:
+                if event.key == pygame.K_f and rolling == False and insideShop == False:
                     for bandit in Bandit.instances:
                         if bandit.looted == False and bandit.stoodOn:
                             bandit.looted = True

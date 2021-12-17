@@ -1,5 +1,5 @@
 ------------------------ KNOWN BUGS------------------------
--
+- Pausing does not pause timers, ie: roll cooldown
 
 --------------------------IMPROVE--------------------------
 -
@@ -27,7 +27,7 @@ Balance
 
 
 Bug Fixes
--
+- No longer can loot while inside shop
 
 
 ---------------------------NOTES---------------------------
