@@ -63,6 +63,7 @@ if collapse:
     banditCount = 0
     wave = 0
     waveIntermissionLength = 1500
+    venom_ticks_remaining = 0
 
     # speed
     speedMove = 50
@@ -88,7 +89,7 @@ if collapse:
     scopeWalk = 0
 
     # statements
-    devMode = False
+    devMode = True
     godMode = False
     invincibility = False
     invisible = False
@@ -195,7 +196,7 @@ if collapse:
 # audio
 if collapse:
     masterVolume = 1  # (0-1)
-    musicVolume = 1  # (0-1)
+    musicVolume = 0  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
     intro = pygame.mixer.Sound('assets/sounds/start_music.wav')
@@ -228,6 +229,7 @@ if collapse:
     burp = pygame.mixer.Sound('assets/sounds/burp.wav')
     burp2 = pygame.mixer.Sound('assets/sounds/burp2.wav')
     burp3 = pygame.mixer.Sound('assets/sounds/burp3.wav')
+    venom_heartbeat = pygame.mixer.Sound('assets/sounds/venom_heartbeat.wav')
 
 # sprites
 if collapse:
@@ -384,6 +386,14 @@ if collapse:
     asset_master_icon_button_hover = pygame.image.load("assets/UI/master_icon_button_hover.png")
     asset_master_icon_button_clicked = pygame.image.load("assets/UI/master_icon_button_clicked.png")
     asset_volume_muted_strikethrough = pygame.image.load("assets/UI/muted_crossout.png")
+    asset_rattlesnake1_left = pygame.image.load("assets/npc/rattlesnake1_left.png")
+    asset_rattlesnake2_left = pygame.image.load("assets/npc/rattlesnake2_left.png")
+    asset_rattlesnake_strike_left = pygame.image.load("assets/npc/rattlesnake_strike_left.png")
+    asset_rattlesnake_dead_left = pygame.image.load("assets/npc/rattlesnake_dead_left.png")
+    asset_rattlesnake1_right = pygame.image.load("assets/npc/rattlesnake1_right.png")
+    asset_rattlesnake2_right = pygame.image.load("assets/npc/rattlesnake2_right.png")
+    asset_rattlesnake_strike_right = pygame.image.load("assets/npc/rattlesnake_strike_right.png")
+    asset_rattlesnake_dead_right = pygame.image.load("assets/npc/rattlesnake_dead_right.png")
 
 # text
 if collapse:
@@ -426,8 +436,8 @@ list_names = ['Bob', 'Richard', 'Aaron', 'Arthur', 'Henry', 'Frank', 'Edward', '
               'Roy', 'Louis', 'Carl', 'Paul', 'Pedro', 'Samuel', 'Ray', 'Howard', 'Oscar', 'Leo', 'Jack', 'Lee']
 
 
-# bandit methods
-def getBanditRespawn():
+# enemy methods
+def getEnemyRespawn():
     x = random.randint(-2500, 2500)
     if x <= 1000 and x >= 300:
         x += 900
@@ -458,7 +468,8 @@ class Bandit:
             self.TYPE_MAP[random.randint(1,3)]  # assign random type
         self.level = 1  # assign level
         self.hp = 100  # assign starting hp
-        self.x_location = getBanditRespawn()  # assign x-location
+        self.x_location = getEnemyRespawn()  # assign x-location
+        self.moveSpeed = 8
         self.bandit_left = None  # is the bandit on the left side of player
         self.nameTag = font1.render("Bandit: " + self.name, True, (150, 240, 41))
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255,255,255))
@@ -470,13 +481,13 @@ class Bandit:
 
     # general method that calls all of the other methods, will be called constantly by main
     def work(self):
-        self.move()
+        self.move(self.moveSpeed)
         self.draw()
         self.checkMelee()
         self.checkDead()
 
     # bandit movement
-    def move(self, vel=8):
+    def move(self, vel):
         # bandit is right of player
         if self.hp > 0 and banMoveAbility == True and invisible == False:
             if self.x_location >= 280:
@@ -542,8 +553,162 @@ class Bandit:
     # manual respawn if needed
     def respawn(self):
         self.hp = 100
-        self.x_location = getBanditRespawn()
+        self.x_location = getEnemyRespawn()
         self.looted = False
+
+
+# Rattlesnake class
+class Rattlesnake:
+    # instance list for created rattlesnakes
+    instances = []
+    alive = 0
+
+    # dictionary for types of rattlesnakes
+    TYPE_MAP = {
+                1: (asset_rattlesnake1_left, asset_rattlesnake2_left, asset_rattlesnake_strike_left, asset_rattlesnake_dead_left,
+                    asset_rattlesnake1_right, asset_rattlesnake2_right, asset_rattlesnake_strike_right, asset_rattlesnake_dead_right)
+                }
+
+    # constructor
+    def __init__(self):
+        Rattlesnake.alive += 1
+        self.__class__.instances.append(self)
+        self.snake1_left_img, self.snake2_left_img, self.snake_strike_left_img, self.snake_dead_left_img, \
+            self.snake1_right_img, self.snake2_right_img, self.snake_strike_right_img, self.snake_dead_right_img = \
+            self.TYPE_MAP[random.randint(1,1)]  # assign random type
+        self.level = 1  # assign level
+        self.hp = 15  # assign starting hp
+        self.x_location = getEnemyRespawn()  # assign x-location
+        self.rattlesnake_left = None  # is the bandit on the left side of player
+        self.nameTag = font1.render("Rattlesnake", True, (150, 240, 41))
+        self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255,255,255))
+        self.stoodOn = False  # is the bandit being stood on by player
+        self.looted = False  # has the player looted bandit
+        self.rattle_range = 250  # distance player needs to be from snake for it to rattle
+        self.strike_range = 85  # distance player needs to be from snake for it to rattle
+        self.rattleInRange = False  # is the player close enough to the rattlesnake to where it will rattle
+        self.rattle_state = 0  # state of rattle the snake is in
+        self.strikeCooldown = False  # is the snake's attack in cooldown
+        self.rattleCooldown = False  # is the snake's attack in cooldown
+        self.striking = False  # is the snake striking/attacking player
+
+    # general method that calls all of the other methods, will be called constantly by main
+    def work(self):
+        self.draw()
+        self.move()
+        self.checkMelee()
+        self.checkDead()
+
+    # rattlesnake movement
+    def move(self):
+        # rattlesnake is right of player
+        if self.hp > 0:
+            if self.x_location >= 240:
+                self.rattlesnake_left = False
+            # bandit is left of player
+            elif self.x_location <= 270:
+                self.rattlesnake_left = True
+
+    # rattlesnake movement
+    def strike(self):
+        # rattlesnake is right of player
+        if self.hp > 0 and self.strikeCooldown == False:
+            snakeStrikeStop_timer.stop()
+            self.striking = True
+            self.strikeCooldown = True
+            snakeStrikeStop_timer.start()
+            snakeStrikeCooldown_timer.start()
+            if invincibility == False:
+                playerHit(10)
+                venomed(10)
+
+    # snake rattles
+    def rattle(self):
+        self.rattleCooldown = True
+        # play audio
+
+        # change states
+        if self.rattle_state == 0:
+            self.rattle_state = 1
+        elif self.rattle_state == 1:
+            self.rattle_state = 0
+        # start cooldown timer
+        snakeRattleCooldown_timer.start()
+
+    # draws alive rattlesnake
+    def draw(self):
+        # refresh hp tag
+        self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255, 255, 255))
+        # draw alive rattlesnake
+        if self.hp > 0:
+            if displayHUD == True:
+                screen.blit(self.nameTag, (self.x_location+1,322))
+                screen.blit(self.hpTag, (self.x_location+15,336))
+            if self.rattlesnake_left == False:
+                if self.striking == False:
+                    if self.rattle_state == 0:
+                        screen.blit(self.snake1_left_img, (self.x_location-39.5, 348))
+                    if self.rattle_state == 1:
+                        screen.blit(self.snake2_left_img, (self.x_location-39.5, 348))
+                if self.striking == True:
+                    screen.blit(self.snake_strike_left_img, (self.x_location - 39.5, 348))
+            elif self.rattlesnake_left == True:
+                if self.striking == False:
+                    if self.rattle_state == 0:
+                        screen.blit(self.snake1_right_img, (self.x_location-7, 348))
+                    if self.rattle_state == 1:
+                        screen.blit(self.snake2_right_img, (self.x_location-7, 348))
+                if self.striking == True:
+                    screen.blit(self.snake_strike_right_img, (self.x_location - 7, 348))
+
+    # seperate from draw method so that it can be called after drawing the player
+    def draw_dead(self):
+        # draw dead rattlesnake
+        if insideShop == False:
+            if self.hp <= 0:
+                if self.rattlesnake_left == False:
+                    screen.blit(self.snake_dead_left_img, (self.x_location-39.5, 348))
+                elif self.rattlesnake_left == True:
+                    screen.blit(self.snake_dead_right_img, (self.x_location-7, 348))
+
+    # cheks if rattlesnake is in melee range
+    def checkMelee(self):
+        if self.hp > 0:
+            if self.x_location <= 210+self.rattle_range and self.x_location >= 210-self.rattle_range and insideShop == False:
+                if self.rattleCooldown == False:
+                    self.rattle()
+            if self.x_location <= 210+self.strike_range and self.x_location >= 210-self.strike_range and insideShop == False:
+                if self.strikeCooldown == False:
+                    self.strike()
+
+    # checks if rattlesnake is dead, looted, and when it should despawn
+    def checkDead(self):
+        # bandit dead
+        if self.hp == 0:
+            banpain.play()
+            giveScore()
+            Rattlesnake.alive -= 1
+            self.hp -= 1
+        # if player is on top of body
+        if self.x_location <= 260 and self.x_location >= 120 and self.rattlesnake_left == False \
+                or self.x_location <= 360 and self.x_location >= 220 and self.rattlesnake_left == True and self.hp <= 0:
+            self.stoodOn = True
+        else:
+            self.stoodOn = False
+        # decrease hp if dead and looted
+        if self.hp <= 0 and self.looted == True:
+            self.hp -= 1
+        # remove from instance list
+        if self.hp <= -20:
+            # self.respawn()
+            self.instances.remove(self)
+
+    # manual respawn if needed
+    def respawn(self):
+        self.hp = 100
+        self.x_location = getEnemyRespawn()
+        self.looted = False
+
 
 
 
@@ -577,6 +742,10 @@ def worldLeft(multiplier=1):
     for instance in Bandit.instances:
         instance.x_location += speedMove*multiplier
 
+    # move rattlesnakes
+    for instance in Rattlesnake.instances:
+        instance.x_location += speedMove*multiplier
+
 
 def worldRight(multiplier=1):
     global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, \
@@ -608,6 +777,10 @@ def worldRight(multiplier=1):
 
     # move bandits
     for instance in Bandit.instances:
+        instance.x_location -= speedMove*multiplier
+
+    # move rattlesnake
+    for instance in Rattlesnake.instances:
         instance.x_location -= speedMove*multiplier
 
 
@@ -800,17 +973,31 @@ def fire():
         bulletx = 330
         stopReload()
         if lookingRight:
+            # Damage Bandit
             for bandit in Bandit.instances:
                 if bandit.x_location <= 600 and bandit.x_location >= 250:
                     for i in range(0,revolverDamage):
                         if bandit.hp > 0:
                             bandit.hp -= 1
+            # Damage Rattlesnake
+            for rattlesnake in Rattlesnake.instances:
+                if rattlesnake.x_location <= 600 and rattlesnake.x_location >= 250:
+                    for i in range(0,revolverDamage):
+                        if rattlesnake.hp > 0:
+                            rattlesnake.hp -= 1
         if lookingLeft:
+            # Damage Bandit
             for bandit in Bandit.instances:
                 if bandit.x_location >= 0 and bandit.x_location <= 250:
                     for i in range(0,revolverDamage):
                         if bandit.hp > 0:
                             bandit.hp -= 1
+            # Damage Rattlesnake
+            for rattlesnake in Rattlesnake.instances:
+                if rattlesnake.x_location >= 0 and rattlesnake.x_location <= 250:
+                    for i in range(0,revolverDamage):
+                        if rattlesnake.hp > 0:
+                            rattlesnake.hp -= 1
 
     # sniper rifle
     if hotbarSlot2 == True and scopeScreen == True:
@@ -1184,6 +1371,7 @@ def showSettings():
     burp.set_volume(masterVolume)
     burp2.set_volume(masterVolume)
     burp3.set_volume(masterVolume)
+    venom_heartbeat.set_volume(masterVolume)
     intromusic.set_volume(musicVolume * masterVolume)
     intro.set_volume(musicVolume * masterVolume)
     music.set_volume(musicVolume * masterVolume)
@@ -1305,6 +1493,14 @@ def playerHit(damage):
         playerHitSound_timer.start()
 
 
+def venomed(ticks):
+    global playerHP, invincibility, godMode, venom_ticks_remaining
+
+    venom_ticks_remaining = ticks
+    if playerHP > 0 and godMode == False:
+        venomTick_timer.start()
+
+
 def playerDead():
     global dead, moveAbility, startGame
     dead = True
@@ -1339,7 +1535,7 @@ def resetValues():
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
-        healing, hpLooped, wave, waveIntermissionLength, showWave, banditCount
+        healing, hpLooped, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining
 
     # player vals
     playerHP = 100
@@ -1357,6 +1553,7 @@ def resetValues():
     banditCount = 0
     wave = 0
     waveIntermissionLength = 1500
+    venom_ticks_remaining = 0
 
     # x-pos
     cloud1x = 100
@@ -1467,6 +1664,11 @@ def resetValues():
     Bandit.alive = 0
     for bandit in Bandit.instances[:]:
         Bandit.instances.remove(bandit)
+
+    # despawn rattlesnakes
+    Bandit.alive = 0
+    for rattlesnake in Rattlesnake.instances[:]:
+        Rattlesnake.instances.remove(rattlesnake)
 
 
 def stopAllTimers(tup):
@@ -1635,6 +1837,7 @@ def waveHandler(wave_num):
         banditCount += 1
         showWave_timer.start()
         Bandit()
+        Rattlesnake()
     if wave_num > 0:
         wave += 1
         if wave % 2 == 1:
@@ -1643,6 +1846,7 @@ def waveHandler(wave_num):
         waveIntermissionLength += 3000
         for i in range(0, banditCount):
             Bandit()
+            Rattlesnake()
 
 
 def volumeButtonReset_timer_handler():
@@ -2004,6 +2208,40 @@ def hideWave_timer_handler():
     hideWave_timer.stop()
 
 
+def venomTick_timer_handler():
+    global playerHP, venom_ticks_remaining
+
+    if venom_ticks_remaining > 0:
+        if playerHP > 0 and godMode == False:
+            playerHP -= 2
+            venom_heartbeat.play()
+            venom_ticks_remaining -= 1
+            venomTick_timer.start()
+    else:
+        venomTick_timer.stop()
+
+
+def snakeStrikeStop_timer_handler():
+    for rattlesnake in Rattlesnake.instances:
+        if rattlesnake.striking == True:
+            rattlesnake.striking = False
+    snakeStrikeStop_timer.stop()
+
+
+def snakeStrikeCooldown_timer_handler():
+    for rattlesnake in Rattlesnake.instances:
+        if rattlesnake.strikeCooldown == True:
+            rattlesnake.strikeCooldown = False
+    snakeStrikeCooldown_timer.stop()
+
+
+def snakeRattleCooldown_timer_handler():
+    for rattlesnake in Rattlesnake.instances:
+        if rattlesnake.rattleCooldown == True:
+            rattlesnake.rattleCooldown = False
+    snakeRattleCooldown_timer.stop()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -2035,6 +2273,10 @@ beerHealing_timer = simplegui.create_timer(beerRegenRate, beerHealing_timer_hand
 startWave_timer = simplegui.create_timer(waveIntermissionLength, startWave_timer_handler)
 showWave_timer = simplegui.create_timer(100, showWave_timer_handler)
 hideWave_timer = simplegui.create_timer(3000, hideWave_timer_handler)
+venomTick_timer = simplegui.create_timer(1000, venomTick_timer_handler)
+snakeStrikeStop_timer = simplegui.create_timer(200, snakeStrikeStop_timer_handler)
+snakeStrikeCooldown_timer = simplegui.create_timer(3000, snakeStrikeCooldown_timer_handler)
+snakeRattleCooldown_timer = simplegui.create_timer(5, snakeRattleCooldown_timer_handler)
 
 
 
@@ -2044,7 +2286,8 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
               volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
               rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
               showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer, beerHealing_timer,
-              startWave_timer, hideWave_timer, showWave_timer)
+              startWave_timer, hideWave_timer, showWave_timer, venomTick_timer, snakeStrikeStop_timer,
+              snakeStrikeCooldown_timer, snakeRattleCooldown_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -2095,7 +2338,7 @@ while True:
                     potion.play()
                 # spawn bandit
                 if event.key == pygame.K_b and mods & pygame.KMOD_CTRL:
-                    ban = Bandit()
+                    ban = Rattlesnake()
                     button.play()
                 # give ammo
                 if event.key == pygame.K_n and mods & pygame.KMOD_CTRL:
@@ -2662,11 +2905,15 @@ while True:
         # saloon
         screen.blit(asset_saloon, (store2x-94, 13.5))
         # tumbleweed
-        screen.blit(asset_tumbleweed, (tumweed1x-38, 331))
+        screen.blit(asset_tumbleweed, (tumweed1x-38, 330))
 
         # draw alive bandits
         for bandit in Bandit.instances:
             bandit.work()
+
+        # draw alive rattlesnakes
+        for rattlesnake in Rattlesnake.instances:
+            rattlesnake.work()
 
         # shop interior
         if insideShop == True:
@@ -2869,6 +3116,10 @@ while True:
         # draw dead bandits
         for bandit in Bandit.instances:
             bandit.draw_dead()
+
+        # draw dead rattlesnakes
+        for rattlesnake in Rattlesnake.instances:
+            rattlesnake.draw_dead()
 
 
         # catalog pages
@@ -3085,6 +3336,7 @@ while True:
         burp.set_volume(masterVolume)
         burp2.set_volume(masterVolume)
         burp3.set_volume(masterVolume)
+        venom_heartbeat.set_volume(masterVolume)
         intromusic.set_volume(musicVolume * masterVolume)
         intro.set_volume(musicVolume * masterVolume)
         music.set_volume(musicVolume * masterVolume)
