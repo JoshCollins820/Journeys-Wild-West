@@ -61,6 +61,7 @@ if collapse:
     masterVolumeStored = 0
     musicVolumeStored = 0
     banditCount = 0
+    snakeCount = 0
     wave = 0
     waveIntermissionLength = 1500
     venom_ticks_remaining = 0
@@ -657,19 +658,19 @@ class Rattlesnake:
             if self.rattlesnake_left == False:
                 if self.striking == False:
                     if self.rattle_state == 0:
-                        screen.blit(self.snake1_left_img, (self.x_location-39.5, 348))
+                        screen.blit(self.snake1_left_img, (self.x_location-39.5, 347))
                     if self.rattle_state == 1:
-                        screen.blit(self.snake2_left_img, (self.x_location-39.5, 348))
+                        screen.blit(self.snake2_left_img, (self.x_location-39.5, 347))
                 if self.striking == True:
-                    screen.blit(self.snake_strike_left_img, (self.x_location - 39.5, 348))
+                    screen.blit(self.snake_strike_left_img, (self.x_location - 39.5, 347))
             elif self.rattlesnake_left == True:
                 if self.striking == False:
                     if self.rattle_state == 0:
-                        screen.blit(self.snake1_right_img, (self.x_location-7, 348))
+                        screen.blit(self.snake1_right_img, (self.x_location-7, 347))
                     if self.rattle_state == 1:
-                        screen.blit(self.snake2_right_img, (self.x_location-7, 348))
+                        screen.blit(self.snake2_right_img, (self.x_location-7, 347))
                 if self.striking == True:
-                    screen.blit(self.snake_strike_right_img, (self.x_location - 7, 348))
+                    screen.blit(self.snake_strike_right_img, (self.x_location - 7, 347))
 
     # seperate from draw method so that it can be called after drawing the player
     def draw_dead(self):
@@ -677,9 +678,9 @@ class Rattlesnake:
         if insideShop == False:
             if self.hp <= 0:
                 if self.rattlesnake_left == False:
-                    screen.blit(self.snake_dead_left_img, (self.x_location-39.5, 348))
+                    screen.blit(self.snake_dead_left_img, (self.x_location-39.5, 347))
                 elif self.rattlesnake_left == True:
-                    screen.blit(self.snake_dead_right_img, (self.x_location-7, 348))
+                    screen.blit(self.snake_dead_right_img, (self.x_location-7, 347))
 
     # cheks if rattlesnake is in melee range
     def checkMelee(self):
@@ -1548,10 +1549,10 @@ def playerDead():
     screen.blit(asset_death_screen, (300 - 300, 300 - 300))
     screen.blit(deathScore_text, (278, 250))
     screen.blit(playerHighscore_text, (264, 270))
-
     moveAbility = False
     startGame = False
     stopAllTimers(timerTuple)
+    stopReload()
     stopSounds()
     death.stop()
     death.play()
@@ -1871,22 +1872,31 @@ def stopReload():
 
 
 def waveHandler(wave_num):
-    global wave, waveIntermissionLength, showWave, banditCount
+    global wave, waveIntermissionLength, showWave, banditCount, snakeCount
+    # starting wave
     if wave_num == 0:
         wave += 1
         banditCount += 1
         showWave_timer.start()
         Bandit()
-        Rattlesnake()
+    # all other waves
     if wave_num > 0:
         wave += 1
+        # every 2 waves, incrememnt amount of bandits by 1
         if wave % 2 == 1:
             banditCount += 1
-        showWave_timer.start()
+        # every 5 waves, incrememnt amount of rattlesnakes by 1
+        if wave % 5 == 0:
+            snakeCount += 1
+        # increase intermission length by 3 seconds
         waveIntermissionLength += 3000
+        # show wave number
+        showWave_timer.start()
         for i in range(0, banditCount):
             Bandit()
+        for i in range(0, snakeCount):
             Rattlesnake()
+
 
 
 def volumeButtonReset_timer_handler():
@@ -2955,13 +2965,14 @@ while True:
         # tumbleweed
         screen.blit(asset_tumbleweed, (tumweed1x-38, 330))
 
-        # draw alive bandits
-        for bandit in Bandit.instances:
-            bandit.work()
 
         # draw alive rattlesnakes
         for rattlesnake in Rattlesnake.instances:
             rattlesnake.work()
+        # draw alive bandits
+        for bandit in Bandit.instances:
+            bandit.work()
+
 
         # shop interior
         if insideShop == True:
