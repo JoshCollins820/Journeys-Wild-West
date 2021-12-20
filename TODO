@@ -1,12 +1,10 @@
 ------------------------ KNOWN BUGS------------------------
-- Pausing does not pause timers, ie: roll cooldown
+- Pausing does not pause timers
 
 --------------------------IMPROVE--------------------------
 -
 
 ----------------------------ADD----------------------------
-- Rattlesnake
-- Vultures
 - Make current game a side Survival gamemode
 - Robbing the store clerk
   (minigame for pursuading him to give free items/money)
@@ -22,7 +20,7 @@
 -------------------------CHANGELOG-------------------------
 v0.5
 New Features
--
+- Added Rattlesnakes
 
 
 Balance

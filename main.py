@@ -230,6 +230,8 @@ if collapse:
     burp2 = pygame.mixer.Sound('assets/sounds/burp2.wav')
     burp3 = pygame.mixer.Sound('assets/sounds/burp3.wav')
     venom_heartbeat = pygame.mixer.Sound('assets/sounds/venom_heartbeat.wav')
+    rattlesnake_rattle = pygame.mixer.Sound('assets/sounds/rattlesnake_rattle.wav')
+    rattlesnake_strike = pygame.mixer.Sound('assets/sounds/rattlesnake_strike.wav')
 
 # sprites
 if collapse:
@@ -570,7 +572,7 @@ class Rattlesnake:
                 }
 
     # constructor
-    def __init__(self):
+    def __init__(self, x = 0):
         Rattlesnake.alive += 1
         self.__class__.instances.append(self)
         self.snake1_left_img, self.snake2_left_img, self.snake_strike_left_img, self.snake_dead_left_img, \
@@ -578,18 +580,22 @@ class Rattlesnake:
             self.TYPE_MAP[random.randint(1,1)]  # assign random type
         self.level = 1  # assign level
         self.hp = 15  # assign starting hp
-        self.x_location = getEnemyRespawn()  # assign x-location
+        if x == 0:
+            self.x_location = getEnemyRespawn()  # assign x-location
+        else:
+            self.x_location = x  # assign x-location
         self.rattlesnake_left = None  # is the bandit on the left side of player
         self.nameTag = font1.render("Rattlesnake", True, (150, 240, 41))
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255,255,255))
         self.stoodOn = False  # is the bandit being stood on by player
         self.looted = False  # has the player looted bandit
-        self.rattle_range = 250  # distance player needs to be from snake for it to rattle
-        self.strike_range = 85  # distance player needs to be from snake for it to rattle
+        self.rattle_range = 350  # distance player needs to be from snake for it to rattle
+        self.strike_range = 100  # distance player needs to be from snake for it to rattle
         self.rattleInRange = False  # is the player close enough to the rattlesnake to where it will rattle
         self.rattle_state = 0  # state of rattle the snake is in
         self.strikeCooldown = False  # is the snake's attack in cooldown
-        self.rattleCooldown = False  # is the snake's attack in cooldown
+        self.rattleCooldown = False  # is the snake's rattle in cooldown
+        self.rattleSoundCooldown = False  # is the snake's rattle in cooldown
         self.striking = False  # is the snake striking/attacking player
 
     # general method that calls all of the other methods, will be called constantly by main
@@ -616,6 +622,7 @@ class Rattlesnake:
             snakeStrikeStop_timer.stop()
             self.striking = True
             self.strikeCooldown = True
+            rattlesnake_strike.play()
             snakeStrikeStop_timer.start()
             snakeStrikeCooldown_timer.start()
             if invincibility == False:
@@ -625,8 +632,10 @@ class Rattlesnake:
     # snake rattles
     def rattle(self):
         self.rattleCooldown = True
+        if self.rattleSoundCooldown == False:
+            rattlesnake_rattle.play()
+        self.rattleSoundCooldown = True
         # play audio
-
         # change states
         if self.rattle_state == 0:
             self.rattle_state = 1
@@ -634,6 +643,7 @@ class Rattlesnake:
             self.rattle_state = 0
         # start cooldown timer
         snakeRattleCooldown_timer.start()
+        snakeRattleSoundCooldown_timer.start()
 
     # draws alive rattlesnake
     def draw(self):
@@ -685,7 +695,7 @@ class Rattlesnake:
     def checkDead(self):
         # bandit dead
         if self.hp == 0:
-            banpain.play()
+            rattlesnake_rattle.stop()
             giveScore()
             Rattlesnake.alive -= 1
             self.hp -= 1
@@ -1008,17 +1018,31 @@ def fire():
         sniperRoundsMag -= 1
         stopReload()
         if lookingRight:
+            # Damage Bandit
             for bandit in Bandit.instances:
                 if bandit.x_location <= 700 and bandit.x_location >= 250:
                     for i in range(0,sniperDamage):
                         if bandit.hp > 0:
                             bandit.hp -= 1
+            # Damage Rattlesnake
+            for rattlesnake in Rattlesnake.instances:
+                if rattlesnake.x_location <= 700 and rattlesnake.x_location >= 250:
+                    for i in range(0,sniperDamage):
+                        if rattlesnake.hp > 0:
+                            rattlesnake.hp -= 1
         if lookingLeft:
+            # Damage Bandit
             for bandit in Bandit.instances:
                 if bandit.x_location >= -100 and bandit.x_location <= 250:
                     for i in range(0,sniperDamage):
                         if bandit.hp > 0:
                             bandit.hp -= 1
+            # Damage Rattlesnake
+            for rattlesnake in Rattlesnake.instances:
+                if rattlesnake.x_location >= -100 and rattlesnake.x_location <= 250:
+                    for i in range(0,sniperDamage):
+                        if rattlesnake.hp > 0:
+                            rattlesnake.hp -= 1
 
     # sawed off
     if hotbarSlot3 == True:
@@ -1031,17 +1055,31 @@ def fire():
         sawedOffRoundsMag -= 1
         stopReload()
         if lookingRight:
+            # Damage Bandit
             for bandit in Bandit.instances:
                 if bandit.x_location <= 600 and bandit.x_location >= 250:
                     for i in range(0,sawedOffDamage):
                         if bandit.hp > 0:
                             bandit.hp -= 1
+            # Damage Rattlesnake
+            for rattlesnake in Rattlesnake.instances:
+                if rattlesnake.x_location <= 600 and rattlesnake.x_location >= 250:
+                    for i in range(0,sawedOffDamage):
+                        if rattlesnake.hp > 0:
+                            rattlesnake.hp -= 1
         if lookingLeft:
+            # Damage Bandit
             for bandit in Bandit.instances:
                 if bandit.x_location >= 0 and bandit.x_location <= 250:
                     for i in range(0,sawedOffDamage):
                         if bandit.hp > 0:
                             bandit.hp -= 1
+            # Damage Rattlesnake
+            for rattlesnake in Rattlesnake.instances:
+                if rattlesnake.x_location >= 0 and rattlesnake.x_location <= 250:
+                    for i in range(0,sawedOffDamage):
+                        if rattlesnake.hp > 0:
+                            rattlesnake.hp -= 1
 
 
 def hpPotion():
@@ -1372,6 +1410,8 @@ def showSettings():
     burp2.set_volume(masterVolume)
     burp3.set_volume(masterVolume)
     venom_heartbeat.set_volume(masterVolume)
+    rattlesnake_rattle.set_volume(masterVolume)
+    rattlesnake_strike.set_volume(masterVolume)
     intromusic.set_volume(musicVolume * masterVolume)
     intro.set_volume(musicVolume * masterVolume)
     music.set_volume(musicVolume * masterVolume)
@@ -2212,12 +2252,12 @@ def venomTick_timer_handler():
     global playerHP, venom_ticks_remaining
 
     if venom_ticks_remaining > 0:
-        if playerHP > 0 and godMode == False:
+        if playerHP > 0 and godMode == False and pause == False:
             playerHP -= 2
             venom_heartbeat.play()
             venom_ticks_remaining -= 1
             venomTick_timer.start()
-    else:
+    elif venom_ticks_remaining == 0:
         venomTick_timer.stop()
 
 
@@ -2240,6 +2280,13 @@ def snakeRattleCooldown_timer_handler():
         if rattlesnake.rattleCooldown == True:
             rattlesnake.rattleCooldown = False
     snakeRattleCooldown_timer.stop()
+
+
+def snakeRattleSoundCooldown_timer_handler():
+    for rattlesnake in Rattlesnake.instances:
+        if rattlesnake.rattleSoundCooldown == True:
+            rattlesnake.rattleSoundCooldown = False
+    snakeRattleSoundCooldown_timer.stop()
 
 
 # timers (ms, timer_handler) (1000ms = 1sec)
@@ -2277,6 +2324,7 @@ venomTick_timer = simplegui.create_timer(1000, venomTick_timer_handler)
 snakeStrikeStop_timer = simplegui.create_timer(200, snakeStrikeStop_timer_handler)
 snakeStrikeCooldown_timer = simplegui.create_timer(3000, snakeStrikeCooldown_timer_handler)
 snakeRattleCooldown_timer = simplegui.create_timer(5, snakeRattleCooldown_timer_handler)
+snakeRattleSoundCooldown_timer = simplegui.create_timer(3200, snakeRattleSoundCooldown_timer_handler)
 
 
 
@@ -2287,7 +2335,7 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
               rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
               showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer, beerHealing_timer,
               startWave_timer, hideWave_timer, showWave_timer, venomTick_timer, snakeStrikeStop_timer,
-              snakeStrikeCooldown_timer, snakeRattleCooldown_timer)
+              snakeStrikeCooldown_timer, snakeRattleCooldown_timer, snakeRattleSoundCooldown_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -2338,7 +2386,7 @@ while True:
                     potion.play()
                 # spawn bandit
                 if event.key == pygame.K_b and mods & pygame.KMOD_CTRL:
-                    ban = Rattlesnake()
+                    ban = Rattlesnake(400)
                     button.play()
                 # give ammo
                 if event.key == pygame.K_n and mods & pygame.KMOD_CTRL:
@@ -3105,7 +3153,6 @@ while True:
             screen.blit(asset_player_hp_gain_particle, (240, hp_gain2_y))
             screen.blit(asset_player_hp_gain_particle, (282, hp_gain3_y))
 
-
         # Loot
         if looting == True:
             if lookingRight == True:
@@ -3113,13 +3160,15 @@ while True:
             if lookingLeft == True:
                 screen.blit(asset_player_loot_left, (173, 255))
 
-        # draw dead bandits
-        for bandit in Bandit.instances:
-            bandit.draw_dead()
 
         # draw dead rattlesnakes
         for rattlesnake in Rattlesnake.instances:
             rattlesnake.draw_dead()
+
+        # draw dead bandits
+        for bandit in Bandit.instances:
+            bandit.draw_dead()
+
 
 
         # catalog pages
@@ -3337,6 +3386,8 @@ while True:
         burp2.set_volume(masterVolume)
         burp3.set_volume(masterVolume)
         venom_heartbeat.set_volume(masterVolume)
+        rattlesnake_rattle.set_volume(masterVolume)
+        rattlesnake_strike.set_volume(masterVolume)
         intromusic.set_volume(musicVolume * masterVolume)
         intro.set_volume(musicVolume * masterVolume)
         music.set_volume(musicVolume * masterVolume)
