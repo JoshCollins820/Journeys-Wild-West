@@ -972,7 +972,7 @@ def fire():
     global score, moneyCount, startGame, moveAbility, hotbarSlot2, hotbarSlot6, dead, bulletx, hotbarSlot1, \
         lookingLeft, lookingRight, revRoundsMag, reloadUI, outAmmoUI, interactText, scopeScreen,\
         playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag, sniperRoundsTotal, playerSniper, pause, \
-        sawedOffRoundsMag
+        sawedOffRoundsMag, insideShop
 
     # Revolver
     if hotbarSlot1 == True:
@@ -983,32 +983,33 @@ def fire():
         revRoundsMag -= 1
         bulletx = 330
         stopReload()
-        if lookingRight:
-            # Damage Bandit
-            for bandit in Bandit.instances:
-                if bandit.x_location <= 600 and bandit.x_location >= 250:
-                    for i in range(0,revolverDamage):
-                        if bandit.hp > 0:
-                            bandit.hp -= 1
-            # Damage Rattlesnake
-            for rattlesnake in Rattlesnake.instances:
-                if rattlesnake.x_location <= 600 and rattlesnake.x_location >= 250:
-                    for i in range(0,revolverDamage):
-                        if rattlesnake.hp > 0:
-                            rattlesnake.hp -= 1
-        if lookingLeft:
-            # Damage Bandit
-            for bandit in Bandit.instances:
-                if bandit.x_location >= 0 and bandit.x_location <= 250:
-                    for i in range(0,revolverDamage):
-                        if bandit.hp > 0:
-                            bandit.hp -= 1
-            # Damage Rattlesnake
-            for rattlesnake in Rattlesnake.instances:
-                if rattlesnake.x_location >= 0 and rattlesnake.x_location <= 250:
-                    for i in range(0,revolverDamage):
-                        if rattlesnake.hp > 0:
-                            rattlesnake.hp -= 1
+        if insideShop == False:
+            if lookingRight:
+                # Damage Bandit
+                for bandit in Bandit.instances:
+                    if bandit.x_location <= 600 and bandit.x_location >= 250:
+                        for i in range(0,revolverDamage):
+                            if bandit.hp > 0:
+                                bandit.hp -= 1
+                # Damage Rattlesnake
+                for rattlesnake in Rattlesnake.instances:
+                    if rattlesnake.x_location <= 600 and rattlesnake.x_location >= 250:
+                        for i in range(0,revolverDamage):
+                            if rattlesnake.hp > 0:
+                                rattlesnake.hp -= 1
+            if lookingLeft:
+                # Damage Bandit
+                for bandit in Bandit.instances:
+                    if bandit.x_location >= 0 and bandit.x_location <= 250:
+                        for i in range(0,revolverDamage):
+                            if bandit.hp > 0:
+                                bandit.hp -= 1
+                # Damage Rattlesnake
+                for rattlesnake in Rattlesnake.instances:
+                    if rattlesnake.x_location >= 0 and rattlesnake.x_location <= 250:
+                        for i in range(0,revolverDamage):
+                            if rattlesnake.hp > 0:
+                                rattlesnake.hp -= 1
 
     # sniper rifle
     if hotbarSlot2 == True and scopeScreen == True:
@@ -1018,32 +1019,33 @@ def fire():
         scopeScreen = False
         sniperRoundsMag -= 1
         stopReload()
-        if lookingRight:
-            # Damage Bandit
-            for bandit in Bandit.instances:
-                if bandit.x_location <= 700 and bandit.x_location >= 250:
-                    for i in range(0,sniperDamage):
-                        if bandit.hp > 0:
-                            bandit.hp -= 1
-            # Damage Rattlesnake
-            for rattlesnake in Rattlesnake.instances:
-                if rattlesnake.x_location <= 700 and rattlesnake.x_location >= 250:
-                    for i in range(0,sniperDamage):
-                        if rattlesnake.hp > 0:
-                            rattlesnake.hp -= 1
-        if lookingLeft:
-            # Damage Bandit
-            for bandit in Bandit.instances:
-                if bandit.x_location >= -100 and bandit.x_location <= 250:
-                    for i in range(0,sniperDamage):
-                        if bandit.hp > 0:
-                            bandit.hp -= 1
-            # Damage Rattlesnake
-            for rattlesnake in Rattlesnake.instances:
-                if rattlesnake.x_location >= -100 and rattlesnake.x_location <= 250:
-                    for i in range(0,sniperDamage):
-                        if rattlesnake.hp > 0:
-                            rattlesnake.hp -= 1
+        if insideShop == False:
+            if lookingRight:
+                # Damage Bandit
+                for bandit in Bandit.instances:
+                    if bandit.x_location <= 700 and bandit.x_location >= 250:
+                        for i in range(0,sniperDamage):
+                            if bandit.hp > 0:
+                                bandit.hp -= 1
+                # Damage Rattlesnake
+                for rattlesnake in Rattlesnake.instances:
+                    if rattlesnake.x_location <= 700 and rattlesnake.x_location >= 250:
+                        for i in range(0,sniperDamage):
+                            if rattlesnake.hp > 0:
+                                rattlesnake.hp -= 1
+            if lookingLeft:
+                # Damage Bandit
+                for bandit in Bandit.instances:
+                    if bandit.x_location >= -100 and bandit.x_location <= 250:
+                        for i in range(0,sniperDamage):
+                            if bandit.hp > 0:
+                                bandit.hp -= 1
+                # Damage Rattlesnake
+                for rattlesnake in Rattlesnake.instances:
+                    if rattlesnake.x_location >= -100 and rattlesnake.x_location <= 250:
+                        for i in range(0,sniperDamage):
+                            if rattlesnake.hp > 0:
+                                rattlesnake.hp -= 1
 
     # sawed off
     if hotbarSlot3 == True:
@@ -1055,32 +1057,33 @@ def fire():
         sawedoffshot.play()
         sawedOffRoundsMag -= 1
         stopReload()
-        if lookingRight:
-            # Damage Bandit
-            for bandit in Bandit.instances:
-                if bandit.x_location <= 600 and bandit.x_location >= 250:
-                    for i in range(0,sawedOffDamage):
-                        if bandit.hp > 0:
-                            bandit.hp -= 1
-            # Damage Rattlesnake
-            for rattlesnake in Rattlesnake.instances:
-                if rattlesnake.x_location <= 600 and rattlesnake.x_location >= 250:
-                    for i in range(0,sawedOffDamage):
-                        if rattlesnake.hp > 0:
-                            rattlesnake.hp -= 1
-        if lookingLeft:
-            # Damage Bandit
-            for bandit in Bandit.instances:
-                if bandit.x_location >= 0 and bandit.x_location <= 250:
-                    for i in range(0,sawedOffDamage):
-                        if bandit.hp > 0:
-                            bandit.hp -= 1
-            # Damage Rattlesnake
-            for rattlesnake in Rattlesnake.instances:
-                if rattlesnake.x_location >= 0 and rattlesnake.x_location <= 250:
-                    for i in range(0,sawedOffDamage):
-                        if rattlesnake.hp > 0:
-                            rattlesnake.hp -= 1
+        if insideShop == False:
+            if lookingRight:
+                # Damage Bandit
+                for bandit in Bandit.instances:
+                    if bandit.x_location <= 600 and bandit.x_location >= 250:
+                        for i in range(0,sawedOffDamage):
+                            if bandit.hp > 0:
+                                bandit.hp -= 1
+                # Damage Rattlesnake
+                for rattlesnake in Rattlesnake.instances:
+                    if rattlesnake.x_location <= 600 and rattlesnake.x_location >= 250:
+                        for i in range(0,sawedOffDamage):
+                            if rattlesnake.hp > 0:
+                                rattlesnake.hp -= 1
+            if lookingLeft:
+                # Damage Bandit
+                for bandit in Bandit.instances:
+                    if bandit.x_location >= 0 and bandit.x_location <= 250:
+                        for i in range(0,sawedOffDamage):
+                            if bandit.hp > 0:
+                                bandit.hp -= 1
+                # Damage Rattlesnake
+                for rattlesnake in Rattlesnake.instances:
+                    if rattlesnake.x_location >= 0 and rattlesnake.x_location <= 250:
+                        for i in range(0,sawedOffDamage):
+                            if rattlesnake.hp > 0:
+                                rattlesnake.hp -= 1
 
 
 def hpPotion():
