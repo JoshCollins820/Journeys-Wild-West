@@ -1787,6 +1787,8 @@ def switchSlots(slot):
             playerShoot = False
             playerHolster = False
             playerIdle = True
+        if insideShop == True:
+            interactText = False
 
     elif slot == 2:
         if scopeScreen == False:
@@ -2624,7 +2626,6 @@ while True:
                             catalogPage2 = True
                             catalogPage3 = False
                             disableText()
-                            turnpage.stop()
                             turnpage.play()
                     elif catalogPage2 == True:
                         # Purchase Sniper Rifle
@@ -2634,11 +2635,9 @@ while True:
                                 ownSniperRifle = True
                                 hotbarSlot2 = False
                                 moneyCount -= 1000
-                                cashregister.stop()
                                 cashregister.play()
                             elif moneyCount < 1000 and ownSniperRifle == False:
                                 insufFundsText = True
-                                error.stop()
                                 error.play()
                         # Purchase Sawed Off
                         if event.key == pygame.K_3:
@@ -2647,25 +2646,21 @@ while True:
                                 ownSawedOff = True
                                 hotbarSlot3 = False
                                 moneyCount -= 3000
-                                cashregister.stop()
                                 cashregister.play()
                             elif moneyCount < 3000 and ownSawedOff == False:
                                 insufFundsText = True
-                                error.stop()
                                 error.play()
                         if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                             catalogPage1 = False
                             catalogPage2 = False
                             catalogPage3 = True
                             disableText()
-                            turnpage.stop()
                             turnpage.play()
                         if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                             catalogPage1 = True
                             catalogPage2 = False
                             catalogPage3 = False
                             disableText()
-                            turnpage.stop()
                             turnpage.play()
                     elif catalogPage3 == True:
                         # Purchase Revolver Rounds
@@ -2675,12 +2670,10 @@ while True:
                                 purchasedText = True
                                 revRoundsTotal += 24
                                 moneyCount -= 50
-                                cashregister.stop()
                                 cashregister.play()
                             elif moneyCount < 50:
                                 purchasedText = False
                                 insufFundsText = True
-                                error.stop()
                                 error.play()
                         # Purchase Sniper Rifle Rounds
                         if event.key == pygame.K_2:
@@ -2689,12 +2682,10 @@ while True:
                                 purchasedText = True
                                 sniperRoundsTotal += 6
                                 moneyCount -= 100
-                                cashregister.stop()
                                 cashregister.play()
                             elif moneyCount < 100:
                                 purchasedText = False
                                 insufFundsText = True
-                                error.stop()
                                 error.play()
                         # Purchase 12 Gauge Shells
                         if event.key == pygame.K_3:
@@ -2703,12 +2694,10 @@ while True:
                                 purchasedText = True
                                 buckRoundsTotal += 12
                                 moneyCount -= 100
-                                cashregister.stop()
                                 cashregister.play()
                             elif moneyCount < 100:
                                 purchasedText = False
                                 insufFundsText = True
-                                error.stop()
                                 error.play()
                         # Purchase HP Potion
                         if event.key == pygame.K_4:
@@ -2717,19 +2706,16 @@ while True:
                                 purchasedText = True
                                 hpPotionCount += 1
                                 moneyCount -= 100
-                                cashregister.stop()
                                 cashregister.play()
                             elif moneyCount < 100:
                                 purchasedText = False
                                 insufFundsText = True
-                                error.stop()
                                 error.play()
                         if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                             catalogPage1 = False
                             catalogPage2 = True
                             catalogPage3 = False
                             disableText()
-                            turnpage.stop()
                             turnpage.play()
         # Key Up Handler
         if event.type == pygame.KEYUP:
