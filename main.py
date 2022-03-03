@@ -1000,13 +1000,13 @@ def fire():
             if lookingLeft:
                 # Damage Bandit
                 for bandit in Bandit.instances:
-                    if bandit.x_location >= 0 and bandit.x_location <= 250:
+                    if bandit.x_location >= -50 and bandit.x_location <= 250:
                         for i in range(0,revolverDamage):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
                 # Damage Rattlesnake
                 for rattlesnake in Rattlesnake.instances:
-                    if rattlesnake.x_location >= 0 and rattlesnake.x_location <= 250:
+                    if rattlesnake.x_location >= -50 and rattlesnake.x_location <= 250:
                         for i in range(0,revolverDamage):
                             if rattlesnake.hp > 0:
                                 rattlesnake.hp -= 1
@@ -1074,13 +1074,13 @@ def fire():
             if lookingLeft:
                 # Damage Bandit
                 for bandit in Bandit.instances:
-                    if bandit.x_location >= 0 and bandit.x_location <= 250:
+                    if bandit.x_location >= -50 and bandit.x_location <= 250:
                         for i in range(0,sawedOffDamage):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
                 # Damage Rattlesnake
                 for rattlesnake in Rattlesnake.instances:
-                    if rattlesnake.x_location >= 0 and rattlesnake.x_location <= 250:
+                    if rattlesnake.x_location >= -50 and rattlesnake.x_location <= 250:
                         for i in range(0,sawedOffDamage):
                             if rattlesnake.hp > 0:
                                 rattlesnake.hp -= 1
@@ -2687,7 +2687,7 @@ while True:
                                 purchasedText = False
                                 insufFundsText = True
                                 error.play()
-                        # Purchase 12 Gauge Shells
+                        # Purchase 12 Gauge Shells1
                         if event.key == pygame.K_3:
                             if moneyCount >= 100:
                                 insufFundsText = False
