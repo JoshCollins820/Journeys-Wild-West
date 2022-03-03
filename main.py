@@ -55,7 +55,7 @@ if collapse:
     drinkTime = 250
     beerRegenRate = 30
     beerRegenAmount = 50
-    hpLooped = 0
+    healQueue = 0
     score = 0
     highscore = 0
     masterVolumeStored = 0
@@ -1087,9 +1087,11 @@ def fire():
 
 
 def hpPotion():
-    global playerHP, hpPotionCount, playerDrink, playerIdle
+    global playerHP, hpPotionCount, playerDrink, playerIdle,beerRegenAmount,healQueue
     beerHealing_timer.start()
     hpPotionCount -= 1
+    # adds amount that beer heals to heal queue (will be decremented in beerHealing_timer)
+    healQueue += beerRegenAmount
     playerDrink = True
     playerIdle = False
     drinkResetDelay_timer.start()
@@ -1579,7 +1581,7 @@ def resetValues():
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
-        healing, hpLooped, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining
+        healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining
 
     # player vals
     playerHP = 100
@@ -1592,7 +1594,7 @@ def resetValues():
     sawedOffRoundsMag = 2
     buckRoundsTotal = 6
     hpPotionCount = 0
-    hpLooped = 0
+    healQueue = 0
     score = 0
     banditCount = 0
     wave = 0
@@ -2031,7 +2033,7 @@ def confirmationBox_timer_handler():
 def rollStart_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll3Left, playerRoll1Right, interactText,\
         playerRoll2Right, playerRoll3Right,invincibility, rollReady, cooldown_sweat_y,playerShoot, scopeScreen, \
-        insideShop, store1x,store2x, cactusx, banMoveAbility
+        insideShop, store1x,store2x, cactusx, banMoveAbility, moveAbility
     standing = False
     rolling = True
     invincibility = True
@@ -2046,6 +2048,7 @@ def rollStart_timer_handler():
         if insideShop == True:
             if (store1x + 700) <= 0:
                 worldRight(0)
+                moveAbility = False
             else:
                 worldRight(1)
         else:
@@ -2068,13 +2071,14 @@ def rollStart_timer_handler():
 
 def rollMid1_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, \
-        playerRoll3Right,playerRoll3Left, insideShop, store1x,store2x, cactusx, banMoveAbility
+        playerRoll3Right,playerRoll3Left, insideShop, store1x,store2x, cactusx, banMoveAbility, moveAbility
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = True
         if insideShop == True:
             if (store1x + 700) <= 0:
                 worldRight(0)
+                moveAbility = False
             else:
                 worldRight(1)
         else:
@@ -2098,13 +2102,14 @@ def rollMid1_timer_handler():
 
 def rollMid2_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right,\
-        playerRoll3Right,playerRoll3Left
+        playerRoll3Right,playerRoll3Left, moveAbility
     if lookingRight == True:
         playerRoll2Right = False
         playerRoll3Right = True
         if insideShop == True:
             if (store1x + 700) <= 0:
                 worldRight(0)
+                moveAbility = False
             else:
                 worldRight(1)
         else:
@@ -2120,7 +2125,7 @@ def rollMid2_timer_handler():
 def rollEnd_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, \
         playerRoll3Right, invincibility,interactText,playerRoll3Left, moveAbility, insideShop, store1x,store2x,\
-        cactusx, banMoveAbility
+        cactusx, banMoveAbility, moveAbility
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = False
@@ -2131,6 +2136,9 @@ def rollEnd_timer_handler():
                 moveAbility = False
             else:
                 worldRight(1)
+            # fixes bug where you can roll then walk through wall
+            if (store1x + 700) <= 0:
+                moveAbility = False
         else:
             worldRight(1)
     elif lookingLeft == True:
@@ -2230,15 +2238,15 @@ def burp_timer_handler():
 
 
 def beerHealing_timer_handler():
-    global playerHP, healing, hpLooped
-    # loops until playerHP is 100 or times looped is 50
-    if playerHP < 100 and hpLooped < beerRegenAmount:
+    global playerHP, healing, healQueue
+    # loops until playerHP is 100 or until healQueue is down to 0
+    if playerHP < 100 and healQueue > 0:
         playerHP += 1
-        hpLooped += 1
+        healQueue -= 1
         healing = True
         beerHealing_timer.start()
     else:
-        hpLooped = 0
+        healQueue = 0
         healing = False
         beerHealing_timer.stop()
 
