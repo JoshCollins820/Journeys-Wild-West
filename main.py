@@ -65,6 +65,8 @@ if collapse:
     wave = 0
     waveIntermissionLength = 1500
     venom_ticks_remaining = 0
+    tumweedReset = -3000
+    tumweedSpawn = 2000
 
     # speed
     speedMove = 50
@@ -3460,8 +3462,8 @@ while True:
 
         # tumweed pos
         tumweed1x -= tumbleAuto
-        if tumweed1x <= - 2000:
-            tumweed1x = 1100
+        if tumweed1x <= tumweedReset:
+            tumweed1x = tumweedSpawn
 
         # bullet reset
         bulletx = -330
