@@ -6,14 +6,15 @@
 
 ----------------------------ADD----------------------------
 - Make current game a side Survival gamemode
-- Robbing the store clerk
-  (minigame for pursuading him to give free items/money)
+- Add save system
+- Robbing the store clerk (minigame)
 - Open saloon
 - Horses
 - Bounty posters
 - Lost item posters
 - Missions
-- Aimable sniper scope
+- Voice acting (Aaron + Sam)
+- Horizontal sniper aiming
 - Leaderboard
 
 -----------------------------------------------------------
@@ -24,7 +25,7 @@ New Features
 
 
 Balance
-- HP Beer can now stack
+- HP Beer heal amount now stacks
 
 
 
@@ -32,7 +33,7 @@ Bug Fixes
 - No longer can loot while inside shop
 - No longer can shoot bandits from inside shop
 - No longer can roll, then walk through shop wall
-- Tuned some sounds
+- Tuned sound effects
 
 
 ---------------------------NOTES---------------------------
