@@ -67,6 +67,7 @@ if collapse:
     venom_ticks_remaining = 0
     tumweedReset = -3000
     tumweedSpawn = 2000
+    lastActiveSlot = 1
 
     # speed
     speedMove = 50
@@ -1583,7 +1584,7 @@ def resetValues():
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
-        healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining
+        healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining,lastActiveSlot
 
     # player vals
     playerHP = 100
@@ -1602,6 +1603,7 @@ def resetValues():
     wave = 0
     waveIntermissionLength = 1500
     venom_ticks_remaining = 0
+    lastActiveSlot = 1
 
     # x-pos
     cloud1x = 100
@@ -1770,7 +1772,7 @@ def musicVolumeMute(previous_volume):
 
 def switchSlots(slot):
     global hotbarSlot1,hotbarSlot2,hotbarSlot3,hotbarSlot4,hotbarSlot5,hotbarSlot6,playerHolster,playerIdle,reloadUI, \
-        playerShoot, playerSniper, interactText, playerGrab, outAmmoUI
+        playerShoot, playerSniper, interactText, playerGrab, outAmmoUI,lastActiveSlot
     if slot == 1:
         hotbarSlot1 = not hotbarSlot1
         hotbarSlot2 = False
@@ -1778,6 +1780,7 @@ def switchSlots(slot):
         hotbarSlot4 = False
         hotbarSlot5 = False
         hotbarSlot6 = False
+        lastActiveSlot = 1
         stopReload()
         griprevolver.stop()
         griprevolver.play()
@@ -1800,6 +1803,7 @@ def switchSlots(slot):
             hotbarSlot4 = False
             hotbarSlot5 = False
             hotbarSlot6 = False
+            lastActiveSlot = 2
             playerHolster = False
             playerShoot = False
             stopReload()
@@ -1818,6 +1822,7 @@ def switchSlots(slot):
         hotbarSlot4 = False
         hotbarSlot5 = False
         hotbarSlot6 = False
+        lastActiveSlot = 3
         interactText = False
         playerHolster = False
         playerSniper = False
@@ -1840,6 +1845,7 @@ def switchSlots(slot):
         hotbarSlot4 = not hotbarSlot4
         hotbarSlot5 = False
         hotbarSlot6 = False
+        lastActiveSlot = 4
         interactText = False
         playerSniper = False
         playerHolster = False
@@ -1851,6 +1857,7 @@ def switchSlots(slot):
         hotbarSlot3 = False
         hotbarSlot4 = False
         hotbarSlot6 = False
+        lastActiveSlot = 5
         interactText = False
         playerSniper = False
         playerHolster = False
@@ -1862,13 +1869,14 @@ def switchSlots(slot):
         hotbarSlot3 = False
         hotbarSlot4 = False
         hotbarSlot5 = False
+        lastActiveSlot = 6
         stopReload()
         interactText = False
         playerHolster = False
         playerSniper = False
         playerShoot = False
 
-
+# scrolls to right slot
 def nextSlot():
     global hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, hotbarSlot5, hotbarSlot6
     if hotbarSlot1:
@@ -1885,6 +1893,7 @@ def nextSlot():
         switchSlots(1)
 
 
+# scrolls to left slot
 def prevSlot():
     global hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, hotbarSlot5, hotbarSlot6
     if hotbarSlot1:
@@ -1899,6 +1908,22 @@ def prevSlot():
         switchSlots(4)
     elif hotbarSlot6:
         switchSlots(5)
+
+
+def holsterSlot():
+    global hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, hotbarSlot5, hotbarSlot6, lastActiveSlot
+    if lastActiveSlot == 1:
+        switchSlots(1)
+    elif lastActiveSlot == 2:
+        switchSlots(2)
+    elif lastActiveSlot == 3:
+        switchSlots(3)
+    elif lastActiveSlot == 4:
+        switchSlots(4)
+    elif lastActiveSlot == 5:
+        switchSlots(5)
+    elif lastActiveSlot == 6:
+        switchSlots(6)
 
 
 def stopReload():
@@ -2604,6 +2629,9 @@ while True:
                     if event.key == pygame.K_q and scopeScreen == False:
                         switchSlots(6)
 
+                    if event.key == pygame.K_t and scopeScreen == False:
+                        holsterSlot()
+
                 # Enter Store
                 if store1x <= 50 and store1x >= 25:
                     if scopeScreen == False and insideShop == False and playerSniper == False:
@@ -2932,6 +2960,13 @@ while True:
                     # Use HP Beer
                     if hotbarSlot6 == True and hpPotionCount > 0 and playerDrink == False:
                         hpPotion()
+            # mouse scroll up
+            if event.button == 4:
+                if pause == False and dead == False:
+                    nextSlot()
+            if event.button == 5:
+                if pause == False and dead == False:
+                    prevSlot()
 
     # Mouse Position
     mouse_posx,mouse_posy = pygame.mouse.get_pos()
