@@ -1869,6 +1869,38 @@ def switchSlots(slot):
         playerShoot = False
 
 
+def nextSlot():
+    global hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, hotbarSlot5, hotbarSlot6
+    if hotbarSlot1:
+        switchSlots(2)
+    elif hotbarSlot2:
+        switchSlots(3)
+    elif hotbarSlot3:
+        switchSlots(4)
+    elif hotbarSlot4:
+        switchSlots(5)
+    elif hotbarSlot5:
+        switchSlots(6)
+    elif hotbarSlot6:
+        switchSlots(1)
+
+
+def prevSlot():
+    global hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, hotbarSlot5, hotbarSlot6
+    if hotbarSlot1:
+        switchSlots(6)
+    elif hotbarSlot2:
+        switchSlots(1)
+    elif hotbarSlot3:
+        switchSlots(2)
+    elif hotbarSlot4:
+        switchSlots(3)
+    elif hotbarSlot5:
+        switchSlots(4)
+    elif hotbarSlot6:
+        switchSlots(5)
+
+
 def stopReload():
     revolver_reload_timer.stop()
     sniper_reload_timer.stop()
