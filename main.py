@@ -194,6 +194,7 @@ if collapse:
     showMoneyGainedText = False
     healing = False
     showWave = False
+    reloading = False
 
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
@@ -1584,7 +1585,8 @@ def resetValues():
         walkingRight, walkingBoth, musicIconButtonClicked, musicIconButtonHover, masterIconButtonClicked, \
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
-        healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining,lastActiveSlot
+        healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining,lastActiveSlot, \
+        reloading
 
     # player vals
     playerHP = 100
@@ -1706,6 +1708,7 @@ def resetValues():
     showMoneyGainedText = False
     healing = False
     showWave = False
+    reloading = False
 
     # reset seed
     random.seed()
@@ -1988,11 +1991,12 @@ def revolver_reload_timer_handler():
 
 
 def sniper_reload_timer_handler():
-    global sniperRoundsMag, sniperRoundsTotal
+    global sniperRoundsMag, sniperRoundsTotal, reloading
     if sniperRoundsTotal > 0:
         sniperRoundsTotal -= 1
         sniperRoundsMag += 1
     if sniperRoundsMag == 1:
+        reloading = False
         sniper_reload_timer.stop()
 
 
@@ -2258,14 +2262,18 @@ def walk2_timer_handler():
 
 
 def reloadEnded_timer_handler():
+    global reloading
     reload.stop()
     revolverspin.play()
+    reloading = False
     reloadEnded_timer.stop()
 
 
 def sawedOffreloadEnded_timer_handler():
+    global reloading
     sawedoffopen.stop()
     sawedoffopen.play()
+    reloading = False
     sawedOffreloadEnded_timer.stop()
 
 
@@ -2533,7 +2541,8 @@ while True:
                         if revRoundsMag < 6:
                             playerHolster = True
                             playerShoot = False
-                            if revRoundsTotal > 0:
+                            if revRoundsTotal > 0 and reloading == False:
+                                reloading = True
                                 reload.stop()
                                 reload.play()
                                 revolver_reload_timer.start()
@@ -2542,7 +2551,8 @@ while True:
                         if sniperRoundsMag < 1:
                             scopeScreen = False
                             playerSniper = True
-                            if sniperRoundsTotal > 0:
+                            if sniperRoundsTotal > 0 and reloading == False:
+                                reloading = True
                                 sniper_reload.stop()
                                 sniper_reload.play()
                                 sniper_reload_timer.start()
@@ -2551,7 +2561,8 @@ while True:
                         if sawedOffRoundsMag < 2:
                             playerHolster = True
                             playerShoot = False
-                            if buckRoundsTotal > 0:
+                            if buckRoundsTotal > 0 and reloading == False:
+                                reloading = True
                                 sawedoffopen.stop()
                                 sawedoffopen.play()
                                 sawed_off_reload_timer.start()

@@ -1,6 +1,7 @@
 ------------------------ KNOWN BUGS------------------------
 - Pausing does not pause timers
 
+
 --------------------------IMPROVE--------------------------
 - Steam deck controls
 -
@@ -38,6 +39,7 @@ Bug Fixes
 - No longer can shoot bandits from inside shop
 - No longer can roll, then walk through shop wall
 - Tuned sound effects
+- Fixed reload sounds being spammable
 
 
 ---------------------------NOTES---------------------------
