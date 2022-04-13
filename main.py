@@ -1876,6 +1876,7 @@ def switchSlots(slot):
         playerSniper = False
         playerShoot = False
 
+
 # scrolls to right slot
 def nextSlot():
     global hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, hotbarSlot5, hotbarSlot6
