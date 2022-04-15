@@ -990,7 +990,6 @@ def fire():
         revRoundsMag -= 1
         bulletx = 330
         stopReload()
-        reloading = False
         if insideShop == False:
             if lookingRight:
                 # Damage Bandit
@@ -1027,7 +1026,6 @@ def fire():
         scopeScreen = False
         sniperRoundsMag -= 1
         stopReload()
-        reloading = False
         if insideShop == False:
             if lookingRight:
                 # Damage Bandit
@@ -1066,7 +1064,6 @@ def fire():
         sawedoffshot.play()
         sawedOffRoundsMag -= 1
         stopReload()
-        reloading = False
         if insideShop == False:
             if lookingRight:
                 # Damage Bandit
@@ -1965,6 +1962,7 @@ def exitGame():
 
 
 def stopReload():
+    global reloading
     revolver_reload_timer.stop()
     sniper_reload_timer.stop()
     sawed_off_reload_timer.stop()
@@ -1973,6 +1971,7 @@ def stopReload():
     sniper_reload.stop()
     sawedoffopen.stop()
     loadshell.stop()
+    reloading = False
 
 
 def waveHandler(wave_num):

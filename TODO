@@ -8,7 +8,6 @@
 
 ----------------------------ADD----------------------------
 - Click to buy in shop
-- Exit button
 - Make current game a side Survival gamemode
 - Add save system
 - Robbing the store clerk (minigame)
@@ -42,6 +41,7 @@ Bug Fixes
 - Tuned sound effects
 - Fixed reload sounds being spammable
 - Mouse cursor now beomces visible/hidden while playing
+- Added exit button
 
 
 ---------------------------NOTES---------------------------
