@@ -181,6 +181,7 @@ if collapse:
     musicIconButtonHover = False
     masterIconButtonClicked = False
     masterIconButtonHover = False
+    exitButtonHover = False
     masterVolumeMuted = False
     musicVolumeMuted = False
     playerRoll1Right = False
@@ -393,6 +394,7 @@ if collapse:
     asset_master_icon_button_hover = pygame.image.load("assets/UI/master_icon_button_hover.png")
     asset_master_icon_button_clicked = pygame.image.load("assets/UI/master_icon_button_clicked.png")
     asset_volume_muted_strikethrough = pygame.image.load("assets/UI/muted_crossout.png")
+    asset_exit_button = pygame.image.load("assets/UI/exit_button.png")
     asset_rattlesnake1_left = pygame.image.load("assets/npc/rattlesnake1_left.png")
     asset_rattlesnake2_left = pygame.image.load("assets/npc/rattlesnake2_left.png")
     asset_rattlesnake_strike_left = pygame.image.load("assets/npc/rattlesnake_strike_left.png")
@@ -1142,7 +1144,7 @@ def stopSounds():
 
 def mainMenu():
     global startGame, tumbleAuto, playButtonHover, moveAbility, banMoveAbility, mouse_posx, mouse_posy, \
-        settingsButtonHover
+        settingsButtonHover, exitButtonHover
     # Background
     screen.blit(asset_main_menu, (0, 0))
     # Version Number
@@ -1160,6 +1162,14 @@ def mainMenu():
     else:
         screen.blit(asset_button_normal, (0, 0))
         playButtonHover = False
+    # Exit Button
+    screen.blit(asset_exit_button, (0, 0))
+    # Normal Button
+    if (560 <= mouse_posx <= 600) and (0 <= mouse_posy <= 40) and settings == False:
+        exitButtonHover = True
+    else:
+        exitButtonHover = False
+
     # Settings Button -------------------------------------------------------------------------------
     # Hover Button
     if (235 <= mouse_posx <= 367) and (494 <= mouse_posy <= 540) and settingsButtonClicked == False \
@@ -1591,7 +1601,7 @@ def resetValues():
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
         healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining,lastActiveSlot, \
-        reloading
+        reloading, exitButtonHover
 
     # player vals
     playerHP = 100
@@ -1702,6 +1712,7 @@ def resetValues():
     musicIconButtonHover = False
     masterIconButtonClicked = False
     masterIconButtonHover = False
+    exitButtonHover = False
     playerRoll1Right = False
     playerRoll2Right = False
     playerRoll3Right = False
@@ -1933,6 +1944,21 @@ def holsterSlot():
         switchSlots(5)
     elif lastActiveSlot == 6:
         switchSlots(6)
+
+
+def exitGame():
+    global devMode
+    # save highscore to file
+    if devMode == False:
+        pickle_out = open("savedata/highscore.txt", "wb")
+        pickle.dump(highscore, pickle_out)
+        pickle_out.close()
+    # close game
+    pygame.mixer.stop()
+    music_timer.stop()
+    stopAllTimers(timerTuple)
+    pygame.quit()
+    sys.exit()
 
 
 def stopReload():
@@ -2456,17 +2482,7 @@ while True:
     for event in pygame.event.get():
         # When game is closed
         if event.type == pygame.QUIT:
-            # save highscore to file
-            if devMode == False:
-                pickle_out = open("savedata/highscore.txt","wb")
-                pickle.dump(highscore, pickle_out)
-                pickle_out.close()
-            # close game
-            pygame.mixer.stop()
-            music_timer.stop()
-            stopAllTimers(timerTuple)
-            pygame.quit()
-            sys.exit()
+            exitGame()
         # Check Walk Both (Fixes bug where player gets stuck when switching directions)
         checkWalkBoth()
         # Key Down Handler
@@ -2853,6 +2869,10 @@ while True:
                     settingsMenu_timer.start()
                     settingsButtonHover = False
                     settingsButtonClicked = True
+                # Exit Button
+                if startGame == False and settings == False and exitButtonHover == True:
+                    button.play()
+                    exitGame()
 
                 # In Death Screen
                 # Restart Game
