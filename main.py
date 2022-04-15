@@ -395,6 +395,7 @@ if collapse:
     asset_master_icon_button_clicked = pygame.image.load("assets/UI/master_icon_button_clicked.png")
     asset_volume_muted_strikethrough = pygame.image.load("assets/UI/muted_crossout.png")
     asset_exit_button = pygame.image.load("assets/UI/exit_button.png")
+    asset_exit_button_hover = pygame.image.load("assets/UI/exit_button_hover.png")
     asset_rattlesnake1_left = pygame.image.load("assets/npc/rattlesnake1_left.png")
     asset_rattlesnake2_left = pygame.image.load("assets/npc/rattlesnake2_left.png")
     asset_rattlesnake_strike_left = pygame.image.load("assets/npc/rattlesnake_strike_left.png")
@@ -1163,11 +1164,13 @@ def mainMenu():
         screen.blit(asset_button_normal, (0, 0))
         playButtonHover = False
     # Exit Button
-    screen.blit(asset_exit_button, (0, 0))
-    # Normal Button
-    if (560 <= mouse_posx <= 600) and (0 <= mouse_posy <= 40) and settings == False:
+    # Hover Button
+    if (563 <= mouse_posx <= 592) and (9 <= mouse_posy <= 38) and settings == False:
+        screen.blit(asset_exit_button_hover, (0, 0))
         exitButtonHover = True
+    # Normal Button
     else:
+        screen.blit(asset_exit_button, (0, 0))
         exitButtonHover = False
 
     # Settings Button -------------------------------------------------------------------------------
@@ -3016,10 +3019,10 @@ while True:
             # mouse scroll up
             if event.button == 4:
                 if pause == False and dead == False:
-                    nextSlot()
+                    prevSlot()
             if event.button == 5:
                 if pause == False and dead == False:
-                    prevSlot()
+                    nextSlot()
 
     # Mouse Position
     mouse_posx,mouse_posy = pygame.mouse.get_pos()
