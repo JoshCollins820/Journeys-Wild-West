@@ -976,7 +976,7 @@ def fire():
     global score, moneyCount, startGame, moveAbility, hotbarSlot2, hotbarSlot6, dead, bulletx, hotbarSlot1, \
         lookingLeft, lookingRight, revRoundsMag, reloadUI, outAmmoUI, interactText, scopeScreen,\
         playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag, sniperRoundsTotal, playerSniper, pause, \
-        sawedOffRoundsMag, insideShop
+        sawedOffRoundsMag, insideShop, reloading
 
     # Revolver
     if hotbarSlot1 == True:
@@ -987,6 +987,7 @@ def fire():
         revRoundsMag -= 1
         bulletx = 330
         stopReload()
+        reloading = False
         if insideShop == False:
             if lookingRight:
                 # Damage Bandit
@@ -1023,6 +1024,7 @@ def fire():
         scopeScreen = False
         sniperRoundsMag -= 1
         stopReload()
+        reloading = False
         if insideShop == False:
             if lookingRight:
                 # Damage Bandit
@@ -1061,6 +1063,7 @@ def fire():
         sawedoffshot.play()
         sawedOffRoundsMag -= 1
         stopReload()
+        reloading = False
         if insideShop == False:
             if lookingRight:
                 # Damage Bandit
