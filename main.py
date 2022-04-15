@@ -17,8 +17,8 @@ except ImportError:
 
 
 # window resolution
-width = 600
-height = 600
+width = 600  # 1280
+height = 600  # 800
 
 
 # pygame initialization
