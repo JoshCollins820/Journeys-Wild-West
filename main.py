@@ -1568,6 +1568,8 @@ def playerDead():
     stopSounds()
     death.stop()
     death.play()
+    # Hide/Show Mouse
+    pygame.mouse.set_visible(True)
 
 
 def resetValues():
@@ -2434,6 +2436,8 @@ timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame
 # Main Menu Music
 intromusic.play(-1)
 resetValues()
+# Hide/Show Mouse
+pygame.mouse.set_visible(True)
 
 # load highscore from file
 try:
@@ -2505,14 +2509,20 @@ while True:
                 pygame.mixer.pause()
                 screen.blit(asset_paused_darken, (0, 0))
                 pause = True
+                # Hide/Show Mouse
+                pygame.mouse.set_visible(True)
 
             # Unpause Game
             elif event.key == pygame.K_ESCAPE and pause == True and settings == False:
                 resumeGame_timer.start()
+                # Hide/Show Mouse
+                pygame.mouse.set_visible(False)
 
             # Exit settings
             elif event.key == pygame.K_ESCAPE and settings == True:
                 settings = False
+                # Hide/Show Mouse
+                pygame.mouse.set_visible(False)
 
             if pause == False:
                 # Walk left
@@ -2684,9 +2694,13 @@ while True:
                             disableText()
                             openbook.stop()
                             openbook.play()
+                            # Hide/Show Mouse
+                            pygame.mouse.set_visible(True)
                     elif playerHolster == False and playerShoot == False and insideShop == True and catalog == True\
                             and playerSniper == False:
                         if event.key == pygame.K_UP or event.key == pygame.K_w:
+                            # Hide/Show Mouse
+                            pygame.mouse.set_visible(False)
                             catalog = False
                             catalogPage1 = False
                             catalogPage2 = False
@@ -2832,6 +2846,8 @@ while True:
                     startGame_timer.start()
                     playButtonHover = False
                     playButtonClicked = True
+                    # Hide/Show Mouse
+                    pygame.mouse.set_visible(False)
                 if settings == False and settingsButtonHover == True:
                     button.play()
                     settingsMenu_timer.start()
@@ -2863,6 +2879,8 @@ while True:
                     resumeGame_timer.start()
                     resumeButtonHover = False
                     resumeButtonClicked = True
+                    # Hide/Show Mouse
+                    pygame.mouse.set_visible(False)
                 # Settings Button
                 if confirmationBox == False and settings == False and settingsButtonHover == True:
                     button.play()
@@ -3026,6 +3044,7 @@ while True:
     # Paused ----------------------------------------------------------------------------------------------------
     if pause == True:
         pauseGame()
+
 
     # Game Started ----------------------------------------------------------------------------------------------
     if startGame == True and pause == False:

@@ -40,6 +40,7 @@ Bug Fixes
 - No longer can roll, then walk through shop wall
 - Tuned sound effects
 - Fixed reload sounds being spammable
+- Mouse cursor now beomces visible/hidden while playing
 
 
 ---------------------------NOTES---------------------------
