@@ -196,6 +196,13 @@ if collapse:
     healing = False
     showWave = False
     reloading = False
+    buyHoverP1_1 = False
+    buyHoverP1_2 = False
+    buyHoverP1_3 = False
+    buyHoverP2_1 = False
+    buyHoverP2_2 = False
+    buyHoverP2_3 = False
+    buyHoverP2_4 = False
 
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
@@ -404,6 +411,13 @@ if collapse:
     asset_rattlesnake2_right = pygame.image.load("assets/npc/rattlesnake2_right.png")
     asset_rattlesnake_strike_right = pygame.image.load("assets/npc/rattlesnake_strike_right.png")
     asset_rattlesnake_dead_right = pygame.image.load("assets/npc/rattlesnake_dead_right.png")
+    asset_buy_hover_p1_1 = pygame.image.load("assets/UI/buy_hover_p1_1.png")
+    asset_buy_hover_p1_2 = pygame.image.load("assets/UI/buy_hover_p1_2.png")
+    asset_buy_hover_p1_3 = pygame.image.load("assets/UI/buy_hover_p1_3.png")
+    asset_buy_hover_p2_1 = pygame.image.load("assets/UI/buy_hover_p2_1.png")
+    asset_buy_hover_p2_2 = pygame.image.load("assets/UI/buy_hover_p2_2.png")
+    asset_buy_hover_p2_3 = pygame.image.load("assets/UI/buy_hover_p2_3.png")
+    asset_buy_hover_p2_4 = pygame.image.load("assets/UI/buy_hover_p2_4.png")
 
 # text
 if collapse:
@@ -1601,7 +1615,8 @@ def resetValues():
         masterIconButtonHover, revolverOutAmmo, sniperOutAmmo, revolverOutMag, sniperOutMag,looting,\
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
         healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining,lastActiveSlot, \
-        reloading, exitButtonHover
+        reloading, exitButtonHover, buyHoverP1_1, buyHoverP1_2, buyHoverP1_3, buyHoverP2_1, buyHoverP2_2, buyHoverP2_3,\
+        buyHoverP2_4
 
     # player vals
     playerHP = 100
@@ -1725,6 +1740,14 @@ def resetValues():
     healing = False
     showWave = False
     reloading = False
+    buyHoverP1_1 = False
+    buyHoverP1_2 = False
+    buyHoverP1_3 = False
+    buyHoverP2_1 = False
+    buyHoverP2_2 = False
+    buyHoverP2_3 = False
+    buyHoverP2_4 = False
+
 
     # reset seed
     random.seed()
@@ -2741,6 +2764,7 @@ while True:
                         if event.key == pygame.K_2:
                             if moneyCount >= 1000 and ownSniperRifle == False:
                                 purchasedText = True
+                                insufFundsText = False
                                 ownSniperRifle = True
                                 hotbarSlot2 = False
                                 moneyCount -= 1000
@@ -2752,6 +2776,7 @@ while True:
                         if event.key == pygame.K_3:
                             if moneyCount >= 3000 and ownSawedOff == False:
                                 purchasedText = True
+                                insufFundsText = False
                                 ownSawedOff = True
                                 hotbarSlot3 = False
                                 moneyCount -= 3000
@@ -2982,6 +3007,79 @@ while True:
                         volumeButtonReset_timer.start()
                         musicIconButtonHover = False
                         musicIconButtonClicked = True
+
+                # Catalog Click to Buy
+                if catalog == True:
+                    # hover buy sniper button
+                    if buyHoverP1_2 == True and ownSniperRifle == False:
+                        if moneyCount >= 1000 and ownSniperRifle == False:
+                            purchasedText = True
+                            ownSniperRifle = True
+                            hotbarSlot2 = False
+                            moneyCount -= 1000
+                            cashregister.play()
+                        elif moneyCount < 1000 and ownSniperRifle == False:
+                            insufFundsText = True
+                            error.play()
+                    # hover buy sawed off button
+                    if buyHoverP1_3 == True and ownSawedOff == False:
+                        if moneyCount >= 3000 and ownSawedOff == False:
+                            purchasedText = True
+                            ownSawedOff = True
+                            hotbarSlot3 = False
+                            moneyCount -= 3000
+                            cashregister.play()
+                        elif moneyCount < 3000 and ownSawedOff == False:
+                            insufFundsText = True
+                            error.play()
+                    # hover buy ammo 1 button
+                    if buyHoverP2_1 == True:
+                        if moneyCount >= 50:
+                            insufFundsText = False
+                            purchasedText = True
+                            revRoundsTotal += 24
+                            moneyCount -= 50
+                            cashregister.play()
+                        elif moneyCount < 50:
+                            purchasedText = False
+                            insufFundsText = True
+                            error.play()
+                    # hover buy ammo 2 button
+                    if buyHoverP2_2 == True:
+                        if moneyCount >= 100:
+                            insufFundsText = False
+                            purchasedText = True
+                            sniperRoundsTotal += 6
+                            moneyCount -= 100
+                            cashregister.play()
+                        elif moneyCount < 100:
+                            purchasedText = False
+                            insufFundsText = True
+                            error.play()
+                    # hover buy ammo 3 button
+                    if buyHoverP2_3 == True:
+                        if moneyCount >= 100:
+                            insufFundsText = False
+                            purchasedText = True
+                            buckRoundsTotal += 12
+                            moneyCount -= 100
+                            cashregister.play()
+                        elif moneyCount < 100:
+                            purchasedText = False
+                            insufFundsText = True
+                            error.play()
+                    # hover buy hp beer button
+                    if buyHoverP2_4 == True:
+                        if moneyCount >= 100:
+                            insufFundsText = False
+                            purchasedText = True
+                            hpPotionCount += 1
+                            moneyCount -= 100
+                            cashregister.play()
+                        elif moneyCount < 100:
+                            purchasedText = False
+                            insufFundsText = True
+                            error.play()
 
                 if pause == False and dead == False and rolling == False:
                     # Revolver fires
@@ -3352,6 +3450,50 @@ while True:
             elif moneyCount >= 50:
                 # .45 rounds
                 screen.blit(asset_text_50_green, (240, 200))
+
+        # Catalog Buy Hover
+        if catalogPage2 == True:
+            # revolver buy hover
+            if (186 <= mouse_posx <= 214) and (127 <= mouse_posy <= 138):
+                buyHoverP1_1 = False  # revolver is already owned, no hover
+            # sniper buy hover
+            if (209 <= mouse_posx <= 236) and (227 <= mouse_posy <= 238):
+                buyHoverP1_2 = True
+                screen.blit(asset_buy_hover_p1_2, (0, 0))
+            else:
+                buyHoverP1_2 = False
+            # sawedoff buy hover
+            if (180 <= mouse_posx <= 207) and (316 <= mouse_posy <= 327):
+                buyHoverP1_3 = True
+                screen.blit(asset_buy_hover_p1_3, (0, 0))
+            else:
+                buyHoverP1_3 = False
+        if catalogPage3 == True:
+            # ammo1 buy hover
+            if (197 <= mouse_posx <= 224) and (128 <= mouse_posy <= 139):
+                buyHoverP2_1 = True
+                screen.blit(asset_buy_hover_p2_1, (0, 0))
+            else:
+                buyHoverP2_1 = False
+            # ammo2 buy hover
+            if (218 <= mouse_posx <= 245) and (225 <= mouse_posy <= 236):
+                buyHoverP2_2 = True
+                screen.blit(asset_buy_hover_p2_2, (0, 0))
+            else:
+                buyHoverP2_2 = False
+            # ammo3 buy hover
+            if (207 <= mouse_posx <= 234) and (318 <= mouse_posy <= 329):
+                buyHoverP2_3 = True
+                screen.blit(asset_buy_hover_p2_3, (0, 0))
+            else:
+                buyHoverP2_3 = False
+            # HP beer buy hover
+            if (500 <= mouse_posx <= 527) and (128 <= mouse_posy <= 139):
+                buyHoverP2_4 = True
+                screen.blit(asset_buy_hover_p2_4, (0, 0))
+            else:
+                buyHoverP2_4 = False
+
 
         # sniper scope
         if ownSniperRifle == True:
