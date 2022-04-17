@@ -3111,7 +3111,7 @@ while True:
                             empty.stop()
                             empty.play()
                     # Use HP Beer
-                    if hotbarSlot6 == True and hpPotionCount > 0 and playerDrink == False:
+                    if hotbarSlot6 == True and hpPotionCount > 0 and playerDrink == False and catalog == False:
                         hpPotion()
             # mouse scroll up
             if event.button == 4:
