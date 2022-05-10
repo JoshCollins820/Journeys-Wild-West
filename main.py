@@ -203,7 +203,7 @@ if collapse:
     buyHoverP2_2 = False
     buyHoverP2_3 = False
     buyHoverP2_4 = False
-    demoMode = True
+    demoMode = False
     if demoMode == True:
         ownSniperRifle = True
         ownSawedOff = True
