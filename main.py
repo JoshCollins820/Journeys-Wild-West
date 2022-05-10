@@ -203,13 +203,14 @@ if collapse:
     buyHoverP2_2 = False
     buyHoverP2_3 = False
     buyHoverP2_4 = False
-    demoMode = False
+    demoMode = True
     if demoMode == True:
         ownSniperRifle = True
         ownSawedOff = True
         sniperRoundsTotal = 8
         buckRoundsTotal = 16
         revRoundsTotal = 24
+        hpPotionCount = 2
 
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
@@ -470,7 +471,7 @@ if collapse:
     wave_text_rect = wave_text.get_rect(center=[300, 150])
     infinity_text = font2.render("-1", True, (255,255,255))
     if demoMode == True:
-        devMode_text = font1.render("Demo Mode", True, (255, 255, 255))
+        devMode_text = font1.render("Stuck? CTRL-F", True, (255, 255, 255))
     else:
         devMode_text = font1.render("Dev Mode", True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
@@ -1504,7 +1505,7 @@ def showHUD():
 
         # dev mode text
         if devMode == True:
-            screen.blit(devMode_text, (width - 75, 569))
+            screen.blit(devMode_text, (width - 90, 569))
 
         # popup text
         if purchasedText == True:
@@ -1773,6 +1774,7 @@ def resetValues():
         sniperRoundsTotal = 8
         buckRoundsTotal = 16
         revRoundsTotal = 24
+        hpPotionCount = 2
 
     # reset seed
     random.seed()
@@ -1995,9 +1997,9 @@ def holsterSlot():
 
 
 def exitGame():
-    global devMode
+    global devMode, demoMode
     # save highscore to file
-    if devMode == False:
+    if devMode == False or demoMode == True:
         pickle_out = open("savedata/highscore.txt", "wb")
         pickle.dump(highscore, pickle_out)
         pickle_out.close()
@@ -2525,6 +2527,8 @@ except:
     pickle.dump(highscore, pickle_out)
     pickle_out.close()
 
+if demoMode == True:
+    resetValues()
 
 # Game Loop (Screen Refresh Loop)
 while True:
@@ -2562,6 +2566,9 @@ while True:
                 if event.key == pygame.K_m and mods & pygame.KMOD_CTRL:
                     giveMoney(10000)
                     cashregister.play()
+                if event.key == pygame.K_f and mods & pygame.KMOD_CTRL:
+                    resetValues()
+                    potion.play()
             # Enable Cheats
             if event.key == pygame.K_o and mods & pygame.KMOD_CTRL:
                 devMode = True
@@ -2909,11 +2916,14 @@ while True:
                 # In Main Menu Screen
                 # Play Button
                 if startGame == False and settings == False and playButtonHover == True:
+                    resetValues()
                     button.play()
                     intro.play()
                     startGame_timer.start()
                     playButtonHover = False
                     playButtonClicked = True
+                    if demoMode == True:
+                        resetValues()
                     # Hide/Show Mouse
                     pygame.mouse.set_visible(False)
                 if settings == False and settingsButtonHover == True:
@@ -3564,7 +3574,7 @@ while True:
         interactCheck()
 
         # check for highscore
-        if score > highscore and devMode == False:
+        if score > highscore and (devMode == False or demoMode == True):
             highscore = score
 
         # check for out of ammo or needed reload
