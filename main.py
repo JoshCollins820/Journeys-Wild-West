@@ -203,6 +203,13 @@ if collapse:
     buyHoverP2_2 = False
     buyHoverP2_3 = False
     buyHoverP2_4 = False
+    demoMode = False
+    if demoMode == True:
+        ownSniperRifle = True
+        ownSawedOff = True
+        sniperRoundsTotal = 8
+        buckRoundsTotal = 16
+        revRoundsTotal = 24
 
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
@@ -435,9 +442,15 @@ if collapse:
     sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255,255,255))
     sawedOffAmmo_text = font2.render((str(sawedOffRoundsMag) + "/" + str(buckRoundsTotal)), True, (255, 255, 255))
     blankAmmo_text = font2.render("-", True, (255,255,255))
-    reload_text = font1.render("RELOAD", True, (255,0,0))
+    if demoMode == True:
+        reload_text = font1.render("RELOAD (R)", True, (255, 0, 0))
+    else:
+        reload_text = font1.render("RELOAD", True, (255, 0, 0))
     outAmmo_text = font1.render("Out of Ammo", True, (255,0,0))
-    interact_text = font1.render("INTERACT", True, (255,255,255))
+    if demoMode == True:
+        interact_text = font1.render("ACTION (W)", True, (0, 255, 0))
+    else:
+        interact_text = font1.render("INTERACT", True, (255,255,255))
     buy_text = font1.render("BUY", True, (255,255,255))
     potionCount_text = font1.render((str(hpPotionCount)), True, (255,255,255))
     clickPlay_text = font1.render("Click Here to PLAY", True, (255,255,255))
@@ -447,12 +460,19 @@ if collapse:
     masterVolume_text = font1.render((str(masterVolume)), True, (255, 255, 255))
     musicVolume_text = font1.render((str(musicVolume)), True, (255, 255, 255))
     playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
-    loot_text = font1.render("LOOT", True, (255, 255, 255))
+    if demoMode == True:
+        loot_text = font1.render("LOOT (F)", True, (255, 255, 255))
+    else:
+        loot_text = font1.render("LOOT", True, (255, 255, 255))
+
     moneyGained_text = font4.render("+ $", True, (50, 100, 50))
     wave_text = font5.render("Wave " + str(wave), True, (240, 177, 29))
     wave_text_rect = wave_text.get_rect(center=[300, 150])
     infinity_text = font2.render("-1", True, (255,255,255))
-    devMode_text = font1.render("Dev Mode", True, (255, 255, 255))
+    if demoMode == True:
+        devMode_text = font1.render("Demo Mode", True, (255, 255, 255))
+    else:
+        devMode_text = font1.render("Dev Mode", True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 # list of names
@@ -1747,7 +1767,12 @@ def resetValues():
     buyHoverP2_2 = False
     buyHoverP2_3 = False
     buyHoverP2_4 = False
-
+    if demoMode == True:
+        ownSniperRifle = True
+        ownSawedOff = True
+        sniperRoundsTotal = 8
+        buckRoundsTotal = 16
+        revRoundsTotal = 24
 
     # reset seed
     random.seed()
