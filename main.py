@@ -471,7 +471,7 @@ if collapse:
     wave_text_rect = wave_text.get_rect(center=[300, 150])
     infinity_text = font2.render("-1", True, (255,255,255))
     if demoMode == True:
-        devMode_text = font1.render("Stuck? CTRL-F", True, (255, 255, 255))
+        devMode_text = font1.render("Demo Mode", True, (255, 255, 255))
     else:
         devMode_text = font1.render("Dev Mode", True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
@@ -2922,8 +2922,6 @@ while True:
                     startGame_timer.start()
                     playButtonHover = False
                     playButtonClicked = True
-                    if demoMode == True:
-                        resetValues()
                     # Hide/Show Mouse
                     pygame.mouse.set_visible(False)
                 if settings == False and settingsButtonHover == True:
