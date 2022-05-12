@@ -203,14 +203,15 @@ if collapse:
     buyHoverP2_2 = False
     buyHoverP2_3 = False
     buyHoverP2_4 = False
-    demoMode = False
+    demoMode = True
     if demoMode == True:
         ownSniperRifle = True
-        ownSawedOff = True
+        ownSawedOff = False
         sniperRoundsTotal = 8
         buckRoundsTotal = 16
         revRoundsTotal = 24
         hpPotionCount = 2
+        moneyCount = 100
 
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
 
@@ -449,7 +450,7 @@ if collapse:
         reload_text = font1.render("RELOAD", True, (255, 0, 0))
     outAmmo_text = font1.render("Out of Ammo", True, (255,0,0))
     if demoMode == True:
-        interact_text = font1.render("ACTION (W)", True, (0, 255, 0))
+        interact_text = font1.render("ACTION (W)", True, (150, 240, 41))
     else:
         interact_text = font1.render("INTERACT", True, (255,255,255))
     buy_text = font1.render("BUY", True, (255,255,255))
@@ -1770,11 +1771,12 @@ def resetValues():
     buyHoverP2_4 = False
     if demoMode == True:
         ownSniperRifle = True
-        ownSawedOff = True
+        ownSawedOff = False
         sniperRoundsTotal = 8
         buckRoundsTotal = 16
         revRoundsTotal = 24
         hpPotionCount = 2
+        moneyCount = 100
 
     # reset seed
     random.seed()
@@ -3547,6 +3549,18 @@ while True:
         # Player Model Refresh
         playerLegsIdle = True
         playerWalk = False
+
+        # Interact text change
+        if hotbarSlot2 == False:
+            if demoMode == True:
+                interact_text = font1.render("ACTION (W)", True, (150, 240, 41))
+            else:
+                interact_text = font1.render("INTERACT", True, (255, 255, 255))
+        elif hotbarSlot2 == True:
+            if demoMode == True:
+                interact_text = font1.render("SCOPE (W)", True, (150, 240, 41))
+            else:
+                interact_text = font1.render("SCOPE", True, (255, 255, 255))
 
         playerGrab = False
         if playerHolster == False and playerShoot == False and playerDrink == False:
