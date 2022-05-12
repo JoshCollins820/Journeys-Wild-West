@@ -108,6 +108,7 @@ if collapse:
     walkingLeft = False
     walkingBoth = False
     rolling = False
+    poisoned = False
     moneyPick = False
     moneyPickText = False
     showMoney = True
@@ -218,7 +219,7 @@ if collapse:
 # audio
 if collapse:
     masterVolume = 1  # (0-1)
-    musicVolume = 0  # (0-1)
+    musicVolume = 0.5  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
     intro = pygame.mixer.Sound('assets/sounds/start_music.wav')
@@ -319,6 +320,7 @@ if collapse:
     asset_catalog_2 = pygame.image.load("assets/UI/catalog_pages_2.png")
     asset_catalog_3 = pygame.image.load("assets/UI/catalog_pages_3.png")
     asset_hp_icon = pygame.image.load("assets/UI/player_hp.png")
+    asset_hp_poison_icon = pygame.image.load("assets/UI/player_hp_poison.png")
     asset_money_icon = pygame.image.load("assets/UI/player_money.png")
     asset_kills_icon = pygame.image.load("assets/UI/player_kills.png")
     asset_ammo_icon = pygame.image.load("assets/UI/player_bullet.png")
@@ -1479,7 +1481,10 @@ def showSettings():
 def showHUD():
     if displayHUD == True:
         # hp
-        screen.blit(asset_hp_icon, (11, 507))
+        if poisoned == True:
+            screen.blit(asset_hp_poison_icon, (11, 507))
+        else:
+            screen.blit(asset_hp_icon, (11, 507))
         if godMode == False:
             screen.blit(playerHP_text, (41, 505))
         elif godMode == True:
@@ -1638,7 +1643,7 @@ def resetValues():
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
         healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining,lastActiveSlot, \
         reloading, exitButtonHover, buyHoverP1_1, buyHoverP1_2, buyHoverP1_3, buyHoverP2_1, buyHoverP2_2, buyHoverP2_3,\
-        buyHoverP2_4
+        buyHoverP2_4, poisoned
 
     # player vals
     playerHP = 100
@@ -1682,6 +1687,7 @@ def resetValues():
     walkingLeft = False
     walkingBoth = False
     rolling = False
+    poisoned = False
     insufFundsText = False
     purchasedText = False
     lookingLeft = False
@@ -2425,15 +2431,17 @@ def hideWave_timer_handler():
 
 
 def venomTick_timer_handler():
-    global playerHP, venom_ticks_remaining
+    global playerHP, venom_ticks_remaining, poisoned
 
     if venom_ticks_remaining > 0:
         if playerHP > 0 and godMode == False and pause == False:
+            poisoned = True
             playerHP -= 2
             venom_heartbeat.play()
             venom_ticks_remaining -= 1
             venomTick_timer.start()
     elif venom_ticks_remaining == 0:
+        poisoned = False
         venomTick_timer.stop()
 
 
