@@ -134,6 +134,7 @@ if collapse:
     dead = False
     scopeScreen = False
     insideShop = False
+    insideSaloon = False
     ownSniperRifle = False
     ownSawedOff = False
     catalog = False
@@ -204,7 +205,7 @@ if collapse:
     buyHoverP2_2 = False
     buyHoverP2_3 = False
     buyHoverP2_4 = False
-    demoMode = True
+    demoMode = False
     if demoMode == True:
         ownSniperRifle = True
         ownSawedOff = False
@@ -219,7 +220,7 @@ if collapse:
 # audio
 if collapse:
     masterVolume = 1  # (0-1)
-    musicVolume = 0.5  # (0-1)
+    musicVolume = 1  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
     intro = pygame.mixer.Sound('assets/sounds/start_music.wav')
@@ -255,13 +256,16 @@ if collapse:
     venom_heartbeat = pygame.mixer.Sound('assets/sounds/venom_heartbeat.wav')
     rattlesnake_rattle = pygame.mixer.Sound('assets/sounds/rattlesnake_rattle.wav')
     rattlesnake_strike = pygame.mixer.Sound('assets/sounds/rattlesnake_strike.wav')
+    saloon_ambience = pygame.mixer.Sound('assets/sounds/saloon.wav')
+    outside_ambience = pygame.mixer.Sound('assets/sounds/wind.wav')
+
 
 # sprites
 if collapse:
     asset_cactus = pygame.image.load("assets/vegetation/cactus.png")
     asset_cloud1 = pygame.image.load("assets/sky/cloud1.png")
     asset_cloud2 = pygame.image.load("assets/sky/cloud2.png")
-    asset_saloon = pygame.image.load("assets/buildings/cianfarano_saloon.png")
+    asset_saloon = pygame.image.load("assets/buildings/cianfarano_saloon_open.png")
     asset_store = pygame.image.load("assets/buildings/solee_os_store.png")
     asset_hotbar = pygame.image.load("assets/UI/hotbar.png")
     asset_revolver_icon = pygame.image.load("assets/UI/revolver_icon.png")
@@ -305,6 +309,7 @@ if collapse:
     asset_sniper_rifle_right = pygame.image.load("assets/weapons/sniper_rifle_right.png")
     asset_sniper_rifle_left = pygame.image.load("assets/weapons/sniper_rifle_left.png")
     asset_shop_interior = pygame.image.load("assets/buildings/shop_interior.png")
+    asset_saloon_interior = pygame.image.load("assets/buildings/saloon_interior.png")
     asset_text_1000_green = pygame.image.load("assets/UI/text_1000_green.png")
     asset_text_1000_red = pygame.image.load("assets/UI/text_1000_red.png")
     asset_text_3000_green = pygame.image.load("assets/UI/text_3000_green.png")
@@ -563,7 +568,7 @@ class Bandit:
     # seperate from draw method so that it can be called after drawing the player
     def draw_dead(self):
         # draw dead bandit
-        if insideShop == False:
+        if insideShop == False and insideSaloon == False:
             if self.hp <= 0:
                 if self.bandit_left == False:
                     screen.blit(self.bandit_leftdead_img, (self.x_location-23, 377))
@@ -573,7 +578,7 @@ class Bandit:
     # cheks if bandit is in melee range
     def checkMelee(self):
         if self.hp > 0:
-            if self.x_location <= 290 and self.x_location >= 210 and insideShop == False:
+            if self.x_location <= 290 and self.x_location >= 210 and insideShop == False and insideSaloon == False:
                 playerHit(4)
 
     # checks if bandit is dead, looted, and when it should despawn
@@ -720,7 +725,7 @@ class Rattlesnake:
     # seperate from draw method so that it can be called after drawing the player
     def draw_dead(self):
         # draw dead rattlesnake
-        if insideShop == False:
+        if insideShop == False and insideSaloon == False:
             if self.hp <= 0:
                 if self.rattlesnake_left == False:
                     screen.blit(self.snake_dead_left_img, (self.x_location-39.5, 347))
@@ -730,10 +735,12 @@ class Rattlesnake:
     # cheks if rattlesnake is in melee range
     def checkMelee(self):
         if self.hp > 0:
-            if self.x_location <= 210+self.rattle_range and self.x_location >= 210-self.rattle_range and insideShop == False:
+            if self.x_location <= 210+self.rattle_range and self.x_location >= 210-self.rattle_range and insideShop == False \
+                    and insideSaloon == False:
                 if self.rattleCooldown == False:
                     self.rattle()
-            if self.x_location <= 210+self.strike_range and self.x_location >= 210-self.strike_range and insideShop == False:
+            if self.x_location <= 210+self.strike_range and self.x_location >= 210-self.strike_range and insideShop == False \
+                    and insideSaloon == False:
                 if self.strikeCooldown == False:
                     self.strike()
 
@@ -843,8 +850,7 @@ def worldRight(multiplier=1):
 def walkRight():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster,\
-        banMoveAbility, cactusx
-
+        banMoveAbility, cactusx, insideSaloon
     if moveAbility == True and pause == False and rolling == False:
         if scopeScreen == False:
             worldRight()
@@ -855,32 +861,28 @@ def walkRight():
                 playerHolster = True
             if hotbarSlot3 == True and ownSawedOff:
                 playerHolster = True
-            if insideShop == False:
+            if insideShop == False and insideSaloon == False:
                 step.stop()
                 step.play()
-            elif insideShop == True:
+            elif insideShop == True or insideSaloon == True:
                 woodstep.stop()
                 woodstep.play()
-    # Exit Store
-    if insideShop == True:
-        if (store1x - 200) >= 0:
-            insideShop = False
-            store1x = 50
-            store2x = 750
-            cactusx = -200
-            banMoveAbility = True
-            door.stop()
-            door.play()
+
     # Shop Wall Collision
     if insideShop == True:
         if (store1x + 700) <= 0:
+            moveAbility = False
+
+    # Saloon Wall Collision
+    if insideSaloon == True:
+        if (store2x + 700) <= 0:
             moveAbility = False
 
 
 def walkLeft():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster,\
-        banMoveAbility, cactusx
+        banMoveAbility, cactusx, insideSaloon
 
     if moveAbility == True and pause == False and rolling == False:
         if scopeScreen == False:
@@ -892,14 +894,14 @@ def walkLeft():
                 playerHolster = True
             if hotbarSlot3 == True and ownSawedOff:
                 playerHolster = True
-            if insideShop == False:
+            if insideShop == False and insideSaloon == False:
                 step.stop()
                 step.play()
-            elif insideShop == True:
+            elif insideShop == True or insideSaloon == True:
                 woodstep.stop()
                 woodstep.play()
     # Exit Store
-    if insideShop == True:
+    if insideShop == True and insideSaloon == False:
         if (store1x - 200) >= 0:
             insideShop = False
             store1x = 50
@@ -908,9 +910,28 @@ def walkLeft():
             banMoveAbility = True
             door.stop()
             door.play()
+            outside_ambience.play(-1)
     # Shop Wall Collision
     if insideShop == True:
         if (store1x + 700) <= 0:
+            moveAbility = True
+            walkLeft()
+
+    # Exit Saloon
+    if insideSaloon == True and insideShop == False:
+        if (store2x - 200) >= 0:
+            insideSaloon = False
+            store1x = -650
+            store2x = 50
+            cactusx = -900
+            banMoveAbility = True
+            door.stop()
+            door.play()
+            saloon_ambience.stop()
+            outside_ambience.play(-1)
+    # Shop Wall Collision
+    if insideSaloon == True:
+        if (store2x + 700) <= 0:
             moveAbility = True
             walkLeft()
 
@@ -926,7 +947,8 @@ def checkWalkBoth():
 
 def roll():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
-        lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster, playerSniper
+        lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster, playerSniper,\
+        insideSaloon
     if lookingRight:
         if moveAbility == True and pause == False:
             if rollReady == True:
@@ -939,10 +961,10 @@ def roll():
                     playerHolster = True
                 if hotbarSlot3 == True and ownSawedOff:
                     playerHolster = True
-                if insideShop == False:
+                if insideShop == False and insideSaloon == False:
                     step.stop()
                     step.play()
-                elif insideShop == True:
+                elif insideShop == True or insideSaloon == True:
                     woodstep.stop()
                     woodstep.play()
     elif lookingLeft:
@@ -957,10 +979,10 @@ def roll():
                     playerHolster = True
                 if hotbarSlot3 == True and ownSawedOff:
                     playerHolster = True
-                if insideShop == False:
+                if insideShop == False and insideSaloon == False:
                     step.stop()
                     step.play()
-                elif insideShop == True:
+                elif insideShop == True or insideSaloon == True:
                     woodstep.stop()
                     woodstep.play()
 
@@ -1017,7 +1039,7 @@ def fire():
     global score, moneyCount, startGame, moveAbility, hotbarSlot2, hotbarSlot6, dead, bulletx, hotbarSlot1, \
         lookingLeft, lookingRight, revRoundsMag, reloadUI, outAmmoUI, interactText, scopeScreen,\
         playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag, sniperRoundsTotal, playerSniper, pause, \
-        sawedOffRoundsMag, insideShop, reloading
+        sawedOffRoundsMag, insideShop, reloading, insideSaloon
 
     # Revolver
     if hotbarSlot1 == True:
@@ -1028,7 +1050,7 @@ def fire():
         revRoundsMag -= 1
         bulletx = 330
         stopReload()
-        if insideShop == False:
+        if insideShop == False and insideSaloon == False:
             if lookingRight:
                 # Damage Bandit
                 for bandit in Bandit.instances:
@@ -1064,7 +1086,7 @@ def fire():
         scopeScreen = False
         sniperRoundsMag -= 1
         stopReload()
-        if insideShop == False:
+        if insideShop == False and insideSaloon == False:
             if lookingRight:
                 # Damage Bandit
                 for bandit in Bandit.instances:
@@ -1102,7 +1124,7 @@ def fire():
         sawedoffshot.play()
         sawedOffRoundsMag -= 1
         stopReload()
-        if insideShop == False:
+        if insideShop == False and insideSaloon == False:
             if lookingRight:
                 # Damage Bandit
                 for bandit in Bandit.instances:
@@ -1470,6 +1492,8 @@ def showSettings():
     burp.set_volume(masterVolume)
     burp2.set_volume(masterVolume)
     burp3.set_volume(masterVolume)
+    saloon_ambience.set_volume(masterVolume)
+    outside_ambience.set_volume(masterVolume)
     venom_heartbeat.set_volume(masterVolume)
     rattlesnake_rattle.set_volume(masterVolume)
     rattlesnake_strike.set_volume(masterVolume)
@@ -1555,7 +1579,7 @@ def showHUD():
             screen.blit(asset_hotbar_select, (activeSlotx1 - 3, 565 - 33))
 
         # loot text
-        if startGame == True and insideShop == False and standing == True:
+        if startGame == True and insideShop == False and insideSaloon == False and standing == True:
             for bandit in Bandit.instances:
                 if bandit.looted == False and bandit.stoodOn == True:
                     if (outAmmoUI or reloadUI) and interactText == True:
@@ -1575,7 +1599,11 @@ def interactCheck():
 
     # Check if in front of store
     if store1x <= 50 and store1x >= 25:
-        if scopeScreen == False and insideShop == False:
+        if scopeScreen == False and insideShop == False and insideSaloon == False:
+            interactText = True
+    # Check if in front of saloon
+    elif store2x <= 50 and store2x >= 25:
+        if scopeScreen == False and insideShop == False and insideSaloon == False:
             interactText = True
     # Open Catalog
     elif store1x + 420 <= 100 and store1x + 420 >= 0:
@@ -1583,7 +1611,7 @@ def interactCheck():
                 and playerSniper == False:
             interactText = True
     # Holding sniper rifle
-    elif playerSniper == True and sniperRoundsMag > 0 and insideShop == False:
+    elif playerSniper == True and sniperRoundsMag > 0 and insideShop == False and insideSaloon == False:
         interactText = True
     else:
         interactText = False
@@ -1643,7 +1671,7 @@ def resetValues():
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
         healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining,lastActiveSlot, \
         reloading, exitButtonHover, buyHoverP1_1, buyHoverP1_2, buyHoverP1_3, buyHoverP2_1, buyHoverP2_2, buyHoverP2_3,\
-        buyHoverP2_4, poisoned
+        buyHoverP2_4, poisoned, insideSaloon
 
     # player vals
     playerHP = 100
@@ -1708,6 +1736,7 @@ def resetValues():
     sawedOffOutAmmo = False
     scopeScreen = False
     insideShop = False
+    insideSaloon = False
     ownSniperRifle = False
     ownSawedOff = False
     catalog = False
@@ -1869,7 +1898,7 @@ def switchSlots(slot):
             playerShoot = False
             playerHolster = False
             playerIdle = True
-        if insideShop == True:
+        if insideShop == True or insideSaloon == True:
             interactText = False
 
     elif slot == 2:
@@ -1890,7 +1919,7 @@ def switchSlots(slot):
                 griprevolver.stop()
                 griprevolver.play()
                 playerIdle = False
-            if insideShop == True:
+            if insideShop == True or insideSaloon == True:
                 interactText = False
     elif slot == 3:
         hotbarSlot1 = False
@@ -2190,7 +2219,7 @@ def confirmationBox_timer_handler():
 def rollStart_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll3Left, playerRoll1Right, interactText,\
         playerRoll2Right, playerRoll3Right,invincibility, rollReady, cooldown_sweat_y,playerShoot, scopeScreen, \
-        insideShop, store1x,store2x, cactusx, banMoveAbility, moveAbility
+        insideShop, store1x,store2x, cactusx, banMoveAbility, moveAbility,insideSaloon
     standing = False
     rolling = True
     invincibility = True
@@ -2208,6 +2237,10 @@ def rollStart_timer_handler():
                 moveAbility = False
             else:
                 worldRight(1)
+        elif insideSaloon == True:
+            if (store2x + 700) <= 0:
+                worldRight(0)
+                moveAbility = False
         else:
             worldRight(1)
     elif lookingLeft == True:
@@ -2220,6 +2253,17 @@ def rollStart_timer_handler():
                 banMoveAbility = True
                 door.stop()
                 door.play()
+                outside_ambience.play(-1)
+        elif insideSaloon == True:
+            if (store2x - 200) >= 0:
+                insideSaloon = False
+                store1x = -650
+                store2x = 50
+                cactusx = -900
+                banMoveAbility = True
+                door.stop()
+                door.play()
+                outside_ambience.play(-1)
         playerRoll1Left = True
         worldLeft(1)
     rollMid1_timer.start()
@@ -2228,12 +2272,18 @@ def rollStart_timer_handler():
 
 def rollMid1_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, \
-        playerRoll3Right,playerRoll3Left, insideShop, store1x,store2x, cactusx, banMoveAbility, moveAbility
+        playerRoll3Right,playerRoll3Left, insideShop, store1x,store2x, cactusx, banMoveAbility, moveAbility,insideSaloon
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = True
         if insideShop == True:
             if (store1x + 700) <= 0:
+                worldRight(0)
+                moveAbility = False
+            else:
+                worldRight(1)
+        elif insideSaloon == True:
+            if (store2x + 700) <= 0:
                 worldRight(0)
                 moveAbility = False
             else:
@@ -2250,6 +2300,17 @@ def rollMid1_timer_handler():
                 banMoveAbility = True
                 door.stop()
                 door.play()
+                outside_ambience.play(-1)
+        elif insideSaloon == True:
+            if (store2x - 200) >= 0:
+                insideSaloon = False
+                store1x = -650
+                store2x = 50
+                cactusx = -900
+                banMoveAbility = True
+                door.stop()
+                door.play()
+                outside_ambience.play(-1)
         playerRoll1Left = False
         playerRoll2Left = True
         worldLeft(1)
@@ -2259,12 +2320,18 @@ def rollMid1_timer_handler():
 
 def rollMid2_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right,\
-        playerRoll3Right,playerRoll3Left, moveAbility
+        playerRoll3Right,playerRoll3Left, moveAbility, insideSaloon,insideShop,store1x, store2x
     if lookingRight == True:
         playerRoll2Right = False
         playerRoll3Right = True
         if insideShop == True:
             if (store1x + 700) <= 0:
+                worldRight(0)
+                moveAbility = False
+            else:
+                worldRight(1)
+        elif insideSaloon == True:
+            if (store2x + 700) <= 0:
                 worldRight(0)
                 moveAbility = False
             else:
@@ -2282,7 +2349,7 @@ def rollMid2_timer_handler():
 def rollEnd_timer_handler():
     global standing, rolling, playerRoll1Left, playerRoll2Left, playerRoll1Right, playerRoll2Right, \
         playerRoll3Right, invincibility,interactText,playerRoll3Left, moveAbility, insideShop, store1x,store2x,\
-        cactusx, banMoveAbility, moveAbility
+        cactusx, banMoveAbility, moveAbility, insideSaloon
     if lookingRight == True:
         playerRoll1Right = False
         playerRoll2Right = False
@@ -2296,6 +2363,15 @@ def rollEnd_timer_handler():
             # fixes bug where you can roll then walk through wall
             if (store1x + 700) <= 0:
                 moveAbility = False
+        elif insideSaloon == True:
+            if (store2x + 700) <= 0:
+                worldRight(0)
+                moveAbility = False
+            else:
+                worldRight(1)
+            # fixes bug where you can roll then walk through wall
+            if (store2x + 700) <= 0:
+                moveAbility = False
         else:
             worldRight(1)
     elif lookingLeft == True:
@@ -2308,6 +2384,17 @@ def rollEnd_timer_handler():
                 banMoveAbility = True
                 door.stop()
                 door.play()
+                outside_ambience.play(-1)
+        elif insideSaloon == True:
+            if (store2x - 200) >= 0:
+                insideSaloon = False
+                store1x = -650
+                store2x = 50
+                cactusx = -900
+                banMoveAbility = True
+                door.stop()
+                door.play()
+                outside_ambience.play(-1)
         playerRoll1Left = False
         playerRoll2Left = False
         playerRoll3Left = False
@@ -2701,7 +2788,7 @@ while True:
                 # Aim Sniper Rifle
                 if event.key == pygame.K_w or event.key == pygame.K_UP:
                     if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True \
-                            and insideShop == False and rolling == False and looting == False:
+                            and insideShop == False and insideSaloon == False and rolling == False and looting == False:
                         scopeScreen = not scopeScreen
                         if scopeScreen == True:
                             breath.stop()
@@ -2710,7 +2797,7 @@ while True:
                             heartbeat.play(-1)
 
                 # Loot body
-                if event.key == pygame.K_f and rolling == False and insideShop == False:
+                if event.key == pygame.K_f and rolling == False and insideShop == False and insideSaloon == False:
                     for bandit in Bandit.instances:
                         if bandit.looted == False and bandit.stoodOn:
                             bandit.looted = True
@@ -2742,7 +2829,7 @@ while True:
 
                 # Enter Store
                 if store1x <= 50 and store1x >= 25:
-                    if scopeScreen == False and insideShop == False and playerSniper == False:
+                    if scopeScreen == False and insideShop == False and insideSaloon == False and playerSniper == False:
                         if event.key == pygame.K_UP or event.key == pygame.K_w:
                             insideShop = True
                             lookingRight = True
@@ -2765,6 +2852,36 @@ while True:
                             cactusx = -100
                             door.stop()
                             door.play()
+                            outside_ambience.stop()
+
+                # Enter Saloon
+                if store2x <= 50 and store2x >= 25:
+                    if scopeScreen == False and insideSaloon == False and insideShop == False and playerSniper == False:
+                        if event.key == pygame.K_UP or event.key == pygame.K_w:
+                            insideSaloon = True
+                            lookingRight = True
+                            lookingLeft = False
+                            interactText = False
+                            banMoveAbility = False
+                            walkRight()
+                            # offset on screen bandits
+                            for bandit in Bandit.instances:
+                                # if on screen
+                                if bandit.x_location >= -120 and bandit.x_location <= 600 and bandit.hp > 0:
+                                    # if to the left
+                                    if bandit.x_location <= 250:
+                                        bandit.x_location -= 400
+                                    # if to the right
+                                    elif bandit.x_location > 250:
+                                        bandit.x_location += 350
+                            store1x = -550
+                            store2x = 150
+                            cactusx = -800
+                            door.stop()
+                            door.play()
+                            outside_ambience.stop()
+                            saloon_ambience.play(-1)
+
                 # Open Catalog
                 if store1x + 420 <= 100 and store1x + 420 >= 0:
                     if playerHolster == False and playerShoot == False and insideShop == True and catalog == False\
@@ -2929,6 +3046,7 @@ while True:
                     resetValues()
                     button.play()
                     intro.play()
+                    outside_ambience.play(-1)
                     startGame_timer.start()
                     playButtonHover = False
                     playButtonClicked = True
@@ -3240,6 +3358,10 @@ while True:
         # shop interior
         if insideShop == True:
             screen.blit(asset_shop_interior, (store1x-250, 0))
+        # shop interior
+        if insideSaloon == True:
+            screen.blit(asset_saloon_interior, (store2x-250, 0))
+
 
         # character model
         if standing == True:
@@ -3570,6 +3692,7 @@ while True:
             else:
                 interact_text = font1.render("SCOPE", True, (255, 255, 255))
 
+
         playerGrab = False
         if playerHolster == False and playerShoot == False and playerDrink == False:
             playerIdle = True
@@ -3715,6 +3838,8 @@ while True:
         burp.set_volume(masterVolume)
         burp2.set_volume(masterVolume)
         burp3.set_volume(masterVolume)
+        saloon_ambience.set_volume(masterVolume)
+        outside_ambience.set_volume(masterVolume)
         venom_heartbeat.set_volume(masterVolume)
         rattlesnake_rattle.set_volume(masterVolume)
         rattlesnake_strike.set_volume(masterVolume)
@@ -3723,17 +3848,18 @@ while True:
         music.set_volume(musicVolume * masterVolume)
 
         # building loop
-        if store2x <= -500:
-            store1x += 1900
-            store2x += 1900
-        elif store2x >= 1400:
-            store1x -= 1900
-            store2x -= 1900
-            cactusx -= 1900
-        if cactusx <= -1000:
-            cactusx += 1900
-        elif cactusx >= 900:
-            cactusx -= 1900
+        if insideShop == False and insideSaloon == False:
+            if store2x <= -500:
+                store1x += 1900
+                store2x += 1900
+            elif store2x >= 1400:
+                store1x -= 1900
+                store2x -= 1900
+                cactusx -= 1900
+            if cactusx <= -1000:
+                cactusx += 1900
+            elif cactusx >= 900:
+                cactusx -= 1900
 
         # active hotbar slot position
         if hotbarSlot1 == True:
