@@ -24,6 +24,7 @@ height = 600  # 800
 # pygame initialization
 pygame.init()
 pygame.mixer.pre_init(44100, -16, 2, 512)
+pygame.mixer.set_num_channels(10)  # default is 8
 clock = pygame.time.Clock()
 random.seed()
 
@@ -220,7 +221,7 @@ if collapse:
 # audio
 if collapse:
     masterVolume = 1  # (0-1)
-    musicVolume = 1  # (0-1)
+    musicVolume = 0  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
     intro = pygame.mixer.Sound('assets/sounds/start_music.wav')
@@ -258,6 +259,7 @@ if collapse:
     rattlesnake_strike = pygame.mixer.Sound('assets/sounds/rattlesnake_strike.wav')
     saloon_ambience = pygame.mixer.Sound('assets/sounds/saloon.wav')
     outside_ambience = pygame.mixer.Sound('assets/sounds/wind.wav')
+    train_distant = pygame.mixer.Sound('assets/sounds/train_distant.wav')
 
 
 # sprites
@@ -1500,6 +1502,7 @@ def showSettings():
     intromusic.set_volume(musicVolume * masterVolume)
     intro.set_volume(musicVolume * masterVolume)
     music.set_volume(musicVolume * masterVolume)
+    train_distant.set_volume(masterVolume)
 
 
 def showHUD():
@@ -2147,6 +2150,8 @@ def startGame_timer_handler():
     restartButtonClicked = False
     moveAbility = True
     banMoveAbility = True
+    trainDistantCooldown_timer.start()
+    outside_ambience.play(-1)
     music_timer.start()
     startGame_timer.stop()
 
@@ -2560,6 +2565,11 @@ def snakeRattleSoundCooldown_timer_handler():
     snakeRattleSoundCooldown_timer.stop()
 
 
+def trainDistantCooldown_timer_handler():
+    train_distant.play()
+    trainDistantCooldown_timer.start()
+
+
 # timers (ms, timer_handler) (1000ms = 1sec)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
@@ -2596,20 +2606,22 @@ snakeStrikeStop_timer = simplegui.create_timer(200, snakeStrikeStop_timer_handle
 snakeStrikeCooldown_timer = simplegui.create_timer(3000, snakeStrikeCooldown_timer_handler)
 snakeRattleCooldown_timer = simplegui.create_timer(5, snakeRattleCooldown_timer_handler)
 snakeRattleSoundCooldown_timer = simplegui.create_timer(3200, snakeRattleSoundCooldown_timer_handler)
+trainDistantCooldown_timer = simplegui.create_timer(120000, trainDistantCooldown_timer_handler)
 
 
 
 # timers tuple
-timerTuple = (revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer, revolverFireDelay_timer,
-              drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer, confirmationBox_timer,
-              volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer, rollMid1_timer,
-              rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
+timerTuple = (trainDistantCooldown_timer, revolver_reload_timer, sniper_reload_timer, music_timer, startGame_timer,
+              revolverFireDelay_timer, drinkResetDelay_timer, resumeGame_timer, mainMenu_timer, playerHitSound_timer,
+              confirmationBox_timer, volumeButtonReset_timer, settingsDone_timer, settingsMenu_timer, rollStart_timer,
+              rollMid1_timer, rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
               showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer, beerHealing_timer,
               startWave_timer, hideWave_timer, showWave_timer, venomTick_timer, snakeStrikeStop_timer,
               snakeStrikeCooldown_timer, snakeRattleCooldown_timer, snakeRattleSoundCooldown_timer)
 
 # Main Menu Music
 intromusic.play(-1)
+intromusic.set_volume(masterVolume*musicVolume)
 resetValues()
 # Hide/Show Mouse
 pygame.mouse.set_visible(True)
@@ -3046,7 +3058,6 @@ while True:
                     resetValues()
                     button.play()
                     intro.play()
-                    outside_ambience.play(-1)
                     startGame_timer.start()
                     playButtonHover = False
                     playButtonClicked = True
@@ -3846,6 +3857,7 @@ while True:
         intromusic.set_volume(musicVolume * masterVolume)
         intro.set_volume(musicVolume * masterVolume)
         music.set_volume(musicVolume * masterVolume)
+        train_distant.set_volume(masterVolume)
 
         # building loop
         if insideShop == False and insideSaloon == False:
