@@ -69,6 +69,8 @@ if collapse:
     tumweedReset = -3000
     tumweedSpawn = 2000
     lastActiveSlot = 1
+    critChance = 10  # out of 100
+    critAmount = 80
 
     # speed
     speedMove = 50
@@ -260,6 +262,7 @@ if collapse:
     saloon_ambience = pygame.mixer.Sound('assets/sounds/saloon.wav')
     outside_ambience = pygame.mixer.Sound('assets/sounds/wind.wav')
     train_distant = pygame.mixer.Sound('assets/sounds/train_distant.wav')
+    headshot_impact = pygame.mixer.Sound('assets/sounds/headshot.wav')
 
 
 # sprites
@@ -515,7 +518,7 @@ class Bandit:
                 }
 
     # constructor
-    def __init__(self):
+    def __init__(self, x=0):
         Bandit.alive += 1
         self.__class__.instances.append(self)
         self.name = random.choice(list_names)  # assign random name
@@ -523,7 +526,10 @@ class Bandit:
             self.TYPE_MAP[random.randint(1,3)]  # assign random type
         self.level = 1  # assign level
         self.hp = 100  # assign starting hp
-        self.x_location = getEnemyRespawn()  # assign x-location
+        if x == 0:
+            self.x_location = getEnemyRespawn()  # assign x-location
+        else:
+            self.x_location = x  # assign x-location
         self.moveSpeed = 8
         self.bandit_left = None  # is the bandit on the left side of player
         self.nameTag = font1.render("Bandit: " + self.name, True, (150, 240, 41))
@@ -1056,26 +1062,40 @@ def fire():
             if lookingRight:
                 # Damage Bandit
                 for bandit in Bandit.instances:
-                    if bandit.x_location <= 600 and bandit.x_location >= 250:
-                        for i in range(0,revolverDamage):
+                    if bandit.x_location <= 600 and bandit.x_location >= 250 and bandit.hp > 0:
+                        # crit/headshot
+                        critRoll = random.randint(0,100)
+                        if critRoll > 0 and critRoll < critChance:
+                            crit = critAmount
+                            headshot_impact.play()
+                        else:
+                            crit = 0
+                        for i in range(0,revolverDamage+crit):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
                 # Damage Rattlesnake
                 for rattlesnake in Rattlesnake.instances:
-                    if rattlesnake.x_location <= 600 and rattlesnake.x_location >= 250:
+                    if rattlesnake.x_location <= 600 and rattlesnake.x_location >= 250 and rattlesnake.hp > 0:
                         for i in range(0,revolverDamage):
                             if rattlesnake.hp > 0:
                                 rattlesnake.hp -= 1
             if lookingLeft:
                 # Damage Bandit
                 for bandit in Bandit.instances:
-                    if bandit.x_location >= -50 and bandit.x_location <= 250:
-                        for i in range(0,revolverDamage):
+                    if bandit.x_location >= -50 and bandit.x_location <= 250 and bandit.hp > 0:
+                        # crit/headshot
+                        critRoll = random.randint(0,100)
+                        if critRoll > 0 and critRoll < critChance:
+                            crit = critAmount
+                            headshot_impact.play()
+                        else:
+                            crit = 0
+                        for i in range(0,revolverDamage+crit):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
                 # Damage Rattlesnake
                 for rattlesnake in Rattlesnake.instances:
-                    if rattlesnake.x_location >= -50 and rattlesnake.x_location <= 250:
+                    if rattlesnake.x_location >= -50 and rattlesnake.x_location <= 250 and rattlesnake.hp > 0:
                         for i in range(0,revolverDamage):
                             if rattlesnake.hp > 0:
                                 rattlesnake.hp -= 1
@@ -1092,26 +1112,26 @@ def fire():
             if lookingRight:
                 # Damage Bandit
                 for bandit in Bandit.instances:
-                    if bandit.x_location <= 700 and bandit.x_location >= 250:
+                    if bandit.x_location <= 700 and bandit.x_location >= 250 and bandit.hp > 0:
                         for i in range(0,sniperDamage):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
                 # Damage Rattlesnake
                 for rattlesnake in Rattlesnake.instances:
-                    if rattlesnake.x_location <= 700 and rattlesnake.x_location >= 250:
+                    if rattlesnake.x_location <= 700 and rattlesnake.x_location >= 250 and rattlesnake.hp > 0:
                         for i in range(0,sniperDamage):
                             if rattlesnake.hp > 0:
                                 rattlesnake.hp -= 1
             if lookingLeft:
                 # Damage Bandit
                 for bandit in Bandit.instances:
-                    if bandit.x_location >= -100 and bandit.x_location <= 250:
+                    if bandit.x_location >= -100 and bandit.x_location <= 250 and bandit.hp > 0:
                         for i in range(0,sniperDamage):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
                 # Damage Rattlesnake
                 for rattlesnake in Rattlesnake.instances:
-                    if rattlesnake.x_location >= -100 and rattlesnake.x_location <= 250:
+                    if rattlesnake.x_location >= -100 and rattlesnake.x_location <= 250 and rattlesnake.hp > 0:
                         for i in range(0,sniperDamage):
                             if rattlesnake.hp > 0:
                                 rattlesnake.hp -= 1
@@ -1130,26 +1150,40 @@ def fire():
             if lookingRight:
                 # Damage Bandit
                 for bandit in Bandit.instances:
-                    if bandit.x_location <= 600 and bandit.x_location >= 250:
-                        for i in range(0,sawedOffDamage):
+                    if bandit.x_location <= 600 and bandit.x_location >= 250 and bandit.hp > 0:
+                        # crit/headshot
+                        critRoll = random.randint(0,100)
+                        if critRoll > 0 and critRoll < critChance:
+                            crit = critAmount
+                            headshot_impact.play()
+                        else:
+                            crit = 0
+                        for i in range(0,sawedOffDamage+crit):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
                 # Damage Rattlesnake
                 for rattlesnake in Rattlesnake.instances:
-                    if rattlesnake.x_location <= 600 and rattlesnake.x_location >= 250:
+                    if rattlesnake.x_location <= 600 and rattlesnake.x_location >= 250 and rattlesnake.hp > 0:
                         for i in range(0,sawedOffDamage):
                             if rattlesnake.hp > 0:
                                 rattlesnake.hp -= 1
             if lookingLeft:
                 # Damage Bandit
                 for bandit in Bandit.instances:
-                    if bandit.x_location >= -50 and bandit.x_location <= 250:
-                        for i in range(0,sawedOffDamage):
+                    if bandit.x_location >= -50 and bandit.x_location <= 250 and bandit.hp > 0:
+                        # crit/headshot
+                        critRoll = random.randint(0,100)
+                        if critRoll > 0 and critRoll < critChance:
+                            crit = critAmount
+                            headshot_impact.play()
+                        else:
+                            crit = 0
+                        for i in range(0,sawedOffDamage+crit):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
                 # Damage Rattlesnake
                 for rattlesnake in Rattlesnake.instances:
-                    if rattlesnake.x_location >= -50 and rattlesnake.x_location <= 250:
+                    if rattlesnake.x_location >= -50 and rattlesnake.x_location <= 250 and rattlesnake.hp > 0:
                         for i in range(0,sawedOffDamage):
                             if rattlesnake.hp > 0:
                                 rattlesnake.hp -= 1
@@ -1503,6 +1537,7 @@ def showSettings():
     intro.set_volume(musicVolume * masterVolume)
     music.set_volume(musicVolume * masterVolume)
     train_distant.set_volume(masterVolume)
+    headshot_impact.set_volume(masterVolume)
 
 
 def showHUD():
@@ -1674,7 +1709,7 @@ def resetValues():
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
         healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining,lastActiveSlot, \
         reloading, exitButtonHover, buyHoverP1_1, buyHoverP1_2, buyHoverP1_3, buyHoverP2_1, buyHoverP2_2, buyHoverP2_3,\
-        buyHoverP2_4, poisoned, insideSaloon
+        buyHoverP2_4, poisoned, insideSaloon, critChance
 
     # player vals
     playerHP = 100
@@ -1694,6 +1729,7 @@ def resetValues():
     waveIntermissionLength = 1500
     venom_ticks_remaining = 0
     lastActiveSlot = 1
+    critChance = 10
 
     # x-pos
     cloud1x = 100
@@ -2663,7 +2699,7 @@ while True:
                     potion.play()
                 # spawn bandit
                 if event.key == pygame.K_b and mods & pygame.KMOD_CTRL:
-                    ban = Rattlesnake(400)
+                    ban = Bandit(400)
                     button.play()
                 # give ammo
                 if event.key == pygame.K_n and mods & pygame.KMOD_CTRL:
@@ -3083,6 +3119,7 @@ while True:
                     startGame_timer.start()
                     restartButtonHover = False
                     restartButtonClicked = True
+                    pygame.mouse.set_visible(False)
                 # Main Menu Button
                 if startGame == False and dead == True and mainMenuButtonHover == True:
                     button.play()
@@ -3701,7 +3738,7 @@ while True:
             if demoMode == True:
                 interact_text = font1.render("SCOPE (W)", True, (150, 240, 41))
             else:
-                interact_text = font1.render("SCOPE", True, (255, 255, 255))
+                interact_text = font1.render("SCOPE IN", True, (255, 255, 255))
 
 
         playerGrab = False
@@ -3858,6 +3895,7 @@ while True:
         intro.set_volume(musicVolume * masterVolume)
         music.set_volume(musicVolume * masterVolume)
         train_distant.set_volume(masterVolume)
+        headshot_impact.set_volume(masterVolume)
 
         # building loop
         if insideShop == False and insideSaloon == False:
