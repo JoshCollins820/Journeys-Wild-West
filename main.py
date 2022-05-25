@@ -508,6 +508,7 @@ def getEnemyRespawn():
 class Bandit:
     # instance list for created bandits
     instances = []
+    lootRange = []
     alive = 0
 
     # dictionary for types of bandits
@@ -531,7 +532,7 @@ class Bandit:
         else:
             self.x_location = x  # assign x-location
         self.moveSpeed = 8
-        self.bandit_left = None  # is the bandit on the left side of player
+        self.bandit_left = False  # is the bandit on the left side of player
         self.nameTag = font1.render("Bandit: " + self.name, True, (150, 240, 41))
         self.hpTag = font1.render(("HP: " + str(self.hp)), True, (255,255,255))
         self.nameLength = len(self.name)
@@ -605,11 +606,18 @@ class Bandit:
             self.stoodOn = False
         # decrease hp if dead and looted
         if self.hp <= 0 and self.looted == True:
+            self.stoodOn = False
             self.hp -= 1
         # remove from instance list
         if self.hp <= -20:
             # self.respawn()
             self.instances.remove(self)
+        # if being stepped on and not in list, add to lootable list
+        if self.stoodOn == True and (self in self.lootRange) == False:
+            self.lootRange.append(self)
+        # if not being stepped on and in list, remove from lootable list
+        elif self.stoodOn == False and (self in self.lootRange) == True:
+            self.lootRange.remove(self)
 
     # manual respawn if needed
     def respawn(self):
@@ -995,7 +1003,7 @@ def roll():
                     woodstep.play()
 
 
-def loot():
+def loot(count=1):
     global playerHolster, looting, standing, moveAbility
 
     if moveAbility == True and pause == False:
@@ -1007,7 +1015,7 @@ def loot():
         looting = True
         standing = False
         moveAbility = False
-        giveMoney()
+        giveMoney(0,count)
         lootBody.play()
         loot_timer.start()
 
@@ -1204,14 +1212,14 @@ def hpPotion():
     burp_timer.start()
 
 
-def giveMoney(amount = 0):
+def giveMoney(amount = 0, multiplier = 1):
     global moneyCount, showMoneyGainedText, moneyGained_text
     # if amount wasn't provided
     if amount == 0:
         amount = random.randint(50,100)
     showMoneyGained_timer.stop()
-    moneyCount += amount
-    moneyGained_text = font4.render("+ $" + (str(amount)), True, (42, 235, 48))
+    moneyCount += amount*multiplier
+    moneyGained_text = font4.render("+ $" + (str(amount*multiplier)), True, (42, 235, 48))
     showMoneyGainedText = True
     showMoneyGained_timer.start()
 
@@ -2642,7 +2650,7 @@ snakeStrikeStop_timer = simplegui.create_timer(200, snakeStrikeStop_timer_handle
 snakeStrikeCooldown_timer = simplegui.create_timer(3000, snakeStrikeCooldown_timer_handler)
 snakeRattleCooldown_timer = simplegui.create_timer(5, snakeRattleCooldown_timer_handler)
 snakeRattleSoundCooldown_timer = simplegui.create_timer(3200, snakeRattleSoundCooldown_timer_handler)
-trainDistantCooldown_timer = simplegui.create_timer(120000, trainDistantCooldown_timer_handler)
+trainDistantCooldown_timer = simplegui.create_timer(80000, trainDistantCooldown_timer_handler)
 
 
 
@@ -2706,6 +2714,10 @@ while True:
                     revRoundsTotal += 1000
                     sniperRoundsTotal += 1000
                     buckRoundsTotal += 1000
+                    ownSniperRifle = True
+                    ownSawedOff = True
+                    hpPotionCount = 10
+                    cashregister.play()
                     revolverspin.play()
                 # give money
                 if event.key == pygame.K_m and mods & pygame.KMOD_CTRL:
@@ -2849,7 +2861,7 @@ while True:
                     for bandit in Bandit.instances:
                         if bandit.looted == False and bandit.stoodOn:
                             bandit.looted = True
-                            loot()
+                            loot(len(Bandit.lootRange))
 
                 # Hotbar slots
                 if moveAbility == True and looting == False:
@@ -3155,6 +3167,7 @@ while True:
                     if confirmYesButtonHover == True:
                         button.play()
                         stopSounds()
+                        stopAllTimers(timerTuple)
                         mainMenu_timer.start()
                         confirmYesButtonHover = False
                         confirmYesButtonClicked = True

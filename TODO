@@ -6,7 +6,8 @@
 - Resolution (maybe 1280x800)
 
 ----------------------------ADD----------------------------
-- Crits/Headshot
+- way to improve skills
+- sand throw
 - Make current game a side Survival gamemode
 - Add save system
 - Robbing the store clerk (minigame)
@@ -42,9 +43,15 @@ Bug Fixes
 - Fixed reload sounds being spammable
 - Mouse cursor now beomces visible/hidden while playing
 - Added exit button
+- Fixed not getting correct amount of money when
+  looting multiple bodies at once
 
 
 ---------------------------NOTES---------------------------
 
 - Quests and bounties to complete for money or rewards
 - Player location is x: 210
+
+Stats:
+Aiming (Crit Chance)
+Stamina (Roll Cooldown)
