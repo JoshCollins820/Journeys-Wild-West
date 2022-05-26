@@ -2992,7 +2992,7 @@ while True:
                 hpPotionCount = 10
                 godMode = True
                 invisible = True
-                levelUp(10)
+                # levelUp(10)
                 burp2.play()
             # Hide HUD
             if event.key == pygame.K_u and mods & pygame.KMOD_CTRL:
