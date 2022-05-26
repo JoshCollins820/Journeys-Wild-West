@@ -282,7 +282,7 @@ if collapse:
     outside_ambience = pygame.mixer.Sound('assets/sounds/wind.wav')
     train_distant = pygame.mixer.Sound('assets/sounds/train_distant.wav')
     headshot_impact = pygame.mixer.Sound('assets/sounds/headshot.wav')
-    levelUp_sound = pygame.mixer.Sound('assets/sounds/levelUp.wav')
+    levelUp_sound = pygame.mixer.Sound('assets/sounds/levelup.wav')
     skillUp_sound = pygame.mixer.Sound('assets/sounds/skillup.wav')
     sand_throw = pygame.mixer.Sound('assets/sounds/sandthrow.wav')
     bandit_stun = pygame.mixer.Sound('assets/sounds/bandit_stun.wav')
