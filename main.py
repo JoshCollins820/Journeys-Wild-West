@@ -116,6 +116,7 @@ if collapse:
     walkingLeft = False
     walkingBoth = False
     rolling = False
+    throwingSand = False
     poisoned = False
     moneyPick = False
     moneyPickText = False
@@ -207,6 +208,11 @@ if collapse:
     playerRoll2Left = False
     playerRoll3Left = False
     rollReady = True
+    sandThrow1Right = False
+    sandThrow2Right = False
+    sandThrow1Left = False
+    sandThrow2Left = False
+    sandReady = True
     looting = False
     showMoneyGainedText = False
     healing = False
@@ -278,6 +284,7 @@ if collapse:
     headshot_impact = pygame.mixer.Sound('assets/sounds/headshot.wav')
     levelUp_sound = pygame.mixer.Sound('assets/sounds/levelUp.wav')
     skillUp_sound = pygame.mixer.Sound('assets/sounds/skillup.wav')
+    sand_throw = pygame.mixer.Sound('assets/sounds/sandthrow.wav')
 
 # sprites
 if collapse:
@@ -475,6 +482,8 @@ if collapse:
     asset_leveling_done_button_normal = pygame.image.load("assets/UI/settings_done_button_normal.png")
     asset_leveling_done_button_hover = pygame.image.load("assets/UI/settings_done_button_hover.png")
     asset_leveling_done_button_clicked = pygame.image.load("assets/UI/settings_done_button_clicked.png")
+    asset_thrown_sand_right = pygame.image.load("assets/weapons/thrown_sand_right.png")
+    asset_thrown_sand_left = pygame.image.load("assets/weapons/thrown_sand_left.png")
 
 # text
 if collapse:
@@ -583,6 +592,9 @@ class Bandit:
         self.banH = 330  # bandit fp img height
         self.stoodOn = False  # is the bandit being stood on by player
         self.looted = False  # has the player looted bandit
+        self.slowLength = 100  # amount of time that bandit gets slowed
+        self.slowed = False  # has the player slowed the bandit
+        self.distPostSlow = 0  # used as a timer for unslowing the bandit
 
     # general method that calls all of the other methods, will be called constantly by main
     def work(self):
@@ -596,12 +608,22 @@ class Bandit:
         # bandit is right of player
         if self.hp > 0 and banMoveAbility == True and invisible == False:
             if self.x_location >= 280:
-                self.x_location -= vel
+                if bandit.slowed == True:
+                    self.x_location -= vel*0.33
+                    self.distPostSlow += vel*0.33
+                else:
+                    self.x_location -= vel
                 self.bandit_left = False
             # bandit is left of player
             elif self.x_location <= 220:
-                self.x_location += vel
+                if bandit.slowed == True:
+                    self.x_location += vel*0.33
+                    self.distPostSlow += vel * 0.33
+                else:
+                    self.x_location += vel
                 self.bandit_left = True
+            if self.distPostSlow > self.slowLength and self.slowed == True:
+                self.slowed = False
 
     # draws alive bandit
     def draw(self):
@@ -1009,7 +1031,7 @@ def roll():
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster, playerSniper,\
         insideSaloon
     if lookingRight:
-        if moveAbility == True and pause == False:
+        if moveAbility == True and pause == False and throwingSand == False:
             if rollReady == True:
                 disableText()
                 # start roll
@@ -1027,7 +1049,7 @@ def roll():
                     woodstep.stop()
                     woodstep.play()
     elif lookingLeft:
-        if moveAbility == True and pause == False:
+        if moveAbility == True and pause == False and throwingSand == False:
             if rollReady == True:
                 disableText()
                 # start roll
@@ -1044,6 +1066,15 @@ def roll():
                 elif insideShop == True or insideSaloon == True:
                     woodstep.stop()
                     woodstep.play()
+
+
+def throwSand():
+    global moveAbility
+    if moveAbility == True and pause == False:
+        if sandReady == True:
+            sandStart_timer.start()
+
+
 
 
 def loot(count=1):
@@ -1687,6 +1718,7 @@ def showSettings():
     headshot_impact.set_volume(masterVolume)
     levelUp_sound.set_volume(masterVolume)
     skillUp_sound.set_volume(masterVolume)
+    sand_throw.set_volume(masterVolume)
 
 
 def showHUD():
@@ -1901,7 +1933,8 @@ def resetValues():
         reloading, exitButtonHover, buyHoverP1_1, buyHoverP1_2, buyHoverP1_3, buyHoverP2_1, buyHoverP2_2, buyHoverP2_3,\
         buyHoverP2_4, poisoned, insideSaloon, critChance, playerLevel, skillPoints, rollCooldown, aimLevelButtonHover, \
         aimLevelButtonClicked, stamLevelButtonHover, stamLevelButtonClicked, showLevelScreen, levelingDoneButtonHover, \
-        levelingDoneButtonClicked, aimLevel, stamLevel, showLevelUp
+        levelingDoneButtonClicked, aimLevel, stamLevel, showLevelUp, throwingSand, sandReady, sandThrow1Right, \
+        sandThrow2Right, sandThrow1Left, sandThrow2Left
 
     # player vals
     playerHP = 100
@@ -1951,6 +1984,7 @@ def resetValues():
     walkingLeft = False
     walkingBoth = False
     rolling = False
+    throwingSand = False
     poisoned = False
     insufFundsText = False
     purchasedText = False
@@ -2034,6 +2068,11 @@ def resetValues():
     playerRoll2Left = False
     playerRoll3Left = False
     rollReady = True
+    sandThrow1Right = False
+    sandThrow2Right = False
+    sandThrow1Left = False
+    sandThrow2Left = False
+    sandReady = True
     looting = False
     showMoneyGainedText = False
     healing = False
@@ -2698,6 +2737,67 @@ def rollCooldown_timer_handler():
     rollCooldown_timer.stop()
 
 
+def sandStart_timer_handler():
+    global sandReady, standing, playerShoot, sandThrow1Right, sandThrow1Left, throwingSand, moveAbility
+    sandReady = False
+    standing = False
+    throwingSand = True
+    playerShoot = False
+    moveAbility = False
+    sand_throw.play()
+    if lookingRight == True:
+        sandThrow1Right = True
+    elif lookingLeft == True:
+        sandThrow1Left = True
+
+    sandMid_timer.start()
+    sandStart_timer.stop()
+
+
+def sandMid_timer_handler():
+    global sandThrow1Right, sandThrow1Left, sandThrow2Right, sandThrow2Left
+    if lookingRight == True:
+        sandThrow1Right = False
+        sandThrow2Right = True
+        # slow bandits in range
+        for bandit in Bandit.instances:
+            if bandit.x_location <= 400 and bandit.x_location >= 250 and bandit.hp > 0:
+                bandit.distPostSlow = 0
+                bandit.slowed = True
+
+    elif lookingLeft == True:
+        sandThrow1Left = False
+        sandThrow2Left = True
+        # slow bandits in range
+        for bandit in Bandit.instances:
+            if bandit.x_location >= 50 and bandit.x_location <= 250 and bandit.hp > 0:
+                bandit.distPostSlow = 0
+                bandit.slowed = True
+
+    sandEnd_timer.start()
+    sandMid_timer.stop()
+
+
+def sandEnd_timer_handler():
+    global standing, sandThrow2Right, sandThrow2Left, throwingSand, moveAbility
+    moveAbility = True
+    if lookingRight == True:
+        sandThrow2Right = False
+    elif lookingLeft == True:
+        sandThrow2Left = False
+    standing = True
+    throwingSand = False
+
+    sandCooldown_timer.start()
+    sandEnd_timer.stop()
+
+
+def sandCooldown_timer_handler():
+    global sandReady
+    sandReady = True
+    sandCooldown_timer.stop()
+
+
 def walk1_timer_handler():
     ## Continuous walking function, called when press A or D or by walk2_timer if player holds A or D
 
@@ -2906,6 +3006,10 @@ aimLevelUp_timer = simplegui.create_timer(50, aimLevelUp_timer_handler)
 stamLevelUp_timer = simplegui.create_timer(50, stamLevelUp_timer_handler)
 showLevelUp_timer = simplegui.create_timer(100, showLevelUp_timer_handler)
 hideLevelUp_timer = simplegui.create_timer(6000, hideLevelUp_timer_handler)
+sandStart_timer = simplegui.create_timer(1, sandStart_timer_handler)
+sandMid_timer = simplegui.create_timer(100, sandMid_timer_handler)
+sandEnd_timer = simplegui.create_timer(150, sandEnd_timer_handler)
+sandCooldown_timer = simplegui.create_timer(1500, sandCooldown_timer_handler)
 
 
 # timers tuple
@@ -2916,7 +3020,8 @@ timerTuple = (trainDistantCooldown_timer, revolver_reload_timer, sniper_reload_t
               showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer, beerHealing_timer,
               startWave_timer, hideWave_timer, showWave_timer, venomTick_timer, snakeStrikeStop_timer,
               snakeStrikeCooldown_timer, snakeRattleCooldown_timer, snakeRattleSoundCooldown_timer, levelingDone_timer,
-              aimLevelUp_timer, stamLevelUp_timer, showLevelUp_timer, hideLevelUp_timer)
+              aimLevelUp_timer, stamLevelUp_timer, showLevelUp_timer, hideLevelUp_timer, sandStart_timer, sandMid_timer,
+              sandEnd_timer,sandCooldown_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -3053,6 +3158,10 @@ while True:
                 if event.key == pygame.K_s or event.key == pygame.K_DOWN:
                     roll()
 
+                # Throw sand
+                if event.key == pygame.K_e:
+                    throwSand()
+
                 # Reloading
                 if event.key == pygame.K_r:
                     # Revolver
@@ -3088,7 +3197,8 @@ while True:
 
                 # Use Item (Space)
                 if event.key == pygame.K_SPACE:
-                    if pause == False and dead == False and rolling == False and showLevelScreen == False:
+                    if pause == False and dead == False and rolling == False and showLevelScreen == False\
+                            and throwingSand == False:
                         # Revolver fire
                         if hotbarSlot1 == True:
                             if moveAbility == True and readyToFireRevolver == True:
@@ -3124,7 +3234,8 @@ while True:
                 # Aim Sniper Rifle
                 if event.key == pygame.K_w or event.key == pygame.K_UP:
                     if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True and showLevelScreen == False\
-                            and insideShop == False and insideSaloon == False and rolling == False and looting == False:
+                            and insideShop == False and insideSaloon == False and rolling == False and looting == False and\
+                            throwingSand == False:
                         scopeScreen = not scopeScreen
                         if scopeScreen == True:
                             breath.stop()
@@ -3134,7 +3245,7 @@ while True:
 
                 # Loot body
                 if event.key == pygame.K_f and rolling == False and insideShop == False and insideSaloon == False \
-                        and showLevelScreen == False:
+                        and showLevelScreen == False and throwingSand == False:
                     for bandit in Bandit.instances:
                         if bandit.looted == False and bandit.stoodOn:
                             bandit.looted = True
@@ -3612,7 +3723,8 @@ while True:
                             insufFundsText = True
                             error.play()
 
-                if pause == False and dead == False and rolling == False and showLevelScreen == False:
+                if pause == False and dead == False and rolling == False and showLevelScreen == False and \
+                        throwingSand == False:
                     # Revolver fires
                     if hotbarSlot1 == True:
                         if moveAbility == True and readyToFireRevolver == True:
@@ -3912,6 +4024,38 @@ while True:
                 screen.blit(asset_player_cooldown_sweat_right, (212, cooldown_sweat_y))
             if lookingLeft:
                 screen.blit(asset_player_cooldown_sweat_left, (222, cooldown_sweat_y))
+
+        # Throw sand
+        if throwingSand == True:
+            if lookingRight == True:
+                if sandThrow1Right == True:
+                    screen.blit(asset_player_loot_right, (180, 255))
+                if sandThrow2Right == True:
+                    screen.blit(asset_player_legs_idle_right, (217, 252))
+                    screen.blit(asset_player_right, (217, 253))
+                    screen.blit(asset_bandana_right, (217, 253))
+                    if ownSniperRifle == True:
+                        screen.blit(asset_sniper_rifle_right, (237, 302))
+                    screen.blit(asset_player_shoot_right, (227, 252))
+                    screen.blit(asset_revolver_vert_right, (236, 344))
+                    screen.blit(asset_holster_right, (217, 259))
+                    # sand
+                    screen.blit(asset_thrown_sand_right, (267, 265))
+            if lookingLeft == True:
+                if sandThrow1Left == True:
+                    screen.blit(asset_player_loot_left, (173, 255))
+                if sandThrow2Left == True:
+                    screen.blit(asset_revolver_vert_grip_left, (248, 342))
+                    screen.blit(asset_player_legs_idle_left, (217, 252))
+                    screen.blit(asset_player_shoot_left, (207, 252))
+                    screen.blit(asset_player_left, (217, 253))
+                    if ownSniperRifle == True:
+                        screen.blit(asset_sniper_rifle_left, (253, 302))
+                    screen.blit(asset_player_arms_idle, (217, 253))
+                    screen.blit(asset_bandana_left, (217, 253))
+                    # sand
+                    screen.blit(asset_thrown_sand_left, (73, 265))
+
         # HP Gain Particles
         if standing == True and healing == True:
             screen.blit(asset_player_hp_gain_particle, (208, hp_gain1_y))
@@ -4232,6 +4376,7 @@ while True:
         headshot_impact.set_volume(masterVolume)
         levelUp_sound.set_volume(masterVolume)
         skillUp_sound.set_volume(masterVolume)
+        sand_throw.set_volume(masterVolume)
 
         # building loop
         if insideShop == False and insideSaloon == False:
