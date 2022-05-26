@@ -285,6 +285,9 @@ if collapse:
     levelUp_sound = pygame.mixer.Sound('assets/sounds/levelUp.wav')
     skillUp_sound = pygame.mixer.Sound('assets/sounds/skillup.wav')
     sand_throw = pygame.mixer.Sound('assets/sounds/sandthrow.wav')
+    bandit_stun = pygame.mixer.Sound('assets/sounds/bandit_stun.wav')
+
+
 
 # sprites
 if collapse:
@@ -300,9 +303,15 @@ if collapse:
     asset_bandit1left = pygame.image.load("assets/npc/bandit1.png")
     asset_bandit2left = pygame.image.load("assets/npc/bandit2.png")
     asset_bandit3left = pygame.image.load("assets/npc/bandit3.png")
+    asset_bandit1left_stun = pygame.image.load("assets/npc/bandit1_stun.png")
+    asset_bandit2left_stun = pygame.image.load("assets/npc/bandit2_stun.png")
+    asset_bandit3left_stun = pygame.image.load("assets/npc/bandit3_stun.png")
     asset_bandit1right = pygame.image.load("assets/npc/bandit1right.png")
     asset_bandit2right = pygame.image.load("assets/npc/bandit2right.png")
     asset_bandit3right = pygame.image.load("assets/npc/bandit3right.png")
+    asset_bandit1right_stun = pygame.image.load("assets/npc/bandit1right_stun.png")
+    asset_bandit2right_stun = pygame.image.load("assets/npc/bandit2right_stun.png")
+    asset_bandit3right_stun = pygame.image.load("assets/npc/bandit3right_stun.png")
     asset_bandit1left_dead = pygame.image.load("assets/npc/bandit1dead.png")
     asset_bandit2left_dead = pygame.image.load("assets/npc/bandit2dead.png")
     asset_bandit3left_dead = pygame.image.load("assets/npc/bandit3dead.png")
@@ -565,9 +574,12 @@ class Bandit:
 
     # dictionary for types of bandits
     TYPE_MAP = {
-                1: (asset_bandit1left, asset_bandit1right, asset_bandit1left_dead, asset_bandit1right_dead, asset_bandit1_fp),
-                2: (asset_bandit2left, asset_bandit2right, asset_bandit2left_dead, asset_bandit2right_dead, asset_bandit2_fp),
-                3: (asset_bandit3left, asset_bandit3right, asset_bandit3left_dead, asset_bandit3right_dead, asset_bandit3_fp)
+                1: (asset_bandit1left, asset_bandit1left_stun, asset_bandit1right, asset_bandit1right_stun,
+                    asset_bandit1left_dead, asset_bandit1right_dead, asset_bandit1_fp),
+                2: (asset_bandit2left, asset_bandit2left_stun, asset_bandit2right, asset_bandit2right_stun,
+                    asset_bandit2left_dead, asset_bandit2right_dead, asset_bandit2_fp),
+                3: (asset_bandit3left, asset_bandit3left_stun, asset_bandit3right, asset_bandit3right_stun,
+                    asset_bandit3left_dead, asset_bandit3right_dead, asset_bandit3_fp)
                 }
 
     # constructor
@@ -575,8 +587,11 @@ class Bandit:
         Bandit.alive += 1
         self.__class__.instances.append(self)
         self.name = random.choice(list_names)  # assign random name
-        self.bandit_left_img, self.bandit_right_img, self.bandit_leftdead_img, self.bandit_rightdead_img, self.bandit_fp_img = \
-            self.TYPE_MAP[random.randint(1,3)]  # assign random type
+
+        self.bandit_left_img, self.bandit_left_stun_img, self.bandit_right_img, self.bandit_right_stun_img, \
+            self.bandit_leftdead_img, self.bandit_rightdead_img, self.bandit_fp_img \
+            = self.TYPE_MAP[random.randint(1,3)]  # assign random type
+
         self.level = 1  # assign level
         self.hp = 100  # assign starting hp
         if x == 0:
@@ -635,9 +650,15 @@ class Bandit:
                 screen.blit(self.nameTag, (self.x_location-20-self.nameLength,232))
                 screen.blit(self.hpTag, (self.x_location-7,246))
             if self.bandit_left == False:
-                screen.blit(self.bandit_left_img, (self.x_location-39.5, 262))
+                if self.slowed == True:
+                    screen.blit(self.bandit_left_stun_img, (self.x_location - 44.5, 262))
+                else:
+                    screen.blit(self.bandit_left_img, (self.x_location-39.5, 262))
             elif self.bandit_left == True:
-                screen.blit(self.bandit_right_img, (self.x_location-7, 262))
+                if self.slowed == True:
+                    screen.blit(self.bandit_right_stun_img, (self.x_location - 7, 262))
+                else:
+                    screen.blit(self.bandit_right_img, (self.x_location-7, 262))
 
     # seperate from draw method so that it can be called after drawing the player
     def draw_dead(self):
@@ -1719,6 +1740,7 @@ def showSettings():
     levelUp_sound.set_volume(masterVolume)
     skillUp_sound.set_volume(masterVolume)
     sand_throw.set_volume(masterVolume)
+    bandit_stun.set_volume(masterVolume)
 
 
 def showHUD():
@@ -2764,6 +2786,7 @@ def sandMid_timer_handler():
             if bandit.x_location <= 400 and bandit.x_location >= 250 and bandit.hp > 0:
                 bandit.distPostSlow = 0
                 bandit.slowed = True
+                bandit_stun.play()
 
     elif lookingLeft == True:
         sandThrow1Left = False
@@ -2773,6 +2796,7 @@ def sandMid_timer_handler():
             if bandit.x_location >= 50 and bandit.x_location <= 250 and bandit.hp > 0:
                 bandit.distPostSlow = 0
                 bandit.slowed = True
+                bandit_stun.play()
 
     sandEnd_timer.start()
     sandMid_timer.stop()
@@ -4377,6 +4401,7 @@ while True:
         levelUp_sound.set_volume(masterVolume)
         skillUp_sound.set_volume(masterVolume)
         sand_throw.set_volume(masterVolume)
+        bandit_stun.set_volume(masterVolume)
 
         # building loop
         if insideShop == False and insideSaloon == False:
