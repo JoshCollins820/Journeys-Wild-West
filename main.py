@@ -40,6 +40,8 @@ if collapse:
     # MAKE SURE TO ALSO CHANGE VALUES IN RESETVALUES METHOD -------------------------------------------------------
     # vals
     playerHP = 100
+    playerLevel = 1
+    skillPoints = 0
     moneyCount = 0
     revRoundsMag = 6
     revRoundsTotal = 24
@@ -69,7 +71,8 @@ if collapse:
     tumweedReset = -3000
     tumweedSpawn = 2000
     lastActiveSlot = 1
-    critChance = 10  # out of 100
+    rollCooldown = 1500
+    critChance = 7  # out of 100
     critAmount = 80
 
     # speed
@@ -96,7 +99,7 @@ if collapse:
     scopeWalk = 0
 
     # statements
-    devMode = True
+    devMode = False
     godMode = False
     invincibility = False
     invisible = False
@@ -263,6 +266,7 @@ if collapse:
     outside_ambience = pygame.mixer.Sound('assets/sounds/wind.wav')
     train_distant = pygame.mixer.Sound('assets/sounds/train_distant.wav')
     headshot_impact = pygame.mixer.Sound('assets/sounds/headshot.wav')
+    levelUp_sound = pygame.mixer.Sound('assets/sounds/levelUp.wav')
 
 
 # sprites
@@ -450,6 +454,7 @@ if collapse:
     # syntax - (Name, Size, Bold, Italic)
 
     playerHP_text = font2.render((str(playerHP)), True, (255,255,255))
+    playerLevel_text = font2.render("Level: " + (str(playerLevel)), True, (255, 255, 255))
     playerScore_text = font2.render((str(score)), True, (255,255,255))
     playerMoney_text = font2.render((str(moneyCount)), True, (255,255,255))
     revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255,255,255))
@@ -1242,6 +1247,9 @@ def stopSounds():
     death.stop()
     playerhit.stop()
     combatroll.stop()
+    train_distant.stop()
+    outside_ambience.stop()
+    saloon_ambience.stop()
 
 
 def mainMenu():
@@ -1546,6 +1554,7 @@ def showSettings():
     music.set_volume(musicVolume * masterVolume)
     train_distant.set_volume(masterVolume)
     headshot_impact.set_volume(masterVolume)
+    levelUp_sound.set_volume(masterVolume)
 
 
 def showHUD():
@@ -1559,6 +1568,9 @@ def showHUD():
             screen.blit(playerHP_text, (41, 505))
         elif godMode == True:
             screen.blit(infinity_text, (41, 505))
+
+        # level
+        screen.blit(playerLevel_text, (11, 8))
 
         # kills
         screen.blit(asset_kills_icon, (11, 530))
@@ -1663,6 +1675,41 @@ def interactCheck():
         interactText = False
 
 
+def levelUpCheck():
+    global playerLevel
+    if score >= 2 and playerLevel == 1:
+        levelUp()
+    elif score >= 5 and playerLevel == 2:
+        levelUp()
+    elif score >= 10 and playerLevel == 3:
+        levelUp()
+    elif score >= 20 and playerLevel == 4:
+        levelUp()
+    elif score >= 35 and playerLevel == 5:
+        levelUp()
+    elif score >= 50 and playerLevel == 6:
+        levelUp()
+    elif score >= 65 and playerLevel == 7:
+        levelUp()
+    elif score >= 80 and playerLevel == 8:
+        levelUp()
+    elif score >= 100 and playerLevel == 9:
+        levelUp()
+
+
+def levelUp(amount = 0):
+    global playerLevel, critChance, skillPoints
+    if amount == 0:
+        playerLevel += 1
+        skillPoints += 1
+        levelUp_sound.play()
+    # amount parameter is for cheats
+    else:
+        playerLevel = amount
+        skillPoints = amount-1
+        levelUp_sound.play()
+
+
 def playerHit(damage):
     global playerHP, invincibility, godMode
 
@@ -1717,10 +1764,12 @@ def resetValues():
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
         healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining,lastActiveSlot, \
         reloading, exitButtonHover, buyHoverP1_1, buyHoverP1_2, buyHoverP1_3, buyHoverP2_1, buyHoverP2_2, buyHoverP2_3,\
-        buyHoverP2_4, poisoned, insideSaloon, critChance
+        buyHoverP2_4, poisoned, insideSaloon, critChance, playerLevel, skillPoints, rollCooldown
 
     # player vals
     playerHP = 100
+    playerLevel = 1
+    skillPoints = 0
     moneyCount = 0
     revRoundsMag = 6
     revRoundsTotal = 24
@@ -1737,7 +1786,8 @@ def resetValues():
     waveIntermissionLength = 1500
     venom_ticks_remaining = 0
     lastActiveSlot = 1
-    critChance = 10
+    rollCooldown = 1500
+    critChance = 7
 
     # x-pos
     cloud1x = 100
@@ -2633,7 +2683,7 @@ rollStart_timer = simplegui.create_timer(1, rollStart_timer_handler)
 rollMid1_timer = simplegui.create_timer(75, rollMid1_timer_handler)
 rollMid2_timer = simplegui.create_timer(75, rollMid2_timer_handler)
 rollEnd_timer = simplegui.create_timer(75, rollEnd_timer_handler)
-rollCooldown_timer = simplegui.create_timer(1500, rollCooldown_timer_handler)
+rollCooldown_timer = simplegui.create_timer(rollCooldown, rollCooldown_timer_handler)
 walk1_timer = simplegui.create_timer(1, walk1_timer_handler)
 walk2_timer = simplegui.create_timer(150, walk2_timer_handler)
 reloadEnded_timer = simplegui.create_timer(125, reloadEnded_timer_handler)
@@ -2729,6 +2779,15 @@ while True:
             # Enable Cheats
             if event.key == pygame.K_o and mods & pygame.KMOD_CTRL:
                 devMode = True
+                revRoundsTotal += 1000
+                sniperRoundsTotal += 1000
+                buckRoundsTotal += 1000
+                ownSniperRifle = True
+                ownSawedOff = True
+                hpPotionCount = 10
+                godMode = True
+                invisible = True
+                levelUp(10)
                 burp2.play()
             # Hide HUD
             if event.key == pygame.K_u and mods & pygame.KMOD_CTRL:
@@ -3777,6 +3836,9 @@ while True:
         # check for interact
         interactCheck()
 
+        # check for leveling
+        levelUpCheck()
+
         # check for highscore
         if score > highscore and (devMode == False or demoMode == True):
             highscore = score
@@ -3855,6 +3917,7 @@ while True:
 
         # text refresh
         playerHP_text = font2.render((str(playerHP)), True, (255, 255, 255))
+        playerLevel_text = font2.render("Level: " + (str(playerLevel)) + "    Skill Points: " + (str(skillPoints)), True, (255, 255, 255))
         playerScore_text = font2.render((str(score)), True, (255, 255, 255))
         playerMoney_text = font2.render((str(moneyCount)), True, (255, 255, 255))
         revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255, 255, 255))
@@ -3909,6 +3972,7 @@ while True:
         music.set_volume(musicVolume * masterVolume)
         train_distant.set_volume(masterVolume)
         headshot_impact.set_volume(masterVolume)
+        levelUp_sound.set_volume(masterVolume)
 
         # building loop
         if insideShop == False and insideSaloon == False:
