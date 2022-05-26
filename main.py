@@ -42,6 +42,8 @@ if collapse:
     playerHP = 100
     playerLevel = 1
     skillPoints = 0
+    aimLevel = 0
+    stamLevel = 0
     moneyCount = 0
     revRoundsMag = 6
     revRoundsTotal = 24
@@ -189,6 +191,12 @@ if collapse:
     musicIconButtonHover = False
     masterIconButtonClicked = False
     masterIconButtonHover = False
+    aimLevelButtonHover = False
+    aimLevelButtonClicked = False
+    stamLevelButtonHover = False
+    stamLevelButtonClicked = False
+    levelingDoneButtonHover = False
+    levelingDoneButtonClicked = False
     exitButtonHover = False
     masterVolumeMuted = False
     musicVolumeMuted = False
@@ -211,6 +219,8 @@ if collapse:
     buyHoverP2_2 = False
     buyHoverP2_3 = False
     buyHoverP2_4 = False
+    showLevelScreen = False
+    showLevelUp = False
     demoMode = False
     if demoMode == True:
         ownSniperRifle = True
@@ -267,7 +277,7 @@ if collapse:
     train_distant = pygame.mixer.Sound('assets/sounds/train_distant.wav')
     headshot_impact = pygame.mixer.Sound('assets/sounds/headshot.wav')
     levelUp_sound = pygame.mixer.Sound('assets/sounds/levelUp.wav')
-
+    skillUp_sound = pygame.mixer.Sound('assets/sounds/skillup.wav')
 
 # sprites
 if collapse:
@@ -443,6 +453,28 @@ if collapse:
     asset_buy_hover_p2_2 = pygame.image.load("assets/UI/buy_hover_p2_2.png")
     asset_buy_hover_p2_3 = pygame.image.load("assets/UI/buy_hover_p2_3.png")
     asset_buy_hover_p2_4 = pygame.image.load("assets/UI/buy_hover_p2_4.png")
+    asset_aim_level_button_normal = pygame.image.load("assets/UI/levelup_button_normal.png")
+    asset_aim_level_button_hover = pygame.image.load("assets/UI/levelup_button_hover.png")
+    asset_aim_level_button_clicked = pygame.image.load("assets/UI/levelup_button_clicked.png")
+    asset_stam_level_button_normal = pygame.image.load("assets/UI/levelup_button_normal.png")
+    asset_stam_level_button_hover = pygame.image.load("assets/UI/levelup_button_hover.png")
+    asset_stam_level_button_clicked = pygame.image.load("assets/UI/levelup_button_clicked.png")
+    asset_aim_level_0 = pygame.image.load("assets/UI/level_0.png")
+    asset_aim_level_1 = pygame.image.load("assets/UI/level_1.png")
+    asset_aim_level_2 = pygame.image.load("assets/UI/level_2.png")
+    asset_aim_level_3 = pygame.image.load("assets/UI/level_3.png")
+    asset_aim_level_4 = pygame.image.load("assets/UI/level_4.png")
+    asset_aim_level_5 = pygame.image.load("assets/UI/level_5.png")
+    asset_stam_level_0 = pygame.image.load("assets/UI/level_0.png")
+    asset_stam_level_1 = pygame.image.load("assets/UI/level_1.png")
+    asset_stam_level_2 = pygame.image.load("assets/UI/level_2.png")
+    asset_stam_level_3 = pygame.image.load("assets/UI/level_3.png")
+    asset_stam_level_4 = pygame.image.load("assets/UI/level_4.png")
+    asset_stam_level_5 = pygame.image.load("assets/UI/level_5.png")
+    asset_leveling_menu = pygame.image.load("assets/UI/leveling.png")
+    asset_leveling_done_button_normal = pygame.image.load("assets/UI/settings_done_button_normal.png")
+    asset_leveling_done_button_hover = pygame.image.load("assets/UI/settings_done_button_hover.png")
+    asset_leveling_done_button_clicked = pygame.image.load("assets/UI/settings_done_button_clicked.png")
 
 # text
 if collapse:
@@ -451,11 +483,13 @@ if collapse:
     font3 = pygame.font.SysFont("ebrima", 20, True)
     font4 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 16)
     font5 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 24)
+    font6 = pygame.font.Font("assets/fonts/BAHNSCHRIFT.TTF", 28)
     # syntax - (Name, Size, Bold, Italic)
 
     playerHP_text = font2.render((str(playerHP)), True, (255,255,255))
     playerLevel_text = font2.render("Level: " + (str(playerLevel)), True, (255, 255, 255))
-    playerScore_text = font2.render((str(score)), True, (255,255,255))
+    playerSkillPoints_text = font2.render("Skill Points: " + (str(skillPoints)), True, (255, 255, 255))
+    playerScore_text = font4.render((str(score)), True, (255,255,255))
     playerMoney_text = font2.render((str(moneyCount)), True, (255,255,255))
     revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255,255,255))
     sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255,255,255))
@@ -487,6 +521,10 @@ if collapse:
     moneyGained_text = font4.render("+ $", True, (50, 100, 50))
     wave_text = font5.render("Wave " + str(wave), True, (240, 177, 29))
     wave_text_rect = wave_text.get_rect(center=[300, 150])
+    levelUp_text = font6.render("Level Up!", True, (240, 177, 29))
+    levelUp_text_rect = levelUp_text.get_rect(center=[300, 70])
+    skillUp_text = font4.render("Press TAB to Spend Your " + str(skillPoints) + " Skill Points", True, (240, 177, 29))
+    skillUp_text_rect = skillUp_text.get_rect(center=[300, 100])
     infinity_text = font2.render("-1", True, (255,255,255))
     if demoMode == True:
         devMode_text = font1.render("Demo Mode", True, (255, 255, 255))
@@ -1304,6 +1342,99 @@ def mainMenu():
     music_timer.stop()
 
 
+def levelScreen():
+    global levelingDoneButtonClicked, levelingDoneButtonHover, aimLevelButtonHover, stamLevelButtonHover, \
+        aimLevelButtonClicked, stamLevelButtonClicked
+    # level screen
+    screen.blit(asset_leveling_menu, (0, 0))
+    # level
+    screen.blit(playerLevel_text, (135, 345))
+    # skillpoints
+    screen.blit(playerSkillPoints_text, (135, 375))
+
+    # Stat Data
+    screen.blit(critData_text, (350, 345))
+    screen.blit(stamData_text, (350, 375))
+
+
+    # Info
+    if aimLevelButtonHover == True:
+        screen.blit(aimLevelInfo_text, (135, 226))
+    if stamLevelButtonHover == True:
+        screen.blit(stamLevelInfo_text, (135, 284))
+
+
+    # Done Button ---------------------------------------------------------------------------------
+    # Hover Button
+    if (233 <= mouse_posx <= 370) and (433 <= mouse_posy <= 473) and levelingDoneButtonClicked == False:
+        screen.blit(asset_leveling_done_button_hover, (0, 0))
+        levelingDoneButtonHover = True
+    # Click Button
+    elif (233 <= mouse_posx <= 370) and (433 <= mouse_posy <= 473) and levelingDoneButtonClicked == True:
+        screen.blit(asset_leveling_done_button_clicked, (0, 0))
+        levelingDoneButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_leveling_done_button_normal, (0, 0))
+        levelingDoneButtonHover = False
+
+    # Aim Level Button ---------------------------------------------------------------------------------
+    # Hover Button
+    if (454 <= mouse_posx <= 485) and (190 <= mouse_posy <= 220) and aimLevelButtonClicked == False:
+        screen.blit(asset_aim_level_button_hover, (0, -2))
+        aimLevelButtonHover = True
+    # Click Button
+    elif (454 <= mouse_posx <= 485) and (190 <= mouse_posy <= 220) and aimLevelButtonClicked == True:
+        screen.blit(asset_aim_level_button_clicked, (0, -2))
+        aimLevelButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_aim_level_button_normal, (0, -2))
+        aimLevelButtonHover = False
+
+    # Stam Level Button ---------------------------------------------------------------------------------
+    # Hover Button
+    if (456 <= mouse_posx <= 482) and (248 <= mouse_posy <= 275) and stamLevelButtonClicked == False:
+        screen.blit(asset_stam_level_button_hover, (0, 56))
+        stamLevelButtonHover = True
+    # Click Button
+    elif (456 <= mouse_posx <= 482) and (248 <= mouse_posy <= 275) and stamLevelButtonClicked == True:
+        screen.blit(asset_stam_level_button_clicked, (0, 56))
+        stamLevelButtonHover = False
+    # Normal Button
+    else:
+        screen.blit(asset_stam_level_button_normal, (0, 56))
+        stamLevelButtonHover = False
+
+    # Aim levels
+    if aimLevel == 0:
+        screen.blit(asset_aim_level_0, (0, 0))
+    elif aimLevel == 1:
+        screen.blit(asset_aim_level_1, (0, 0))
+    elif aimLevel == 2:
+        screen.blit(asset_aim_level_2, (0, 0))
+    elif aimLevel == 3:
+        screen.blit(asset_aim_level_3, (0, 0))
+    elif aimLevel == 4:
+        screen.blit(asset_aim_level_4, (0, 0))
+    elif aimLevel == 5:
+        screen.blit(asset_aim_level_5, (0, 0))
+
+    # Stam levels
+    if stamLevel == 0:
+        screen.blit(asset_stam_level_0, (0, 56))
+    elif stamLevel == 1:
+        screen.blit(asset_stam_level_1, (0, 56))
+    elif stamLevel == 2:
+        screen.blit(asset_stam_level_2, (0, 56))
+    elif stamLevel == 3:
+        screen.blit(asset_stam_level_3, (0, 56))
+    elif stamLevel == 4:
+        screen.blit(asset_stam_level_4, (0, 56))
+    elif stamLevel == 5:
+        screen.blit(asset_stam_level_5, (0, 56))
+
+
 def pauseGame():
     global resumeButtonHover, settingsButtonHover, mainMenu2ButtonHover, confirmYesButtonHover, \
         confirmNoButtonHover, settingsDoneButtonHover, masterLeftButtonHover, masterRightButtonHover, \
@@ -1555,6 +1686,7 @@ def showSettings():
     train_distant.set_volume(masterVolume)
     headshot_impact.set_volume(masterVolume)
     levelUp_sound.set_volume(masterVolume)
+    skillUp_sound.set_volume(masterVolume)
 
 
 def showHUD():
@@ -1568,9 +1700,6 @@ def showHUD():
             screen.blit(playerHP_text, (41, 505))
         elif godMode == True:
             screen.blit(infinity_text, (41, 505))
-
-        # level
-        screen.blit(playerLevel_text, (11, 8))
 
         # kills
         screen.blit(asset_kills_icon, (11, 530))
@@ -1602,7 +1731,9 @@ def showHUD():
             screen.blit(asset_text_insufficient, (201, 60))
         if showWave == True:
             screen.blit(wave_text, wave_text_rect)
-
+        if showLevelUp == True:
+            screen.blit(levelUp_text, levelUp_text_rect)
+            screen.blit(skillUp_text, skillUp_text_rect)
 
         # interact text
         if interactText == True and rolling == False and scopeScreen == False:
@@ -1651,6 +1782,10 @@ def showHUD():
         if showMoneyGainedText == True:
             screen.blit(moneyGained_text, (30, 480))
 
+        # Level Screen
+        if showLevelScreen == True:
+            levelScreen()
+
 
 def interactCheck():
     global interactText
@@ -1698,16 +1833,16 @@ def levelUpCheck():
 
 
 def levelUp(amount = 0):
-    global playerLevel, critChance, skillPoints
+    global playerLevel, skillPoints
     if amount == 0:
         playerLevel += 1
         skillPoints += 1
         levelUp_sound.play()
+        showLevelUp_timer.start()
     # amount parameter is for cheats
     else:
         playerLevel = amount
         skillPoints = amount-1
-        levelUp_sound.play()
 
 
 def playerHit(damage):
@@ -1764,12 +1899,16 @@ def resetValues():
         showMoneyGainedText, sawedOffRoundsMag, buckRoundsTotal,ownSawedOff,sawedOffOutMag,sawedOffOutAmmo, \
         healing, healQueue, wave, waveIntermissionLength, showWave, banditCount, venom_ticks_remaining,lastActiveSlot, \
         reloading, exitButtonHover, buyHoverP1_1, buyHoverP1_2, buyHoverP1_3, buyHoverP2_1, buyHoverP2_2, buyHoverP2_3,\
-        buyHoverP2_4, poisoned, insideSaloon, critChance, playerLevel, skillPoints, rollCooldown
+        buyHoverP2_4, poisoned, insideSaloon, critChance, playerLevel, skillPoints, rollCooldown, aimLevelButtonHover, \
+        aimLevelButtonClicked, stamLevelButtonHover, stamLevelButtonClicked, showLevelScreen, levelingDoneButtonHover, \
+        levelingDoneButtonClicked, aimLevel, stamLevel, showLevelUp
 
     # player vals
     playerHP = 100
     playerLevel = 1
     skillPoints = 0
+    aimLevel = 0
+    stamLevel = 0
     moneyCount = 0
     revRoundsMag = 6
     revRoundsTotal = 24
@@ -1881,6 +2020,12 @@ def resetValues():
     musicIconButtonHover = False
     masterIconButtonClicked = False
     masterIconButtonHover = False
+    aimLevelButtonHover = False
+    aimLevelButtonClicked = False
+    stamLevelButtonHover = False
+    stamLevelButtonClicked = False
+    levelingDoneButtonHover = False
+    levelingDoneButtonClicked = False
     exitButtonHover = False
     playerRoll1Right = False
     playerRoll2Right = False
@@ -1901,6 +2046,8 @@ def resetValues():
     buyHoverP2_2 = False
     buyHoverP2_3 = False
     buyHoverP2_4 = False
+    showLevelScreen = False
+    showLevelUp = False
     if demoMode == True:
         ownSniperRifle = True
         ownSawedOff = False
@@ -2287,6 +2434,40 @@ def resumeGame_timer_handler():
     resumeGame_timer.stop()
 
 
+def levelingDone_timer_handler():
+    global levelingDoneButtonClicked, showLevelScreen
+    showLevelScreen = False
+    levelingDoneButtonClicked = False
+    levelingDone_timer.stop()
+
+
+def aimLevelUp_timer_handler():
+    global aimLevelButtonClicked, aimLevel, skillPoints, critChance
+    skillUp_sound.play()
+    # increase aim level for UI
+    aimLevel += 1
+    # take away skill point
+    skillPoints -= 1
+    # increase crit stat %
+    critChance += 5
+    aimLevelButtonClicked = False
+    aimLevelUp_timer.stop()
+
+
+def stamLevelUp_timer_handler():
+    global stamLevelButtonClicked, stamLevel, skillPoints, rollCooldown, rollCooldown_timer
+    skillUp_sound.play()
+    # increase aim level for UI
+    stamLevel += 1
+    # take away skill point
+    skillPoints -= 1
+    # decrease roll cooldown
+    rollCooldown -= 180
+    rollCooldown_timer = simplegui.create_timer(rollCooldown, rollCooldown_timer_handler)
+    stamLevelButtonClicked = False
+    stamLevelUp_timer.stop()
+
+
 def revolverFireDelay_timer_handler():
     global readyToFireRevolver
     readyToFireRevolver = True
@@ -2340,6 +2521,8 @@ def rollStart_timer_handler():
             if (store2x + 700) <= 0:
                 worldRight(0)
                 moveAbility = False
+            else:
+                worldRight(1)
         else:
             worldRight(1)
     elif lookingLeft == True:
@@ -2356,6 +2539,7 @@ def rollStart_timer_handler():
         elif insideSaloon == True:
             if (store2x - 200) >= 0:
                 insideSaloon = False
+                saloon_ambience.stop()
                 store1x = -650
                 store2x = 50
                 cactusx = -900
@@ -2403,6 +2587,7 @@ def rollMid1_timer_handler():
         elif insideSaloon == True:
             if (store2x - 200) >= 0:
                 insideSaloon = False
+                saloon_ambience.stop()
                 store1x = -650
                 store2x = 50
                 cactusx = -900
@@ -2470,6 +2655,7 @@ def rollEnd_timer_handler():
                 worldRight(1)
             # fixes bug where you can roll then walk through wall
             if (store2x + 700) <= 0:
+                worldRight(0)
                 moveAbility = False
         else:
             worldRight(1)
@@ -2487,6 +2673,7 @@ def rollEnd_timer_handler():
         elif insideSaloon == True:
             if (store2x - 200) >= 0:
                 insideSaloon = False
+                saloon_ambience.stop()
                 store1x = -650
                 store2x = 50
                 cactusx = -900
@@ -2616,6 +2803,19 @@ def hideWave_timer_handler():
     hideWave_timer.stop()
 
 
+def showLevelUp_timer_handler():
+    global showLevelUp
+    showLevelUp = True
+    hideLevelUp_timer.start()
+    showLevelUp_timer.stop()
+
+
+def hideLevelUp_timer_handler():
+    global showLevelUp
+    showLevelUp = False
+    hideLevelUp_timer.stop()
+
+
 def venomTick_timer_handler():
     global playerHP, venom_ticks_remaining, poisoned
 
@@ -2664,7 +2864,7 @@ def trainDistantCooldown_timer_handler():
     trainDistantCooldown_timer.start()
 
 
-# timers (ms, timer_handler) (1000ms = 1sec)
+# timers (ms, timer_handler) (1000ms = 1sec) (keep in mind these do not refresh constantly)
 revolver_reload_timer = simplegui.create_timer(revolverReloadSpeed, revolver_reload_timer_handler)
 sniper_reload_timer = simplegui.create_timer(1000, sniper_reload_timer_handler)
 sawed_off_reload_timer = simplegui.create_timer(500, sawed_off_reload_timer_handler)
@@ -2701,7 +2901,11 @@ snakeStrikeCooldown_timer = simplegui.create_timer(3000, snakeStrikeCooldown_tim
 snakeRattleCooldown_timer = simplegui.create_timer(5, snakeRattleCooldown_timer_handler)
 snakeRattleSoundCooldown_timer = simplegui.create_timer(3200, snakeRattleSoundCooldown_timer_handler)
 trainDistantCooldown_timer = simplegui.create_timer(80000, trainDistantCooldown_timer_handler)
-
+levelingDone_timer = simplegui.create_timer(50, levelingDone_timer_handler)
+aimLevelUp_timer = simplegui.create_timer(50, aimLevelUp_timer_handler)
+stamLevelUp_timer = simplegui.create_timer(50, stamLevelUp_timer_handler)
+showLevelUp_timer = simplegui.create_timer(100, showLevelUp_timer_handler)
+hideLevelUp_timer = simplegui.create_timer(6000, hideLevelUp_timer_handler)
 
 
 # timers tuple
@@ -2711,7 +2915,8 @@ timerTuple = (trainDistantCooldown_timer, revolver_reload_timer, sniper_reload_t
               rollMid1_timer, rollEnd_timer, rollCooldown_timer, walk1_timer, walk2_timer, reloadEnded_timer, loot_timer,
               showMoneyGained_timer, sawed_off_reload_timer, sawedOffreloadEnded_timer,burp_timer, beerHealing_timer,
               startWave_timer, hideWave_timer, showWave_timer, venomTick_timer, snakeStrikeStop_timer,
-              snakeStrikeCooldown_timer, snakeRattleCooldown_timer, snakeRattleSoundCooldown_timer)
+              snakeStrikeCooldown_timer, snakeRattleCooldown_timer, snakeRattleSoundCooldown_timer, levelingDone_timer,
+              aimLevelUp_timer, stamLevelUp_timer, showLevelUp_timer, hideLevelUp_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -2813,6 +3018,18 @@ while True:
                 # Hide/Show Mouse
                 pygame.mouse.set_visible(False)
 
+            # Open Level screen
+            if event.key == pygame.K_TAB and pause == False and startGame == True and dead == False and \
+                    showLevelScreen == False and catalog == False:
+                pygame.mouse.set_visible(True)
+                showLevelScreen = True
+
+            # Close Level screen
+            elif event.key == pygame.K_TAB and pause == False and startGame == True and dead == False and \
+                    showLevelScreen == True and catalog == False:
+                pygame.mouse.set_visible(False)
+                showLevelScreen = False
+
             if pause == False:
                 # Walk left
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
@@ -2871,7 +3088,7 @@ while True:
 
                 # Use Item (Space)
                 if event.key == pygame.K_SPACE:
-                    if pause == False and dead == False and rolling == False:
+                    if pause == False and dead == False and rolling == False and showLevelScreen == False:
                         # Revolver fire
                         if hotbarSlot1 == True:
                             if moveAbility == True and readyToFireRevolver == True:
@@ -2906,7 +3123,7 @@ while True:
 
                 # Aim Sniper Rifle
                 if event.key == pygame.K_w or event.key == pygame.K_UP:
-                    if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True \
+                    if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True and showLevelScreen == False\
                             and insideShop == False and insideSaloon == False and rolling == False and looting == False:
                         scopeScreen = not scopeScreen
                         if scopeScreen == True:
@@ -2916,14 +3133,15 @@ while True:
                             heartbeat.play(-1)
 
                 # Loot body
-                if event.key == pygame.K_f and rolling == False and insideShop == False and insideSaloon == False:
+                if event.key == pygame.K_f and rolling == False and insideShop == False and insideSaloon == False \
+                        and showLevelScreen == False:
                     for bandit in Bandit.instances:
                         if bandit.looted == False and bandit.stoodOn:
                             bandit.looted = True
                             loot(len(Bandit.lootRange))
 
                 # Hotbar slots
-                if moveAbility == True and looting == False:
+                if moveAbility == True and looting == False and showLevelScreen == False:
                     # Switch to hotbar slot 1
                     if event.key == pygame.K_1 and scopeScreen == False:
                         switchSlots(1)
@@ -3004,7 +3222,7 @@ while True:
                 # Open Catalog
                 if store1x + 420 <= 100 and store1x + 420 >= 0:
                     if playerHolster == False and playerShoot == False and insideShop == True and catalog == False\
-                            and playerSniper == False:
+                            and playerSniper == False and showLevelScreen == False:
                         if event.key == pygame.K_UP or event.key == pygame.K_w:
                             catalog = not catalog
                             catalogPage1 = True
@@ -3159,6 +3377,8 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Mouse Button 1
             if event.button == 1:
+                # debug for mouse location
+                # print(str(mouse_posx) + ", " + str(mouse_posy))
                 # In Main Menu Screen
                 # Play Button
                 if startGame == False and settings == False and playButtonHover == True:
@@ -3289,6 +3509,36 @@ while True:
                         musicIconButtonHover = False
                         musicIconButtonClicked = True
 
+                if showLevelScreen == True:
+                    # Done Button
+                    if levelingDoneButtonHover == True:
+                        button.play()
+                        levelingDone_timer.start()
+                        levelingDoneButtonHover = False
+                        levelingDoneButtonClicked = True
+
+                    # Aim Level Up Button
+                    if aimLevelButtonHover == True:
+                        # if not max level and have skill point
+                        if aimLevel < 5 and skillPoints > 0:
+                            button.play()
+                            aimLevelUp_timer.start()
+                            aimLevelButtonHover = False
+                            aimLevelButtonClicked = True
+                        else:
+                            error.play()
+
+                    # Stam Level Up Button
+                    if stamLevelButtonHover == True:
+                        # if not max level and have skill point
+                        if stamLevel < 5 and skillPoints > 0:
+                            button.play()
+                            stamLevelUp_timer.start()
+                            stamLevelButtonHover = False
+                            stamLevelButtonClicked = True
+                        else:
+                            error.play()
+
                 # Catalog Click to Buy
                 if catalog == True:
                     # hover buy sniper button
@@ -3362,7 +3612,7 @@ while True:
                             insufFundsText = True
                             error.play()
 
-                if pause == False and dead == False and rolling == False:
+                if pause == False and dead == False and rolling == False and showLevelScreen == False:
                     # Revolver fires
                     if hotbarSlot1 == True:
                         if moveAbility == True and readyToFireRevolver == True:
@@ -3445,7 +3695,6 @@ while True:
     # Paused ----------------------------------------------------------------------------------------------------
     if pause == True:
         pauseGame()
-
 
     # Game Started ----------------------------------------------------------------------------------------------
     if startGame == True and pause == False:
@@ -3917,7 +4166,8 @@ while True:
 
         # text refresh
         playerHP_text = font2.render((str(playerHP)), True, (255, 255, 255))
-        playerLevel_text = font2.render("Level: " + (str(playerLevel)) + "    Skill Points: " + (str(skillPoints)), True, (255, 255, 255))
+        playerLevel_text = font2.render("Level: " + (str(playerLevel)), True, (255, 255, 255))
+        playerSkillPoints_text = font2.render("Skill Points: " + (str(skillPoints)), True, (255, 255, 255))
         playerScore_text = font2.render((str(score)), True, (255, 255, 255))
         playerMoney_text = font2.render((str(moneyCount)), True, (255, 255, 255))
         revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255, 255, 255))
@@ -3930,7 +4180,15 @@ while True:
         playerHighscore_text = font1.render("Highscore: " + (str(highscore)), True, (255, 255, 255))
         wave_text = font5.render("Wave " + str(wave), True, (240, 177, 29))
         wave_text_rect = wave_text.get_rect(center=[300, 150])
+        levelUp_text = font6.render("Level Up!", True, (240, 177, 29))
+        levelUp_text_rect = levelUp_text.get_rect(center=[300, 70])
+        skillUp_text = font4.render("Press TAB to Spend Your " + str(skillPoints) + " Skill Points", True,(240, 177, 29))
+        skillUp_text_rect = skillUp_text.get_rect(center=[300, 100])
         infinity_text = font2.render("-1", True, (255, 255, 255))
+        aimLevelInfo_text = font1.render("Increases chance of landing Headshot by 5% each level", True, (255, 255, 255))
+        stamLevelInfo_text = font1.render("Decreases Combat Roll cooldown by 10% each level", True, (255, 255, 255))
+        critData_text = font1.render("Headshot Odds: " + str(critChance) + "%", True, (255, 255, 255))
+        stamData_text = font1.render("Roll Cooldown: " + str(rollCooldown/1000) + "s", True, (255, 255, 255))
 
         # volume refresh
         step.set_volume(masterVolume)
@@ -3973,6 +4231,7 @@ while True:
         train_distant.set_volume(masterVolume)
         headshot_impact.set_volume(masterVolume)
         levelUp_sound.set_volume(masterVolume)
+        skillUp_sound.set_volume(masterVolume)
 
         # building loop
         if insideShop == False and insideSaloon == False:
