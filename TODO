@@ -6,45 +6,32 @@
 - Resolution (maybe 1280x800)
 
 ----------------------------ADD----------------------------
-- Make current game a side Survival gamemode
-- Add save system
-- Robbing the store clerk (minigame)
-- Horses
+- Rob the store clerk
+- Snakes move
 - Bounty posters
 - Lost item posters
+- Horizontal sniper aiming
 - Missions
 - Voice acting (Solee & Cianfarano)
-- Horizontal sniper aiming
 - Leaderboard
+- Horses
+- Make current game a side Survival gamemode
+- Add save system
 
 -----------------------------------------------------------
 -------------------------CHANGELOG-------------------------
-v0.5
+v0.6
 New Features
-- Rattlesnakes
-- Sand Throwing
-- Leveling system
-- Interior to Saloon
-- Hotbar scrolling
-- Clickable buy buttons in shop
-- Ambient sfx
+-
 
 
 Balance
-- HP Beer heal amount now stacks
+-
 
 
 
 Bug Fixes
-- No longer can loot while inside shop
-- No longer can shoot bandits from inside shop
-- No longer can roll, then walk through shop wall
-- Tuned sound effects
-- Reload sounds being spammable
-- Mouse cursor now beomces visible/hidden while playing
-- Added exit button
-- Fixed not getting correct amount of money when
-  looting multiple bodies at once
+-
 
 
 ---------------------------NOTES---------------------------
@@ -52,5 +39,3 @@ Bug Fixes
 - Quests and bounties to complete for money or rewards
 - Player location is x: 210
 
-right: 150->50
-left: -100->-250

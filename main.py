@@ -1,5 +1,5 @@
 ## JOURNEYS WILD WEST
-## v0.5
+## v0.6
 ## Developed by: Josh Collins
 ## --------------------------
 
@@ -33,7 +33,7 @@ screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("JOURNEYS: WILD WEST")
 pygame.display.set_icon(pygame.image.load("assets/icon/window_icon.png"))
 collapse = True
-version = "0.5"
+version = "0.6"
 
 # values and statements
 if collapse:
@@ -554,7 +554,7 @@ if collapse:
     if demoMode == True:
         devMode_text = font1.render("Demo Mode", True, (255, 255, 255))
     else:
-        devMode_text = font1.render("Dev Mode", True, (255, 255, 255))
+        devMode_text = font1.render("Cheat Mode", True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 # list of names
@@ -3176,7 +3176,7 @@ while True:
                     potion.play()
                 # spawn bandit
                 if event.key == pygame.K_b and mods & pygame.KMOD_CTRL:
-                    ban = Bandit(400)
+                    ban = Rattlesnake(400)
                     button.play()
                 # give ammo
                 if event.key == pygame.K_n and mods & pygame.KMOD_CTRL:
@@ -3204,8 +3204,8 @@ while True:
                 ownSniperRifle = True
                 ownSawedOff = True
                 hpPotionCount = 10
-                godMode = True
-                invisible = True
+                # godMode = True
+                # invisible = True
                 # levelUp(10)
                 burp2.play()
             # Hide HUD
