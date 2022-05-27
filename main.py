@@ -24,7 +24,7 @@ height = 600  # 800
 # pygame initialization
 pygame.init()
 pygame.mixer.pre_init(44100, -16, 2, 512)
-pygame.mixer.set_num_channels(10)  # default is 8
+pygame.mixer.set_num_channels(12)  # default is 8
 clock = pygame.time.Clock()
 random.seed()
 
@@ -227,6 +227,9 @@ if collapse:
     buyHoverP2_4 = False
     showLevelScreen = False
     showLevelUp = False
+    playedBanPain = False
+    saloonPanic = False
+    saloonTookDrink = False
     demoMode = False
     if demoMode == True:
         ownSniperRifle = True
@@ -255,6 +258,7 @@ if collapse:
     death = pygame.mixer.Sound('assets/sounds/death.wav')
     playerhit = pygame.mixer.Sound('assets/sounds/playerhit.wav')
     banpain = pygame.mixer.Sound('assets/sounds/banpain.wav')
+    banhit = pygame.mixer.Sound('assets/sounds/banhit.wav')
     snipershot = pygame.mixer.Sound('assets/sounds/snipershot.wav')
     heartbeat = pygame.mixer.Sound('assets/sounds/heartbeat.wav')
     breath = pygame.mixer.Sound('assets/sounds/breath.wav')
@@ -286,6 +290,7 @@ if collapse:
     skillUp_sound = pygame.mixer.Sound('assets/sounds/skillup.wav')
     sand_throw = pygame.mixer.Sound('assets/sounds/sandthrow.wav')
     bandit_stun = pygame.mixer.Sound('assets/sounds/bandit_stun.wav')
+    saloon_panic = pygame.mixer.Sound('assets/sounds/panic.wav')
 
 
 
@@ -345,6 +350,8 @@ if collapse:
     asset_sniper_rifle_left = pygame.image.load("assets/weapons/sniper_rifle_left.png")
     asset_shop_interior = pygame.image.load("assets/buildings/shop_interior.png")
     asset_saloon_interior = pygame.image.load("assets/buildings/saloon_interior.png")
+    asset_saloon_interior_panic = pygame.image.load("assets/buildings/saloon_interior_panic.png")
+    asset_saloon_interior_panic_no_drink = pygame.image.load("assets/buildings/saloon_interior_panic_no_drink.png")
     asset_text_1000_green = pygame.image.load("assets/UI/text_1000_green.png")
     asset_text_1000_red = pygame.image.load("assets/UI/text_1000_red.png")
     asset_text_3000_green = pygame.image.load("assets/UI/text_3000_green.png")
@@ -673,14 +680,19 @@ class Bandit:
     # cheks if bandit is in melee range
     def checkMelee(self):
         if self.hp > 0:
-            if self.x_location <= 290 and self.x_location >= 210 and insideShop == False and insideSaloon == False:
+            if self.x_location <= 290 and self.x_location >= 210 and insideShop == False and insideSaloon == False\
+                    and self.slowed == False:
                 playerHit(4)
 
     # checks if bandit is dead, looted, and when it should despawn
     def checkDead(self):
+        global playedBanPain
         # bandit dead
         if self.hp == 0:
-            banpain.play()
+            # prevents banpain from playing multiple times at once
+            if playedBanPain == False:
+                banpain.play()
+                playedBanPain = True
             giveScore()
             Bandit.alive -= 1
             self.hp -= 1
@@ -1091,7 +1103,7 @@ def roll():
 
 def throwSand():
     global moveAbility
-    if moveAbility == True and pause == False:
+    if moveAbility == True and pause == False and insideShop == False and insideSaloon == False:
         if sandReady == True:
             sandStart_timer.start()
 
@@ -1150,8 +1162,12 @@ def fire():
     global score, moneyCount, startGame, moveAbility, hotbarSlot2, hotbarSlot6, dead, bulletx, hotbarSlot1, \
         lookingLeft, lookingRight, revRoundsMag, reloadUI, outAmmoUI, interactText, scopeScreen,\
         playerShoot, playerHolster, revRoundsTotal,sniperRoundsMag, sniperRoundsTotal, playerSniper, pause, \
-        sawedOffRoundsMag, insideShop, reloading, insideSaloon
+        sawedOffRoundsMag, insideShop, reloading, insideSaloon, playedBanPain, saloonPanic
 
+    # bool used to prevent sounds from playing for each bandit hit
+    playedHitSound = False
+    playedHeadshotSound = False
+    playedBanPain = False
     # Revolver
     if hotbarSlot1 == True:
         playerShoot = True
@@ -1170,9 +1186,16 @@ def fire():
                         critRoll = random.randint(0,100)
                         if critRoll > 0 and critRoll < critChance:
                             crit = critAmount
-                            headshot_impact.play()
+                            # prevents sound from being played multiple times per shot
+                            if playedHeadshotSound == False:
+                                headshot_impact.play()
+                                playedHeadshotSound = True
                         else:
                             crit = 0
+                        # prevents sound from being played multiple times per shot
+                        if playedHitSound == False:
+                            banhit.play()
+                            playedHitSound = True
                         for i in range(0,revolverDamage+crit):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
@@ -1190,9 +1213,16 @@ def fire():
                         critRoll = random.randint(0,100)
                         if critRoll > 0 and critRoll < critChance:
                             crit = critAmount
-                            headshot_impact.play()
+                            # prevents sound from being played multiple times per shot
+                            if playedHeadshotSound == False:
+                                headshot_impact.play()
+                                playedHeadshotSound = True
                         else:
                             crit = 0
+                        # prevents sound from being played multiple times per shot
+                        if playedHitSound == False:
+                            banhit.play()
+                            playedHitSound = True
                         for i in range(0,revolverDamage+crit):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
@@ -1202,6 +1232,17 @@ def fire():
                         for i in range(0,revolverDamage):
                             if rattlesnake.hp > 0:
                                 rattlesnake.hp -= 1
+        elif insideSaloon == True:
+            if lookingRight == True:
+                if store2x >= 50 and store2x <= 150:
+                    saloonPanic = True
+                    saloon_panic.play()
+                    saloon_ambience.stop()
+            if lookingLeft == True:
+                if store2x >= -250 and store2x <= -100:
+                    saloonPanic = True
+                    saloon_panic.play()
+                    saloon_ambience.stop()
 
     # sniper rifle
     if hotbarSlot2 == True and scopeScreen == True:
@@ -1216,6 +1257,10 @@ def fire():
                 # Damage Bandit
                 for bandit in Bandit.instances:
                     if bandit.x_location <= 700 and bandit.x_location >= 250 and bandit.hp > 0:
+                        # prevents sound from being played multiple times per shot
+                        if playedHitSound == False:
+                            banhit.play()
+                            playedHitSound = True
                         for i in range(0,sniperDamage):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
@@ -1229,6 +1274,10 @@ def fire():
                 # Damage Bandit
                 for bandit in Bandit.instances:
                     if bandit.x_location >= -100 and bandit.x_location <= 250 and bandit.hp > 0:
+                        # prevents sound from being played multiple times per shot
+                        if playedHitSound == False:
+                            banhit.play()
+                            playedHitSound = True
                         for i in range(0,sniperDamage):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
@@ -1258,9 +1307,16 @@ def fire():
                         critRoll = random.randint(0,100)
                         if critRoll > 0 and critRoll < critChance:
                             crit = critAmount
-                            headshot_impact.play()
+                            # prevents sound from being played multiple times per shot
+                            if playedHeadshotSound == False:
+                                headshot_impact.play()
+                                playedHeadshotSound = True
                         else:
                             crit = 0
+                        # prevents sound from being played multiple times per shot
+                        if playedHitSound == False:
+                            banhit.play()
+                            playedHitSound = True
                         for i in range(0,sawedOffDamage+crit):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
@@ -1278,9 +1334,16 @@ def fire():
                         critRoll = random.randint(0,100)
                         if critRoll > 0 and critRoll < critChance:
                             crit = critAmount
-                            headshot_impact.play()
+                            # prevents sound from being played multiple times per shot
+                            if playedHeadshotSound == False:
+                                headshot_impact.play()
+                                playedHeadshotSound = True
                         else:
                             crit = 0
+                        # prevents sound from being played multiple times per shot
+                        if playedHitSound == False:
+                            banhit.play()
+                            playedHitSound = True
                         for i in range(0,sawedOffDamage+crit):
                             if bandit.hp > 0:
                                 bandit.hp -= 1
@@ -1290,6 +1353,17 @@ def fire():
                         for i in range(0,sawedOffDamage):
                             if rattlesnake.hp > 0:
                                 rattlesnake.hp -= 1
+        elif insideSaloon == True:
+            if lookingRight == True:
+                if store2x >= 50 and store2x <= 150:
+                    saloonPanic = True
+                    saloon_panic.play()
+                    saloon_ambience.stop()
+            if lookingLeft == True:
+                if store2x >= -250 and store2x <= -100:
+                    saloonPanic = True
+                    saloon_panic.play()
+                    saloon_ambience.stop()
 
 
 def hpPotion():
@@ -1340,6 +1414,8 @@ def stopSounds():
     train_distant.stop()
     outside_ambience.stop()
     saloon_ambience.stop()
+    saloon_panic.stop()
+    levelUp_sound.stop()
 
 
 def mainMenu():
@@ -1709,6 +1785,7 @@ def showSettings():
     death.set_volume(masterVolume)
     playerhit.set_volume(masterVolume)
     banpain.set_volume(masterVolume)
+    banhit.set_volume(masterVolume)
     snipershot.set_volume(masterVolume)
     heartbeat.set_volume(masterVolume)
     breath.set_volume(masterVolume)
@@ -1741,6 +1818,7 @@ def showSettings():
     skillUp_sound.set_volume(masterVolume)
     sand_throw.set_volume(masterVolume)
     bandit_stun.set_volume(masterVolume)
+    saloon_panic.set_volume(masterVolume)
 
 
 def showHUD():
@@ -1862,6 +1940,10 @@ def interactCheck():
         interactText = True
     else:
         interactText = False
+    # In Saloon (panic state)
+    if insideSaloon == True and saloonPanic == True and saloonTookDrink == False:
+        if store2x >= -50 and store2x <= -25:
+            interactText = True
 
 
 def levelUpCheck():
@@ -1956,7 +2038,7 @@ def resetValues():
         buyHoverP2_4, poisoned, insideSaloon, critChance, playerLevel, skillPoints, rollCooldown, aimLevelButtonHover, \
         aimLevelButtonClicked, stamLevelButtonHover, stamLevelButtonClicked, showLevelScreen, levelingDoneButtonHover, \
         levelingDoneButtonClicked, aimLevel, stamLevel, showLevelUp, throwingSand, sandReady, sandThrow1Right, \
-        sandThrow2Right, sandThrow1Left, sandThrow2Left
+        sandThrow2Right, sandThrow1Left, sandThrow2Left, playedBanPain, saloonPanic, saloonTookDrink
 
     # player vals
     playerHP = 100
@@ -2109,6 +2191,9 @@ def resetValues():
     buyHoverP2_4 = False
     showLevelScreen = False
     showLevelUp = False
+    playedBanPain = False
+    saloonPanic = False
+    saloonTookDrink = False
     if demoMode == True:
         ownSniperRifle = True
         ownSawedOff = False
@@ -3267,6 +3352,16 @@ while True:
                             heartbeat.stop()
                             heartbeat.play(-1)
 
+                # Take beer in paniced saloon
+                if event.key == pygame.K_w or event.key == pygame.K_UP:
+                    if insideSaloon == True and saloonPanic == True and saloonTookDrink == False:
+                        if store2x >= -50 and store2x <= -25:
+                            saloonTookDrink = True
+                            hpPotionCount += 1
+                            potion.play()
+
+
+
                 # Loot body
                 if event.key == pygame.K_f and rolling == False and insideShop == False and insideSaloon == False \
                         and showLevelScreen == False and throwingSand == False:
@@ -3352,7 +3447,8 @@ while True:
                             door.stop()
                             door.play()
                             outside_ambience.stop()
-                            saloon_ambience.play(-1)
+                            if saloonPanic == False:
+                                saloon_ambience.play(-1)
 
                 # Open Catalog
                 if store1x + 420 <= 100 and store1x + 420 >= 0:
@@ -3865,7 +3961,12 @@ while True:
             screen.blit(asset_shop_interior, (store1x-250, 0))
         # shop interior
         if insideSaloon == True:
-            screen.blit(asset_saloon_interior, (store2x-250, 0))
+            if saloonPanic == False and saloonTookDrink == False:
+                screen.blit(asset_saloon_interior, (store2x-250, 0))
+            if saloonPanic == True and saloonTookDrink == False:
+                screen.blit(asset_saloon_interior_panic, (store2x - 250, 0))
+            if saloonPanic == True and saloonTookDrink == True:
+                screen.blit(asset_saloon_interior_panic_no_drink, (store2x - 250, 0))
 
 
         # character model
@@ -4370,6 +4471,7 @@ while True:
         death.set_volume(masterVolume)
         playerhit.set_volume(masterVolume)
         banpain.set_volume(masterVolume)
+        banhit.set_volume(masterVolume)
         snipershot.set_volume(masterVolume)
         heartbeat.set_volume(masterVolume)
         breath.set_volume(masterVolume)
@@ -4402,6 +4504,7 @@ while True:
         skillUp_sound.set_volume(masterVolume)
         sand_throw.set_volume(masterVolume)
         bandit_stun.set_volume(masterVolume)
+        saloon_panic.set_volume(masterVolume)
 
         # building loop
         if insideShop == False and insideSaloon == False:

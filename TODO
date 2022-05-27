@@ -13,7 +13,7 @@
 - Bounty posters
 - Lost item posters
 - Missions
-- Voice acting (Aaron + Sam)
+- Voice acting (Solee & Cianfarano)
 - Horizontal sniper aiming
 - Leaderboard
 
@@ -21,13 +21,13 @@
 -------------------------CHANGELOG-------------------------
 v0.5
 New Features
-- Added Rattlesnakes
+- Rattlesnakes
+- Sand Throwing
+- Leveling system
+- Interior to Saloon
 - Hotbar scrolling
 - Clickable buy buttons in shop
-- Opened the Saloon
-- Added ambient sfx
-- Added leveling system
-- Added sand throwing
+- Ambient sfx
 
 
 Balance
@@ -40,7 +40,7 @@ Bug Fixes
 - No longer can shoot bandits from inside shop
 - No longer can roll, then walk through shop wall
 - Tuned sound effects
-- Fixed reload sounds being spammable
+- Reload sounds being spammable
 - Mouse cursor now beomces visible/hidden while playing
 - Added exit button
 - Fixed not getting correct amount of money when
@@ -52,6 +52,5 @@ Bug Fixes
 - Quests and bounties to complete for money or rewards
 - Player location is x: 210
 
-Stats:
-Aiming (Crit Chance)
-Stamina (Roll Cooldown)
+right: 150->50
+left: -100->-250
