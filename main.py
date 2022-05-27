@@ -245,7 +245,7 @@ if collapse:
 # audio
 if collapse:
     masterVolume = 1  # (0-1)
-    musicVolume = 0  # (0-1)
+    musicVolume = 1  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
     intro = pygame.mixer.Sound('assets/sounds/start_music.wav')
@@ -4203,7 +4203,21 @@ while True:
         for bandit in Bandit.instances:
             bandit.draw_dead()
 
+        # sniper scope
+        if ownSniperRifle == True:
+            if scopeScreen == True:
+                scoped()
+            else:
+                breath.stop()
+                heartbeat.stop()
 
+
+
+        # Constant Refresh -------------------------------------------------------------------------------------
+
+        # HUD
+        if startGame == True and scopeScreen == False:
+            showHUD()
 
         # catalog pages
         if insideShop == True:
@@ -4296,23 +4310,6 @@ while True:
                 screen.blit(asset_buy_hover_p2_4, (0, 0))
             else:
                 buyHoverP2_4 = False
-
-
-        # sniper scope
-        if ownSniperRifle == True:
-            if scopeScreen == True:
-                scoped()
-            else:
-                breath.stop()
-                heartbeat.stop()
-
-
-
-        # Constant Refresh -------------------------------------------------------------------------------------
-
-        # HUD
-        if startGame == True and scopeScreen == False:
-            showHUD()
 
         # Player Model Refresh
         playerLegsIdle = True
