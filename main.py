@@ -245,7 +245,7 @@ if collapse:
 # audio
 if collapse:
     masterVolume = 1  # (0-1)
-    musicVolume = 1  # (0-1)
+    musicVolume = 0  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
     intro = pygame.mixer.Sound('assets/sounds/start_music.wav')
@@ -554,7 +554,7 @@ if collapse:
     if demoMode == True:
         devMode_text = font1.render("Demo Mode", True, (255, 255, 255))
     else:
-        devMode_text = font1.render("Cheat Mode", True, (255, 255, 255))
+        devMode_text = font1.render("Debug Mode", True, (255, 255, 255))
     # syntax - (Message, AntiAliasing, Color, Background=None)
 
 # list of names
@@ -2463,7 +2463,7 @@ def waveHandler(wave_num):
     if wave_num > 0:
         wave += 1
         # every 2 waves, incrememnt amount of bandits by 1
-        if wave % 2 == 1:
+        if wave % 2 == 0:
             banditCount += 1
         # every 5 waves, incrememnt amount of rattlesnakes by 1
         if wave % 5 == 0:
