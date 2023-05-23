@@ -32,7 +32,7 @@ random.seed()
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("JOURNEYS: WILD WEST")
 pygame.display.set_icon(pygame.image.load("assets/icon/window_icon.png"))
-collapse = True
+collapse = True  # used in order to collapse code for organization
 version = "0.6"
 
 # values and statements
@@ -231,6 +231,7 @@ if collapse:
     saloonPanic = False
     saloonTookDrink = False
     demoMode = False
+    waveMoade = False
     if demoMode == True:
         ownSniperRifle = True
         ownSawedOff = False
@@ -291,8 +292,6 @@ if collapse:
     sand_throw = pygame.mixer.Sound('assets/sounds/sandthrow.wav')
     bandit_stun = pygame.mixer.Sound('assets/sounds/bandit_stun.wav')
     saloon_panic = pygame.mixer.Sound('assets/sounds/panic.wav')
-
-
 
 # sprites
 if collapse:
@@ -890,19 +889,7 @@ class Rattlesnake:
 
 
 def worldLeft(multiplier=1):
-    global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x,\
-        playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
-
-    if standing == True:
-        playerIdle = False
-        playerLegsIdle = False
-        if playerShoot == True:
-            playerHolster = True
-            playerShoot = False
-        if lookingRight == True:
-            playerWalk = True
-        if lookingLeft == True:
-            playerWalk = True
+    global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x
 
     cloud1x += cloudMove*multiplier
     if cloud1x + 85 >= 800:
@@ -925,21 +912,7 @@ def worldLeft(multiplier=1):
 
 
 def worldRight(multiplier=1):
-    global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x, \
-        playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster, playerSniper
-
-    if standing == True:
-        playerIdle = False
-        playerLegsIdle = False
-        if playerShoot == True:
-            playerHolster = True
-            playerShoot = False
-        if lookingRight == True:
-            playerWalk = True
-        if lookingLeft == True:
-            playerWalk = True
-        if playerShoot == True:
-            playerHolster = True
+    global cloud1x, cloud2x, standing, cactusx, store1x, store2x, tumweed1x
 
     cloud1x -= cloudMove*multiplier
     if cloud1x + 85 <= -100:
@@ -961,42 +934,23 @@ def worldRight(multiplier=1):
         instance.x_location -= speedMove*multiplier
 
 
-def walkRight():
-    global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
-        lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster,\
-        banMoveAbility, cactusx, insideSaloon
-    if moveAbility == True and pause == False and rolling == False:
-        if scopeScreen == False:
-            worldRight()
-            disableText()
-            lookingRight = True
-            lookingLeft = False
-            if hotbarSlot1 == True:
-                playerHolster = True
-            if hotbarSlot3 == True and ownSawedOff:
-                playerHolster = True
-            if insideShop == False and insideSaloon == False:
-                step.stop()
-                step.play()
-            elif insideShop == True or insideSaloon == True:
-                woodstep.stop()
-                woodstep.play()
-
-    # Shop Wall Collision
-    if insideShop == True:
-        if (store1x + 700) <= 0:
-            moveAbility = False
-
-    # Saloon Wall Collision
-    if insideSaloon == True:
-        if (store2x + 700) <= 0:
-            moveAbility = False
-
-
 def walkLeft():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster,\
-        banMoveAbility, cactusx, insideSaloon
+        banMoveAbility, cactusx, insideSaloon,standing, playerIdle, playerLegsIdle, playerWalk, scopeScreen
+
+    if standing == True:
+        playerIdle = False
+        playerLegsIdle = False
+        if playerShoot == True:
+            playerHolster = True
+            playerShoot = False
+        if lookingRight == True:
+            playerWalk = True
+        if lookingLeft == True:
+            playerWalk = True
+        if scopeScreen == True:
+            scopeScreen = False
 
     if moveAbility == True and pause == False and rolling == False:
         if scopeScreen == False:
@@ -1048,6 +1002,55 @@ def walkLeft():
         if (store2x + 700) <= 0:
             moveAbility = True
             walkLeft()
+
+
+def walkRight():
+    global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
+        lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster,\
+        banMoveAbility, cactusx, insideSaloon, playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster,\
+        scopeScreen
+
+    if standing == True:
+        playerIdle = False
+        playerLegsIdle = False
+        if playerShoot == True:
+            playerHolster = True
+            playerShoot = False
+        if lookingRight == True:
+            playerWalk = True
+        if lookingLeft == True:
+            playerWalk = True
+        if playerShoot == True:
+            playerHolster = True
+        if scopeScreen == True:
+            scopeScreen = False
+
+    if moveAbility == True and pause == False and rolling == False:
+        if scopeScreen == False:
+            worldRight()
+            disableText()
+            lookingRight = True
+            lookingLeft = False
+            if hotbarSlot1 == True:
+                playerHolster = True
+            if hotbarSlot3 == True and ownSawedOff:
+                playerHolster = True
+            if insideShop == False and insideSaloon == False:
+                step.stop()
+                step.play()
+            elif insideShop == True or insideSaloon == True:
+                woodstep.stop()
+                woodstep.play()
+
+    # Shop Wall Collision
+    if insideShop == True:
+        if (store1x + 700) <= 0:
+            moveAbility = False
+
+    # Saloon Wall Collision
+    if insideSaloon == True:
+        if (store2x + 700) <= 0:
+            moveAbility = False
 
 
 def checkWalkBoth():
@@ -1106,8 +1109,6 @@ def throwSand():
     if moveAbility == True and pause == False and insideShop == False and insideSaloon == False:
         if sandReady == True:
             sandStart_timer.start()
-
-
 
 
 def loot(count=1):
@@ -4334,11 +4335,11 @@ while True:
         if (playerHolster == True or playerSniper == True) and insideShop == True:
             screen.blit(shopWarning_text, (store1x + 527, 207))
 
-        # If trying to walk both left and right
-        if walkingLeft and walkingRight:
-            walkingBoth = True
-        else:
-            walkingBoth = False
+        # # If trying to walk both left and right
+        # if walkingLeft and walkingRight:
+        #     walkingBoth = True
+        # else:
+        #     walkingBoth = False
 
         # Check if dead
         if playerHP <= 0:
