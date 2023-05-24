@@ -26,12 +26,13 @@ New Features
 
 
 Balance
--
+- Increased Sniper Rifle firing distance
+- Added probability to miss Sniper Rifle shots
 
 
 
 Bug Fixes
--
+- Player will now leave scoped state when attemping to move
 
 
 ---------------------------NOTES---------------------------

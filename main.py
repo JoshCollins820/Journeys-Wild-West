@@ -76,6 +76,7 @@ if collapse:
     rollCooldown = 1500
     critChance = 7  # out of 100
     critAmount = 80
+    scopeDistance = 1000
 
     # speed
     speedMove = 50
@@ -99,6 +100,10 @@ if collapse:
     activeSlotx2 = -50
     bulletx = 330
     scopeWalk = 0
+
+    # lists
+    enemyVicinityLeft = []  # contains all enemies to the left of player in order of distance (closest->first)
+    enemyVicinityRight = []  # contains all enemies to the right of player in order of distance (closest->first)
 
     # statements
     devMode = False
@@ -616,6 +621,7 @@ class Bandit:
         self.slowLength = 100  # amount of time that bandit gets slowed
         self.slowed = False  # has the player slowed the bandit
         self.distPostSlow = 0  # used as a timer for unslowing the bandit
+        self.distFromPlayer = abs(self.x_location - 260)
 
     # general method that calls all of the other methods, will be called constantly by main
     def work(self):
@@ -623,6 +629,7 @@ class Bandit:
         self.draw()
         self.checkMelee()
         self.checkDead()
+        self.updateDist()
 
     # bandit movement
     def move(self, vel):
@@ -721,6 +728,9 @@ class Bandit:
         self.hp = 100
         self.x_location = getEnemyRespawn()
         self.looted = False
+
+    def updateDist(self):
+        self.distFromPlayer = abs(self.x_location - 260)
 
 
 # Rattlesnake class
@@ -1149,8 +1159,8 @@ def scoped():
         asset_ban_fp_rect = asset_ban_fp.get_rect(center=[300, 330])
         # draw bandit
         if bandit.hp > 0:
-            if bandit.x_location <= 700 and bandit.x_location >= 250 and lookingRight == True \
-                    or bandit.x_location >= -100 and bandit.x_location <= 250 and lookingLeft == True:
+            if bandit.x_location <= (600+scopeDistance) and bandit.x_location >= 250 and lookingRight == True \
+                    or bandit.x_location >= (0-scopeDistance) and bandit.x_location <= 250 and lookingLeft == True:
                 screen.blit(asset_ban_fp, asset_ban_fp_rect)
 
     # scope
@@ -1254,40 +1264,43 @@ def fire():
         sniperRoundsMag -= 1
         stopReload()
         if insideShop == False and insideSaloon == False:
-            if lookingRight:
-                # Damage Bandit
-                for bandit in Bandit.instances:
-                    if bandit.x_location <= 700 and bandit.x_location >= 250 and bandit.hp > 0:
-                        # prevents sound from being played multiple times per shot
-                        if playedHitSound == False:
-                            banhit.play()
-                            playedHitSound = True
-                        for i in range(0,sniperDamage):
-                            if bandit.hp > 0:
-                                bandit.hp -= 1
-                # Damage Rattlesnake
-                for rattlesnake in Rattlesnake.instances:
-                    if rattlesnake.x_location <= 700 and rattlesnake.x_location >= 250 and rattlesnake.hp > 0:
-                        for i in range(0,sniperDamage):
-                            if rattlesnake.hp > 0:
-                                rattlesnake.hp -= 1
-            if lookingLeft:
-                # Damage Bandit
-                for bandit in Bandit.instances:
-                    if bandit.x_location >= -100 and bandit.x_location <= 250 and bandit.hp > 0:
-                        # prevents sound from being played multiple times per shot
-                        if playedHitSound == False:
-                            banhit.play()
-                            playedHitSound = True
-                        for i in range(0,sniperDamage):
-                            if bandit.hp > 0:
-                                bandit.hp -= 1
-                # Damage Rattlesnake
-                for rattlesnake in Rattlesnake.instances:
-                    if rattlesnake.x_location >= -100 and rattlesnake.x_location <= 250 and rattlesnake.hp > 0:
-                        for i in range(0,sniperDamage):
-                            if rattlesnake.hp > 0:
-                                rattlesnake.hp -= 1
+            hitRoll = random.randint(0, 100)
+            hitChance = 68+critChance  # min is 75%, max is 100%
+            if hitRoll > 0 and hitRoll < hitChance:
+                if lookingRight:
+                    # Damage Bandit
+                    for bandit in Bandit.instances:
+                        if bandit.x_location <= (600+scopeDistance) and bandit.x_location >= 250 and bandit.hp > 0:
+                            # prevents sound from being played multiple times per shot
+                            if playedHitSound == False:
+                                banhit.play()
+                                playedHitSound = True
+                            for i in range(0,sniperDamage):
+                                if bandit.hp > 0:
+                                    bandit.hp -= 1
+                    # Damage Rattlesnake
+                    for rattlesnake in Rattlesnake.instances:
+                        if rattlesnake.x_location <= (600+scopeDistance) and rattlesnake.x_location >= 250 and rattlesnake.hp > 0:
+                            for i in range(0,sniperDamage):
+                                if rattlesnake.hp > 0:
+                                    rattlesnake.hp -= 1
+                if lookingLeft:
+                    # Damage Bandit
+                    for bandit in Bandit.instances:
+                        if bandit.x_location >= (0-scopeDistance) and bandit.x_location <= 250 and bandit.hp > 0:
+                            # prevents sound from being played multiple times per shot
+                            if playedHitSound == False:
+                                banhit.play()
+                                playedHitSound = True
+                            for i in range(0,sniperDamage):
+                                if bandit.hp > 0:
+                                    bandit.hp -= 1
+                    # Damage Rattlesnake
+                    for rattlesnake in Rattlesnake.instances:
+                        if rattlesnake.x_location >= (0-scopeDistance) and rattlesnake.x_location <= 250 and rattlesnake.hp > 0:
+                            for i in range(0,sniperDamage):
+                                if rattlesnake.hp > 0:
+                                    rattlesnake.hp -= 1
 
     # sawed off
     if hotbarSlot3 == True:
@@ -1483,7 +1496,8 @@ def levelScreen():
 
     # Stat Data
     screen.blit(critData_text, (350, 345))
-    screen.blit(stamData_text, (350, 375))
+    screen.blit(hitData_text, (350, 370))
+    screen.blit(stamData_text, (350, 395))
 
 
     # Info
@@ -2078,6 +2092,10 @@ def resetValues():
     activeSlotx2 = -50
     bulletx = 330
 
+    # lists
+    enemyVicinityLeft = []  # contains all enemies to the left of player in order of distance (closest->first)
+    enemyVicinityRight = []  # contains all enemies to the right of player in order of distance (closest->first)
+
     invincibility = False
     moveAbility = True
     banMoveAbility = True
@@ -2270,6 +2288,26 @@ def musicVolumeMute(previous_volume):
 def switchSlots(slot):
     global hotbarSlot1,hotbarSlot2,hotbarSlot3,hotbarSlot4,hotbarSlot5,hotbarSlot6,playerHolster,playerIdle,reloadUI, \
         playerShoot, playerSniper, interactText, playerGrab, outAmmoUI,lastActiveSlot
+    if slot == 0:
+        hotbarSlot1 = False
+        hotbarSlot2 = False
+        hotbarSlot3 = False
+        hotbarSlot4 = False
+        hotbarSlot5 = False
+        hotbarSlot6 = False
+        stopReload()
+        griprevolver.stop()
+        griprevolver.play()
+        playerHolster = False
+        playerShoot = False
+        playerIdle = False
+        playerSniper = False
+        if hotbarSlot1 == False:
+            playerShoot = False
+            playerHolster = False
+            playerIdle = True
+        if insideShop == True or insideSaloon == True:
+            interactText = False
     if slot == 1:
         hotbarSlot1 = not hotbarSlot1
         hotbarSlot2 = False
@@ -3177,7 +3215,7 @@ while True:
                     potion.play()
                 # spawn bandit
                 if event.key == pygame.K_b and mods & pygame.KMOD_CTRL:
-                    ban = Rattlesnake(400)
+                    ban = Bandit(400)
                     button.play()
                 # give ammo
                 if event.key == pygame.K_n and mods & pygame.KMOD_CTRL:
@@ -3199,12 +3237,14 @@ while True:
             # Enable Cheats
             if event.key == pygame.K_o and mods & pygame.KMOD_CTRL:
                 devMode = True
+                switchSlots(0)
                 revRoundsTotal += 1000
                 sniperRoundsTotal += 1000
                 buckRoundsTotal += 1000
                 ownSniperRifle = True
                 ownSawedOff = True
                 hpPotionCount = 10
+                skillPoints = 10
                 # godMode = True
                 # invisible = True
                 # levelUp(10)
@@ -4335,12 +4375,6 @@ while True:
         if (playerHolster == True or playerSniper == True) and insideShop == True:
             screen.blit(shopWarning_text, (store1x + 527, 207))
 
-        # # If trying to walk both left and right
-        # if walkingLeft and walkingRight:
-        #     walkingBoth = True
-        # else:
-        #     walkingBoth = False
-
         # Check if dead
         if playerHP <= 0:
             playerDead()
@@ -4455,6 +4489,7 @@ while True:
         aimLevelInfo_text = font1.render("Increases chance of landing Headshot by 5% each level", True, (255, 255, 255))
         stamLevelInfo_text = font1.render("Decreases Combat Roll cooldown by 10% each level", True, (255, 255, 255))
         critData_text = font1.render("Headshot Odds: " + str(critChance) + "%", True, (255, 255, 255))
+        hitData_text = font1.render("Sniper Hit Odds: " + str(68+critChance) + "%", True, (255, 255, 255))
         stamData_text = font1.render("Roll Cooldown: " + str(rollCooldown/1000) + "s", True, (255, 255, 255))
 
         # volume refresh
@@ -4541,18 +4576,17 @@ while True:
             activeSlotx1 = -500
             activeSlotx2 = -500
 
-        # bandit fp
+        # bandit refresh
         for bandit in Bandit.instances:
             # refresh values
             if bandit.hp > 0:
                 # calculate distance between bandit and player
-                bandit_distance = abs(bandit.x_location - 260)
-                if bandit_distance == 0:
-                    bandit_distance = 1
+                if bandit.distFromPlayer == 0:
+                    bandit.distFromPlayer = 1
                 # if statement fixes negative bug
-                if bandit_distance < 500:
+                if bandit.distFromPlayer < (400+scopeDistance):
                     # scopeWalk gets larger as bandit_distance gets smaller
-                    scopeWalk = 500 - bandit_distance
+                    scopeWalk = (400+scopeDistance) - bandit.distFromPlayer
 
 
         # cloud pos
