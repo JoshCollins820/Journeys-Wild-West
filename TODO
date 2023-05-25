@@ -1,6 +1,13 @@
 ------------------------ KNOWN BUGS------------------------
 - Pausing does not pause timers
 
+- When two bandits are approaching while looking through
+scope, sometimes the scale of the front bandit resets back
+a little. It seems like the flicker happens when the 2nd
+bandit enters the scopedScreen distance. Recreate bug by
+spawning two bandits seperated by about two player models
+worth of space and run far to the left/right where they are
+out of view in scopeScreen, wait until they come into view
 
 --------------------------IMPROVE--------------------------
 - Resolution (maybe 1280x800)
@@ -33,6 +40,7 @@ Balance
 
 Bug Fixes
 - Player will now leave scoped state when attemping to move
+- No longer can throw sand while scoped
 
 
 ---------------------------NOTES---------------------------
@@ -40,9 +48,5 @@ Bug Fixes
 - Quests and bounties to complete for money or rewards
 - Player location is x: 210
 
-- Created two new lists for enemies in vicinity
-- Goal is to have an updated list of enemies (left/right)
-- Will help with ordering of enemies when scoped in
-and in general when I need to know who is closest to
-the player
+
 

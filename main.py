@@ -703,6 +703,7 @@ class Bandit:
                 playedBanPain = True
             giveScore()
             Bandit.alive -= 1
+            self.removeFromVicinity()
             self.hp -= 1
         # if player is on top of body
         if self.x_location <= 260 and self.x_location >= 120 and self.bandit_left == False \
@@ -730,30 +731,45 @@ class Bandit:
         self.hp = 100
         self.x_location = getEnemyRespawn()
         self.looted = False
+        self.sideOfPlayer = 0
 
     def updateDist(self):
         self.distFromPlayer = abs(self.x_location - 260)
 
-    def updateVicinity(self):
-        # bandit is on left side of player
-        if self.x_location < 240:
-            # if bandit was on right side
-            if self.sideOfPlayer == 2:
-                enemyVicinityRight.remove(self)  # remove from right list
-            # if bandit was not already on the left list
-            if self.sideOfPlayer != 1:
-                enemyVicinityLeft.append(self)  # add to left list
-                self.sideOfPlayer = 1  # assign left
+    def getDist(self):
+        return self.distFromPlayer
 
-        # bandit is on the right side of player
-        elif self.x_location > 240:
-            # if bandit was on left side
-            if self.sideOfPlayer == 1:
-                enemyVicinityLeft.remove(self)  # remove from left list
-            # if bandit was not already on the left list
-            if self.sideOfPlayer != 2:
-                enemyVicinityRight.append(self)  # add to right list
-                self.sideOfPlayer = 2  # assign left
+    def updateVicinity(self):
+        # bandit is alive
+        if self.hp > 0:
+            # bandit is on left side of player
+            if self.x_location < 240:
+                # if bandit was on right side
+                if self.sideOfPlayer == 2:
+                    enemyVicinityRight.remove(self)  # remove from right list
+                # if bandit was not already on the left list
+                if self.sideOfPlayer != 1:
+                    enemyVicinityLeft.append(self)  # add to left list
+                    self.sideOfPlayer = 1  # assign left
+
+            # bandit is on the right side of player
+            elif self.x_location > 240:
+                # if bandit was on left side
+                if self.sideOfPlayer == 1:
+                    enemyVicinityLeft.remove(self)  # remove from left list
+                # if bandit was not already on the left list
+                if self.sideOfPlayer != 2:
+                    enemyVicinityRight.append(self)  # add to right list
+                    self.sideOfPlayer = 2  # assign left
+
+    def removeFromVicinity(self):
+        # remove from list they were in
+        if self.sideOfPlayer == 1:
+            enemyVicinityLeft.remove(self)  # remove from left list
+        elif self.sideOfPlayer == 2:
+            enemyVicinityRight.remove(self)  # remove from right list
+        # reset sideOfPlayer back to 0
+        self.sideOfPlayer = 0
 
 
 
@@ -1140,7 +1156,7 @@ def roll():
 
 def throwSand():
     global moveAbility
-    if moveAbility == True and pause == False and insideShop == False and insideSaloon == False:
+    if moveAbility == True and pause == False and insideShop == False and insideSaloon == False and scopeScreen == False:
         if sandReady == True:
             sandStart_timer.start()
 
@@ -1169,8 +1185,24 @@ def disableText():
     purchasedText = False
 
 
+def getBanditDist(bandit):
+    return bandit.getDist()
+
+
+def sortVicinityList():
+    global enemyVicinityLeft, enemyVicinityRight
+    # sort vicinity lists by distance from player
+
+    # left list
+    enemyVicinityLeft.sort(key=getBanditDist)
+    # right list
+    enemyVicinityRight.sort(key=getBanditDist)
+
+
 def scoped():
-    global scopeWalkScale
+    # sort bandits by distance
+    sortVicinityList()
+
     # backdrop
     if lookingRight == True:
         screen.blit(asset_scope_back_right, (0, 0))
@@ -1183,8 +1215,11 @@ def scoped():
         asset_ban_fp_rect = asset_ban_fp.get_rect(center=[300, 330])
         # draw bandit
         if bandit.hp > 0:
-            if bandit.x_location <= (600+scopeDistance) and bandit.x_location >= 250 and lookingRight == True \
-                    or bandit.x_location >= (0-scopeDistance) and bandit.x_location <= 250 and lookingLeft == True:
+            # if in range AND looking in right direction AND bandit is the first in the list
+            if bandit.x_location <= (600+scopeDistance) and bandit.x_location >= 250 and lookingRight == True and \
+                enemyVicinityRight[0] == bandit or \
+                bandit.x_location >= (0-scopeDistance) and bandit.x_location <= 250 and lookingLeft == True and \
+                    enemyVicinityLeft[0] == bandit:
                 screen.blit(asset_ban_fp, asset_ban_fp_rect)
 
     # scope
