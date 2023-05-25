@@ -27,7 +27,7 @@ New Features
 
 Balance
 - Increased Sniper Rifle firing distance
-- Added probability to miss Sniper Rifle shots
+- Added probability to miss shots with Sniper Rifle
 
 
 
@@ -39,4 +39,10 @@ Bug Fixes
 
 - Quests and bounties to complete for money or rewards
 - Player location is x: 210
+
+- Created two new lists for enemies in vicinity
+- Goal is to have an updated list of enemies (left/right)
+- Will help with ordering of enemies when scoped in
+and in general when I need to know who is closest to
+the player
 

@@ -76,7 +76,7 @@ if collapse:
     rollCooldown = 1500
     critChance = 7  # out of 100
     critAmount = 80
-    scopeDistance = 1000
+    scopeDistance = 200
 
     # speed
     speedMove = 50
@@ -99,7 +99,7 @@ if collapse:
     activeSlotx1 = -50
     activeSlotx2 = -50
     bulletx = 330
-    scopeWalk = 0
+    scopeWalkScale = 0
 
     # lists
     enemyVicinityLeft = []  # contains all enemies to the left of player in order of distance (closest->first)
@@ -622,6 +622,7 @@ class Bandit:
         self.slowed = False  # has the player slowed the bandit
         self.distPostSlow = 0  # used as a timer for unslowing the bandit
         self.distFromPlayer = abs(self.x_location - 260)
+        self.sideOfPlayer = 0  # 0 if not assigned side, 1 if on left, 2 if on right
 
     # general method that calls all of the other methods, will be called constantly by main
     def work(self):
@@ -630,6 +631,7 @@ class Bandit:
         self.checkMelee()
         self.checkDead()
         self.updateDist()
+        self.updateVicinity()
 
     # bandit movement
     def move(self, vel):
@@ -731,6 +733,28 @@ class Bandit:
 
     def updateDist(self):
         self.distFromPlayer = abs(self.x_location - 260)
+
+    def updateVicinity(self):
+        # bandit is on left side of player
+        if self.x_location < 240:
+            # if bandit was on right side
+            if self.sideOfPlayer == 2:
+                enemyVicinityRight.remove(self)  # remove from right list
+            # if bandit was not already on the left list
+            if self.sideOfPlayer != 1:
+                enemyVicinityLeft.append(self)  # add to left list
+                self.sideOfPlayer = 1  # assign left
+
+        # bandit is on the right side of player
+        elif self.x_location > 240:
+            # if bandit was on left side
+            if self.sideOfPlayer == 1:
+                enemyVicinityLeft.remove(self)  # remove from left list
+            # if bandit was not already on the left list
+            if self.sideOfPlayer != 2:
+                enemyVicinityRight.append(self)  # add to right list
+                self.sideOfPlayer = 2  # assign left
+
 
 
 # Rattlesnake class
@@ -1146,7 +1170,7 @@ def disableText():
 
 
 def scoped():
-    global scopeWalk
+    global scopeWalkScale
     # backdrop
     if lookingRight == True:
         screen.blit(asset_scope_back_right, (0, 0))
@@ -1155,7 +1179,7 @@ def scoped():
 
     for bandit in Bandit.instances:
         # update bandit scale
-        asset_ban_fp = pygame.transform.scale(bandit.bandit_fp_img, (bandit.banW + (scopeWalk * 0.7), bandit.banH + scopeWalk))
+        asset_ban_fp = pygame.transform.scale(bandit.bandit_fp_img, (bandit.banW + (scopeWalkScale * 0.7), bandit.banH + scopeWalkScale))
         asset_ban_fp_rect = asset_ban_fp.get_rect(center=[300, 330])
         # draw bandit
         if bandit.hp > 0:
@@ -2033,7 +2057,7 @@ def playerDead():
 def resetValues():
     global playerHP, moneyCount, revRoundsMag, revRoundsTotal, revolverFireRate, sniperRoundsMag, sniperRoundsTotal, \
         hpPotionCount, score, cloud1x, cloud2x, tumweed1x, store1x, store2x, cactusx, activeSlotx1, activeSlotx2, \
-        bulletx, scopeWalk, startGame, dead, moveAbility, banMoveAbility, interactText, buyText, sitting, standing, \
+        bulletx, scopeWalkScale, startGame, dead, moveAbility, banMoveAbility, interactText, buyText, sitting, standing, \
         insufFundsText, purchasedText, lookingLeft, lookingRight, hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, \
         hotbarSlot5, hotbarSlot6, reloadUI, outAmmoUI, scopeScreen,insideShop, ownSniperRifle, catalog, catalogPage1, \
         catalogPage2, catalogPage3, playerIdle, playerWalk, playerHolster, playerLegsIdle, playerShoot, playerDrink, \
@@ -2411,7 +2435,6 @@ def switchSlots(slot):
         playerSniper = False
         playerShoot = False
 
-
 # scrolls to right slot
 def nextSlot():
     global hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, hotbarSlot5, hotbarSlot6
@@ -2427,7 +2450,6 @@ def nextSlot():
         switchSlots(6)
     elif hotbarSlot6:
         switchSlots(1)
-
 
 # scrolls to left slot
 def prevSlot():
@@ -2515,7 +2537,6 @@ def waveHandler(wave_num):
             Bandit()
         for i in range(0, snakeCount):
             Rattlesnake()
-
 
 
 def volumeButtonReset_timer_handler():
@@ -4585,8 +4606,8 @@ while True:
                     bandit.distFromPlayer = 1
                 # if statement fixes negative bug
                 if bandit.distFromPlayer < (400+scopeDistance):
-                    # scopeWalk gets larger as bandit_distance gets smaller
-                    scopeWalk = (400+scopeDistance) - bandit.distFromPlayer
+                    # scopeWalkScale gets larger as bandit_distance gets smaller
+                    scopeWalkScale = (400+scopeDistance) - bandit.distFromPlayer
 
 
         # cloud pos
