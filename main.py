@@ -1356,43 +1356,40 @@ def fire():
         sniperRoundsMag -= 1
         stopReload()
         if insideShop == False and insideSaloon == False:
-            hitRoll = random.randint(0, 100)
-            hitChance = 68+critChance  # min is 75%, max is 100%
-            if hitRoll > 0 and hitRoll < hitChance:
-                if lookingRight:
-                    # Damage Bandit
-                    for bandit in Bandit.instances:
-                        if bandit.x_location <= (600+scopeDistance) and bandit.x_location >= 250 and bandit.hp > 0:
-                            # prevents sound from being played multiple times per shot
-                            if playedHitSound == False:
-                                banhit.play()
-                                playedHitSound = True
-                            for i in range(0,sniperDamage):
-                                if bandit.hp > 0:
-                                    bandit.hp -= 1
-                    # Damage Rattlesnake
-                    for rattlesnake in Rattlesnake.instances:
-                        if rattlesnake.x_location <= (600+scopeDistance) and rattlesnake.x_location >= 250 and rattlesnake.hp > 0:
-                            for i in range(0,sniperDamage):
-                                if rattlesnake.hp > 0:
-                                    rattlesnake.hp -= 1
-                if lookingLeft:
-                    # Damage Bandit
-                    for bandit in Bandit.instances:
-                        if bandit.x_location >= (0-scopeDistance) and bandit.x_location <= 250 and bandit.hp > 0:
-                            # prevents sound from being played multiple times per shot
-                            if playedHitSound == False:
-                                banhit.play()
-                                playedHitSound = True
-                            for i in range(0,sniperDamage):
-                                if bandit.hp > 0:
-                                    bandit.hp -= 1
-                    # Damage Rattlesnake
-                    for rattlesnake in Rattlesnake.instances:
-                        if rattlesnake.x_location >= (0-scopeDistance) and rattlesnake.x_location <= 250 and rattlesnake.hp > 0:
-                            for i in range(0,sniperDamage):
-                                if rattlesnake.hp > 0:
-                                    rattlesnake.hp -= 1
+            if lookingRight:
+                # Damage Bandit
+                for bandit in Bandit.instances:
+                    if bandit.x_location <= (600+scopeDistance) and bandit.x_location >= 250 and bandit.hp > 0:
+                        # prevents sound from being played multiple times per shot
+                        if playedHitSound == False:
+                            banhit.play()
+                            playedHitSound = True
+                        for i in range(0,sniperDamage):
+                            if bandit.hp > 0:
+                                bandit.hp -= 1
+                # Damage Rattlesnake
+                for rattlesnake in Rattlesnake.instances:
+                    if rattlesnake.x_location <= (600+scopeDistance) and rattlesnake.x_location >= 250 and rattlesnake.hp > 0:
+                        for i in range(0,sniperDamage):
+                            if rattlesnake.hp > 0:
+                                rattlesnake.hp -= 1
+            if lookingLeft:
+                # Damage Bandit
+                for bandit in Bandit.instances:
+                    if bandit.x_location >= (0-scopeDistance) and bandit.x_location <= 250 and bandit.hp > 0:
+                        # prevents sound from being played multiple times per shot
+                        if playedHitSound == False:
+                            banhit.play()
+                            playedHitSound = True
+                        for i in range(0,sniperDamage):
+                            if bandit.hp > 0:
+                                bandit.hp -= 1
+                # Damage Rattlesnake
+                for rattlesnake in Rattlesnake.instances:
+                    if rattlesnake.x_location >= (0-scopeDistance) and rattlesnake.x_location <= 250 and rattlesnake.hp > 0:
+                        for i in range(0,sniperDamage):
+                            if rattlesnake.hp > 0:
+                                rattlesnake.hp -= 1
 
     # sawed off
     if hotbarSlot3 == True:
