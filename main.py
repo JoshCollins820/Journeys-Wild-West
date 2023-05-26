@@ -8,6 +8,7 @@ import pygame
 import random
 import sys
 import pickle
+import math
 
 # SimpleGUI Module
 try:
@@ -254,7 +255,7 @@ if collapse:
 
 # audio
 if collapse:
-    masterVolume = 0  # (0-1)
+    masterVolume = 0.2  # (0-1)
     musicVolume = 0  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
@@ -1123,15 +1124,15 @@ def checkWalkBoth():
 
 def scopeLeft():
     global scopex
-    # if aiming in
-    if scopeScreen == True:
+    # if aiming in and within screen
+    if scopeScreen == True and scopex > -180:
         # move scopex to the left
         scopex -= speedScopeAim
 
 def scopeRight():
     global scopex
-    # if aiming in
-    if scopeScreen == True:
+    # if aiming in and within screen
+    if scopeScreen == True and scopex < 180:
         # move scopex to the left
         scopex += speedScopeAim
 
@@ -1360,7 +1361,10 @@ def fire():
             if lookingRight:
                 # Damage Bandit
                 for bandit in Bandit.instances:
-                    if bandit.x_location <= (600+scopeDistance) and bandit.x_location >= 250 and bandit.hp > 0:
+                    leftHitbox = bandit.aimx - (math.log(bandit.scopeWalkScale, 1.075))
+                    rightHitbox = bandit.aimx + (math.log(bandit.scopeWalkScale, 1.075))
+                    if bandit.x_location <= (600+scopeDistance) and bandit.x_location >= 250 and bandit.hp > 0 and \
+                            scopex+300 > leftHitbox and scopex+300 < rightHitbox:
                         # prevents sound from being played multiple times per shot
                         if playedHitSound == False:
                             banhit.play()
@@ -1377,7 +1381,10 @@ def fire():
             if lookingLeft:
                 # Damage Bandit
                 for bandit in Bandit.instances:
-                    if bandit.x_location >= (0-scopeDistance) and bandit.x_location <= 250 and bandit.hp > 0:
+                    leftHitbox = bandit.aimx - (math.log(bandit.scopeWalkScale, 1.075))
+                    rightHitbox = bandit.aimx + (math.log(bandit.scopeWalkScale, 1.075))
+                    if bandit.x_location >= (0-scopeDistance) and bandit.x_location <= 250 and bandit.hp > 0 and \
+                            scopex+300 > leftHitbox and scopex+300 < rightHitbox:
                         # prevents sound from being played multiple times per shot
                         if playedHitSound == False:
                             banhit.play()
@@ -3328,6 +3335,7 @@ while True:
         # Check Scope aiming both
         if scopeScreen:
             checkScopeBoth()
+
         # Key Down Handler
         if event.type == pygame.KEYDOWN:
             mods = pygame.key.get_mods()
@@ -4649,7 +4657,7 @@ while True:
         playerScore_text = font2.render((str(score)), True, (255, 255, 255))
         playerMoney_text = font2.render((str(moneyCount)), True, (255, 255, 255))
         revolverAmmo_text = font2.render((str(revRoundsMag) + "/" + str(revRoundsTotal)), True, (255, 255, 255))
-        sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255, 255, 255))
+        sniperAmmo_text = font2.render((str(sniperRoundsMag) + "/" + str(sniperRoundsTotal)), True, (255,255,255))
         sawedOffAmmo_text = font2.render((str(sawedOffRoundsMag) + "/" + str(buckRoundsTotal)), True, (255, 255, 255))
         potionCount_text = font1.render((str(hpPotionCount)), True, (255, 255, 255))
         deathScore_text = font1.render(("Score: " + str(score)), True, (255, 255, 255))
