@@ -628,6 +628,7 @@ class Bandit:
         self.distFromPlayer = abs(self.x_location - 260)
         self.sideOfPlayer = 0  # 0 if not assigned side, 1 if on left, 2 if on right
         self.scopeWalkScale = 1  # the scale of the bandit in scopeScreen, dependent on distFromPlayer
+        self.aimx = random.randint(125,475)  # where the bandit is on scopeScreen (125-475)
 
     # general method that calls all of the other methods, will be called constantly by main
     def work(self):
@@ -1245,7 +1246,7 @@ def scoped():
         # update bandit scale
         asset_ban_fp = pygame.transform.scale(bandit.bandit_fp_img, (bandit.banW + (bandit.scopeWalkScale * 0.7),
                                                                      bandit.banH + bandit.scopeWalkScale))
-        asset_ban_fp_rect = asset_ban_fp.get_rect(center=[300, 330])
+        asset_ban_fp_rect = asset_ban_fp.get_rect(center=[bandit.aimx, 330])
         # draw bandit
         if bandit.hp > 0:
             # if in range AND looking in right direction AND bandit is the first in the list
