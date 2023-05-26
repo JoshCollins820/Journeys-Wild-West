@@ -1,13 +1,10 @@
 ------------------------ KNOWN BUGS------------------------
 - Pausing does not pause timers
 
-- When two bandits are approaching while looking through
-scope, sometimes the scale of the front bandit resets back
-a little. It seems like the flicker happens when the 2nd
-bandit enters the scopedScreen distance. Recreate bug by
-spawning two bandits seperated by about two player models
-worth of space and run far to the left/right where they are
-out of view in scopeScreen, wait until they come into view
+- When two bandits collide in player at around the same
+time, sometimes the second bandit that comes in after will
+replace the first bandit in the scopeScreen, this is due
+to them being the same distance from the player in the list
 
 --------------------------IMPROVE--------------------------
 - Resolution (maybe 1280x800)

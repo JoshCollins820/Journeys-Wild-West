@@ -80,6 +80,7 @@ if collapse:
 
     # speed
     speedMove = 50
+    speedScopeAim = 7
     cloudMove = 8
     cloudAuto = 0.2
     tumbleAuto = 15
@@ -99,7 +100,7 @@ if collapse:
     activeSlotx1 = -50
     activeSlotx2 = -50
     bulletx = 330
-    scopeWalkScale = 0
+    scopex = 0
 
     # lists
     enemyVicinityLeft = []  # contains all enemies to the left of player in order of distance (closest->first)
@@ -120,6 +121,9 @@ if collapse:
     walkingRight = False
     walkingLeft = False
     walkingBoth = False
+    scopingLeft = False
+    scopingRight = False
+    scopingBoth = False
     rolling = False
     throwingSand = False
     poisoned = False
@@ -250,7 +254,7 @@ if collapse:
 
 # audio
 if collapse:
-    masterVolume = 1  # (0-1)
+    masterVolume = 0  # (0-1)
     musicVolume = 0  # (0-1)
     step = pygame.mixer.Sound('assets/sounds/step.wav')
     woodstep = pygame.mixer.Sound('assets/sounds/woodstep.wav')
@@ -623,6 +627,7 @@ class Bandit:
         self.distPostSlow = 0  # used as a timer for unslowing the bandit
         self.distFromPlayer = abs(self.x_location - 260)
         self.sideOfPlayer = 0  # 0 if not assigned side, 1 if on left, 2 if on right
+        self.scopeWalkScale = 1  # the scale of the bandit in scopeScreen, dependent on distFromPlayer
 
     # general method that calls all of the other methods, will be called constantly by main
     def work(self):
@@ -734,7 +739,15 @@ class Bandit:
         self.sideOfPlayer = 0
 
     def updateDist(self):
+        # update distFromPlayer
         self.distFromPlayer = abs(self.x_location - 260)
+        if self.distFromPlayer == 0:
+            self.distFromPlayer = 1
+        # update scopeWalkScale which determines the scale of bandit in scopeScreen
+        # below if statement fixes: 'ValueError: Cannot scale to negative size' error
+        if self.distFromPlayer < (400 + scopeDistance):
+            # scopeWalkScale gets larger as bandit_distance gets smaller
+            self.scopeWalkScale = (400+scopeDistance) - self.distFromPlayer
 
     def getDist(self):
         return self.distFromPlayer
@@ -987,7 +1000,7 @@ def worldRight(multiplier=1):
 def walkLeft():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster,\
-        banMoveAbility, cactusx, insideSaloon,standing, playerIdle, playerLegsIdle, playerWalk, scopeScreen
+        banMoveAbility, cactusx, insideSaloon,standing, playerIdle, playerLegsIdle, playerWalk
 
     if standing == True:
         playerIdle = False
@@ -999,8 +1012,6 @@ def walkLeft():
             playerWalk = True
         if lookingLeft == True:
             playerWalk = True
-        if scopeScreen == True:
-            scopeScreen = False
 
     if moveAbility == True and pause == False and rolling == False:
         if scopeScreen == False:
@@ -1057,8 +1068,7 @@ def walkLeft():
 def walkRight():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
         lookingLeft, hotbarSlot1, store1x, store2x, scopeScreen, insideShop, playerShoot, playerHolster,\
-        banMoveAbility, cactusx, insideSaloon, playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster,\
-        scopeScreen
+        banMoveAbility, cactusx, insideSaloon, playerIdle, playerWalk, playerLegsIdle, playerShoot, playerHolster
 
     if standing == True:
         playerIdle = False
@@ -1072,8 +1082,6 @@ def walkRight():
             playerWalk = True
         if playerShoot == True:
             playerHolster = True
-        if scopeScreen == True:
-            scopeScreen = False
 
     if moveAbility == True and pause == False and rolling == False:
         if scopeScreen == False:
@@ -1111,6 +1119,29 @@ def checkWalkBoth():
     else:
         walkingBoth = False
 
+
+def scopeLeft():
+    global scopex
+    # if aiming in
+    if scopeScreen == True:
+        # move scopex to the left
+        scopex -= speedScopeAim
+
+def scopeRight():
+    global scopex
+    # if aiming in
+    if scopeScreen == True:
+        # move scopex to the left
+        scopex += speedScopeAim
+
+def checkScopeBoth():
+    global scopingBoth
+
+    # If trying to aim scope both left and right
+    if scopingLeft and scopingRight:
+        scopingBoth = True
+    else:
+        scopingBoth = False
 
 def roll():
     global moveAbility, hotbarSlot2, moneyPickText, interactText, insufFundsText, purchasedText, lookingRight,\
@@ -1200,6 +1231,7 @@ def sortVicinityList():
 
 
 def scoped():
+    global scopex
     # sort bandits by distance
     sortVicinityList()
 
@@ -1211,7 +1243,8 @@ def scoped():
 
     for bandit in Bandit.instances:
         # update bandit scale
-        asset_ban_fp = pygame.transform.scale(bandit.bandit_fp_img, (bandit.banW + (scopeWalkScale * 0.7), bandit.banH + scopeWalkScale))
+        asset_ban_fp = pygame.transform.scale(bandit.bandit_fp_img, (bandit.banW + (bandit.scopeWalkScale * 0.7),
+                                                                     bandit.banH + bandit.scopeWalkScale))
         asset_ban_fp_rect = asset_ban_fp.get_rect(center=[300, 330])
         # draw bandit
         if bandit.hp > 0:
@@ -1221,9 +1254,9 @@ def scoped():
                 bandit.x_location >= (0-scopeDistance) and bandit.x_location <= 250 and lookingLeft == True and \
                     enemyVicinityLeft[0] == bandit:
                 screen.blit(asset_ban_fp, asset_ban_fp_rect)
-
-    # scope
-    screen.blit(asset_sniperscope, (0, 0))
+    # draw scope
+    screen.blit(asset_sniperscope, (scopex-60, -60))
+    # draw ui
     screen.blit(asset_ammo_icon, (25 - 12.5, 583 - 10))
     screen.blit(sniperAmmo_text, (41, 571))
 
@@ -2092,7 +2125,7 @@ def playerDead():
 def resetValues():
     global playerHP, moneyCount, revRoundsMag, revRoundsTotal, revolverFireRate, sniperRoundsMag, sniperRoundsTotal, \
         hpPotionCount, score, cloud1x, cloud2x, tumweed1x, store1x, store2x, cactusx, activeSlotx1, activeSlotx2, \
-        bulletx, scopeWalkScale, startGame, dead, moveAbility, banMoveAbility, interactText, buyText, sitting, standing, \
+        bulletx, startGame, dead, moveAbility, banMoveAbility, interactText, buyText, sitting, standing, \
         insufFundsText, purchasedText, lookingLeft, lookingRight, hotbarSlot1, hotbarSlot2, hotbarSlot3, hotbarSlot4, \
         hotbarSlot5, hotbarSlot6, reloadUI, outAmmoUI, scopeScreen,insideShop, ownSniperRifle, catalog, catalogPage1, \
         catalogPage2, catalogPage3, playerIdle, playerWalk, playerHolster, playerLegsIdle, playerShoot, playerDrink, \
@@ -2112,7 +2145,8 @@ def resetValues():
         buyHoverP2_4, poisoned, insideSaloon, critChance, playerLevel, skillPoints, rollCooldown, aimLevelButtonHover, \
         aimLevelButtonClicked, stamLevelButtonHover, stamLevelButtonClicked, showLevelScreen, levelingDoneButtonHover, \
         levelingDoneButtonClicked, aimLevel, stamLevel, showLevelUp, throwingSand, sandReady, sandThrow1Right, \
-        sandThrow2Right, sandThrow1Left, sandThrow2Left, playedBanPain, saloonPanic, saloonTookDrink
+        sandThrow2Right, sandThrow1Left, sandThrow2Left, playedBanPain, saloonPanic, saloonTookDrink, scopex, \
+        scopingLeft, scopingRight, scopingBoth
 
     # player vals
     playerHP = 100
@@ -2150,6 +2184,7 @@ def resetValues():
     activeSlotx1 = -50
     activeSlotx2 = -50
     bulletx = 330
+    scopex = 0
 
     # lists
     enemyVicinityLeft = []  # contains all enemies to the left of player in order of distance (closest->first)
@@ -2165,6 +2200,9 @@ def resetValues():
     walkingRight = False
     walkingLeft = False
     walkingBoth = False
+    scopingLeft = False
+    scopingRight = False
+    scopingBoth = False
     rolling = False
     throwingSand = False
     poisoned = False
@@ -3029,6 +3067,37 @@ def walk2_timer_handler():
     walk2_timer.stop()
 
 
+def scopeAim1_timer_handler():
+    ## Continuous scope movement function, called when press A or D or by scopeAim2_timer if player holds A or D
+
+    # start walk2_timer
+    scopeAim2_timer.start()
+    scopeAim1_timer.stop()
+
+
+def scopeAim2_timer_handler():
+    ## Continuous scope movement function, if A or D is still being held, move scope again and loop back to scopeAim1_timer
+    ## Allows the player to continuously move scope when holding down keys, loop breaks when player releases keys
+
+    # if player is still holding down walk right key
+    # 'and not' prevents bug where player repeatedly walks left and right if both are held
+    if scopingRight and not scopingLeft:
+        # keeps scope in screen
+        if scopex < 180:
+            scopeRight()
+            scopeAim1_timer.start()
+
+    # if player is still holding down walk left key
+    # 'and not' prevents bug where player repeatedly walks left and right if both are held
+    if scopingLeft and not scopingRight:
+        # keeps scope in screen
+        if scopex > -180:
+            scopeLeft()
+            scopeAim1_timer.start()
+
+    scopeAim2_timer.stop()
+
+
 def reloadEnded_timer_handler():
     global reloading
     reload.stop()
@@ -3190,6 +3259,8 @@ rollEnd_timer = simplegui.create_timer(75, rollEnd_timer_handler)
 rollCooldown_timer = simplegui.create_timer(rollCooldown, rollCooldown_timer_handler)
 walk1_timer = simplegui.create_timer(1, walk1_timer_handler)
 walk2_timer = simplegui.create_timer(150, walk2_timer_handler)
+scopeAim1_timer = simplegui.create_timer(1, scopeAim1_timer_handler)
+scopeAim2_timer = simplegui.create_timer(2, scopeAim2_timer_handler)
 reloadEnded_timer = simplegui.create_timer(125, reloadEnded_timer_handler)
 sawedOffreloadEnded_timer = simplegui.create_timer(500, sawedOffreloadEnded_timer_handler)
 loot_timer = simplegui.create_timer(200, loot_timer_handler)
@@ -3225,7 +3296,7 @@ timerTuple = (trainDistantCooldown_timer, revolver_reload_timer, sniper_reload_t
               startWave_timer, hideWave_timer, showWave_timer, venomTick_timer, snakeStrikeStop_timer,
               snakeStrikeCooldown_timer, snakeRattleCooldown_timer, snakeRattleSoundCooldown_timer, levelingDone_timer,
               aimLevelUp_timer, stamLevelUp_timer, showLevelUp_timer, hideLevelUp_timer, sandStart_timer, sandMid_timer,
-              sandEnd_timer,sandCooldown_timer)
+              sandEnd_timer,sandCooldown_timer,scopeAim1_timer, scopeAim2_timer)
 
 # Main Menu Music
 intromusic.play(-1)
@@ -3256,6 +3327,9 @@ while True:
             exitGame()
         # Check Walk Both (Fixes bug where player gets stuck when switching directions)
         checkWalkBoth()
+        # Check Scope aiming both
+        if scopeScreen:
+            checkScopeBoth()
         # Key Down Handler
         if event.type == pygame.KEYDOWN:
             mods = pygame.key.get_mods()
@@ -3344,21 +3418,37 @@ while True:
             if pause == False:
                 # Walk left
                 if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    walkLeft()
-                    # stop timers to prevent walk timer stack bug
-                    walk2_timer.stop()
-                    walk1_timer.stop()
-                    walkingLeft = True
-                    walk1_timer.start()
+                    if scopeScreen == True:
+                        scopeLeft()
+                        #stops timers to prevent walk timer stack bug
+                        scopeAim2_timer.stop()
+                        scopeAim1_timer.stop()
+                        scopingLeft = True
+                        scopeAim1_timer.start()
+                    else:
+                        walkLeft()
+                        # stop timers to prevent walk timer stack bug
+                        walk2_timer.stop()
+                        walk1_timer.stop()
+                        walkingLeft = True
+                        walk1_timer.start()
 
                 # Walk right
                 if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    walkRight()
-                    # stop timers to prevent walk timer stack bug
-                    walk2_timer.stop()
-                    walk1_timer.stop()
-                    walkingRight = True
-                    walk1_timer.start()
+                    if scopeScreen == True:
+                        scopeRight()
+                        #stops timers to prevent walk timer stack bug
+                        scopeAim2_timer.stop()
+                        scopeAim1_timer.stop()
+                        scopingRight = True
+                        scopeAim1_timer.start()
+                    else:
+                        walkRight()
+                        # stop timers to prevent walk timer stack bug
+                        walk2_timer.stop()
+                        walk1_timer.stop()
+                        walkingRight = True
+                        walk1_timer.start()
 
                 # Roll
                 if event.key == pygame.K_s or event.key == pygame.K_DOWN:
@@ -3442,8 +3532,15 @@ while True:
                     if hotbarSlot2 == True and playerSniper == True and ownSniperRifle == True and showLevelScreen == False\
                             and insideShop == False and insideSaloon == False and rolling == False and looting == False and\
                             throwingSand == False:
+                        # scope in or out
                         scopeScreen = not scopeScreen
                         if scopeScreen == True:
+                            # reset scopeAiming variables
+                            scopex = 0
+                            scopingLeft = False
+                            scopingRight = False
+                            scopingBoth = False
+                            # sounds
                             breath.stop()
                             breath.play()
                             heartbeat.stop()
@@ -3677,30 +3774,56 @@ while True:
                             turnpage.play()
         # Key Up Handler
         if event.type == pygame.KEYUP:
-            # Let go of walk left
-            if walkingBoth == False and (event.key == pygame.K_LEFT or event.key == pygame.K_a):
-                walkingLeft = False
-                walk2_timer.stop()
-                walk1_timer.stop()
-            # Let go of walk left while holding both
-            elif walkingBoth == True and (event.key == pygame.K_LEFT or event.key == pygame.K_a):
-                walk2_timer.stop()
-                walk1_timer.stop()
-                walkingLeft = False
-                walkingRight = True
-                walk1_timer.start()
-            # Let go of walk right
-            if walkingBoth == False and (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
-                walkingRight = False
-                walk2_timer.stop()
-                walk1_timer.stop()
-            # Let go of walk right while holding both
-            elif walkingBoth == True and (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
-                walk2_timer.stop()
-                walk1_timer.stop()
-                walkingRight = False
-                walkingLeft = True
-                walk1_timer.start()
+            if scopeScreen == True:
+                # Let go of scope left
+                if scopingBoth == False and (event.key == pygame.K_LEFT or event.key == pygame.K_a):
+                    scopingLeft = False
+                    scopeAim2_timer.stop()
+                    scopeAim1_timer.stop()
+                # Let go of scope left while holding both
+                elif scopingBoth == True and (event.key == pygame.K_LEFT or event.key == pygame.K_a):
+                    scopeAim2_timer.stop()
+                    scopeAim1_timer.stop()
+                    scopingLeft = False
+                    scopingRight = True
+                    scopeAim1_timer.start()
+                # Let go of scope right
+                if scopingBoth == False and (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+                    scopingRight = False
+                    scopeAim2_timer.stop()
+                    scopeAim1_timer.stop()
+                # Let go of scope right while holding both
+                elif scopingBoth == True and (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+                    scopeAim2_timer.stop()
+                    scopeAim1_timer.stop()
+                    scopingRight = False
+                    scopingLeft = True
+                    scopeAim1_timer.start()
+            else:
+                # Let go of walk left
+                if walkingBoth == False and (event.key == pygame.K_LEFT or event.key == pygame.K_a):
+                    walkingLeft = False
+                    walk2_timer.stop()
+                    walk1_timer.stop()
+                # Let go of walk left while holding both
+                elif walkingBoth == True and (event.key == pygame.K_LEFT or event.key == pygame.K_a):
+                    walk2_timer.stop()
+                    walk1_timer.stop()
+                    walkingLeft = False
+                    walkingRight = True
+                    walk1_timer.start()
+                # Let go of walk right
+                if walkingBoth == False and (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+                    walkingRight = False
+                    walk2_timer.stop()
+                    walk1_timer.stop()
+                # Let go of walk right while holding both
+                elif walkingBoth == True and (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+                    walk2_timer.stop()
+                    walk1_timer.stop()
+                    walkingRight = False
+                    walkingLeft = True
+                    walk1_timer.start()
         # Mouse Handler
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Mouse Button 1
@@ -4631,18 +4754,6 @@ while True:
         else:
             activeSlotx1 = -500
             activeSlotx2 = -500
-
-        # bandit refresh
-        for bandit in Bandit.instances:
-            # refresh values
-            if bandit.hp > 0:
-                # calculate distance between bandit and player
-                if bandit.distFromPlayer == 0:
-                    bandit.distFromPlayer = 1
-                # if statement fixes negative bug
-                if bandit.distFromPlayer < (400+scopeDistance):
-                    # scopeWalkScale gets larger as bandit_distance gets smaller
-                    scopeWalkScale = (400+scopeDistance) - bandit.distFromPlayer
 
 
         # cloud pos
