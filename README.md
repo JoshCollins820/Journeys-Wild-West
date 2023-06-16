@@ -4,7 +4,7 @@
 
 
 The Wild West is a dangerous time to be alive.
-With a six-shooter on your hip and a sniper rifle on your back, you are unstoppable.
+With a six-shooter on your hip and a sniper rifle on your back, how will you fare against endless waves of local thieves.
 Eliminate as many bandits as you can!
 
 ‎
