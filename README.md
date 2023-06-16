@@ -3,7 +3,7 @@
 
 
 
-The Wild West was a dangerous time to be alive.
+The Wild West is a dangerous time to be alive.
 With a six-shooter on your hip and a sniper rifle on your back, you are unstoppable.
 Eliminate as many bandits as you can!
 
