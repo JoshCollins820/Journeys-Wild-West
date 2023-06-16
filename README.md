@@ -12,6 +12,6 @@ Eliminate as many bandits as you can!
 
 From slaying zombies with magic and gunning down western bandits, to begging for spare change and strolling around a little town, you can expect to explore a wide variety of experiences through JOURNEYS minigames.
 
-Download: [Itch](https://jhams.itch.io/journeys-wild-west)
+Download: [Itch Game Page](https://jhams.itch.io/journeys-wild-west)
 
 ‎Trello: https://trello.com/b/yS0l1qXa/journeys-minigames
