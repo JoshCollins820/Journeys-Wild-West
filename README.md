@@ -1,4 +1,4 @@
-# Journeys-Wild West
+# Journeys: Wild West
 ![steamSideGridArtEffectsSmaller](https://github.com/JoshCollins820/Journeys-Wild-West/assets/61770152/13b7be82-e4ce-4223-a262-28d5d0346790)
 
 ## Bio
