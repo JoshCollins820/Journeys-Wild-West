@@ -1,6 +1,5 @@
 # Journeys-Wild West
-![steamSideGridArtEffects](https://github.com/JoshCollins820/Journeys-Wild-West/assets/61770152/6fee4c07-df4e-43d8-ae81-89bba29f9766)
-
+![steamSideGridArtEffectsSmaller](https://github.com/JoshCollins820/Journeys-Wild-West/assets/61770152/13b7be82-e4ce-4223-a262-28d5d0346790)
 
 
 The Wild West is a dangerous time to be alive.
