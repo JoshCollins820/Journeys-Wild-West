@@ -1,4 +1,5 @@
 # Journeys-Wild West
+![steamSideGridArtEffects](https://github.com/JoshCollins820/Journeys-Wild-West/assets/61770152/6fee4c07-df4e-43d8-ae81-89bba29f9766)
 
 
 
