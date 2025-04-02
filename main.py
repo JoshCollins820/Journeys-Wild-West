@@ -2014,7 +2014,7 @@ def showHUD():
         # loot text
         if startGame == True and insideShop == False and insideSaloon == False and standing == True:
             for bandit in Bandit.instances:
-                if bandit.looted == False and bandit.stoodOn == True:
+                if bandit.looted == False and bandit.stoodOn == True and bandit.hp < 0:
                     if (outAmmoUI or reloadUI) and interactText == True:
                         screen.blit(loot_text, (235, 205))
                     elif outAmmoUI == True or reloadUI == True or interactText == True:
